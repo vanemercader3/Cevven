@@ -1,0 +1,185 @@
+.partidos {
+  max-width: 1000px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+  flex: 1;
+  width: 100%;
+}
+
+.partidos__titulo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--blue);
+  margin-bottom: 0.3rem;
+}
+
+.partidos__sub {
+  color: #555;
+  font-size: 1rem;
+  margin-bottom: 3rem;
+}
+
+.partidos__dia {
+  margin-bottom: 3rem;
+}
+
+.partidos__dia-titulo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--blue);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.partidos__dia-linea {
+  flex: 1;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--purple));
+  border-radius: 2px;
+}
+
+.partidos__tabla {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(26, 58, 143, 0.1);
+}
+
+.partidos__header {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 0.8fr 1.2fr 0.5fr 1.2fr;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  color: white;
+  padding: 0.8rem 1.2rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.partidos__fila {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 0.8fr 1.2fr 0.5fr 1.2fr;
+  padding: 0.8rem 1.2rem;
+  align-items: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
+  background: white;
+  transition: background 0.15s;
+}
+
+.partidos__volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--blue);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: opacity 0.2s;
+}
+
+.partidos__cargando {
+  color: var(--blue);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 3rem 0;
+}
+
+.partidos__error {
+  color: var(--red);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.1rem;
+  text-align: center;
+  margin: 3rem 0;
+}
+
+.partidos__volver:hover { opacity: 0.65; }
+
+.partidos__fila:hover {
+  background: #f0f4ff;
+}
+
+
+.partidos__cat {
+  font-weight: 900;
+  color: var(--blue);
+  text-transform: uppercase;
+}
+
+.partidos__hora {
+  font-weight: 900;
+  color: var(--purple);
+  font-size: 1.1rem;
+}
+
+.partidos__equipo {
+  font-weight: 800;
+  color: var(--dark);
+}
+
+.partidos__equipo--rosa {
+  background: #ff69b4;
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.partidos__equipo--verde {
+  background: #2ecc40;
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.partidos__vs {
+  font-weight: 900;
+  color: #aaa;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.partidos__rival {
+  font-weight: 700;
+  color: #444;
+}
+
+.partidos__fila--libre {
+  background: white;
+}
+
+.partidos__libre-texto {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  background: var(--orange);
+  color: white;
+  padding: 0.2rem 0.8rem;
+  border-radius: 6px;
+  display: inline-block;
+  width: fit-content;
+}
+
+@media (max-width: 768px) {
+  .partidos__header { display: none; }
+  .partidos__fila {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.3rem;
+    padding: 0.8rem 1rem;
+  }
+}

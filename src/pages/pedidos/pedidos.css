@@ -1,0 +1,510 @@
+.pedidos {
+  max-width: 800px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+  flex: 1;
+  width: 100%;
+}
+
+.pedidos__titulo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--blue);
+  margin-bottom: 0.3rem;
+}
+
+.pedidos__sub {
+  color: #555;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+.pedidos__volver {
+  background: none;
+  border: none;
+  color: var(--blue);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  padding: 0;
+}
+
+.pedidos__volver:hover { opacity: 0.7; }
+
+/* categorías */
+.pedidos__categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pedidos__cat-btn {
+  background: white;
+  border: 2px solid var(--blue);
+  color: var(--blue);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  padding: 0.7rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase;
+}
+
+.pedidos__cat-btn:hover {
+  background: var(--blue);
+  color: white;
+}
+
+/* jugadoras */
+.pedidos__jugadoras {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.pedidos__jug-btn {
+  background: white;
+  border: 2px solid #e0e0e0;
+  color: var(--dark);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+
+.pedidos__jug-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.pedidos__vacio {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* productos */
+.pedidos__productos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 5rem;
+}
+
+.pedidos__producto-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.2rem;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--blue);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pedidos__producto-header--activo {
+  background: var(--blue);
+  color: white;
+  border-color: var(--blue);
+  border-radius: 10px 10px 0 0;
+}
+
+.pedidos__items {
+  border: 2px solid var(--blue);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+}
+
+.pedidos__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1.2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.pedidos__item:last-child { border-bottom: none; }
+
+.pedidos__item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.pedidos__item-nombre {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--dark);
+}
+
+.pedidos__item-precio {
+  font-size: 0.85rem;
+  color: var(--purple);
+  font-weight: 700;
+}
+
+.pedidos__contador {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.pedidos__contador button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--blue);
+  background: white;
+  color: var(--blue);
+  font-size: 1.2rem;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.pedidos__contador button:hover {
+  background: var(--blue);
+  color: white;
+}
+
+.pedidos__contador span {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 1.2rem;
+  min-width: 24px;
+  text-align: center;
+  color: var(--blue);
+}
+
+/* barra total fija abajo */
+.pedidos__total-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 2px solid #eee;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+}
+
+.pedidos__total-bar span {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.3rem;
+  color: var(--blue);
+}
+
+.pedidos__btn-pedir {
+  background: var(--purple);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.8rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.pedidos__btn-pedir:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pedidos__btn-pedir:not(:disabled):hover { opacity: 0.85; }
+
+/* resumen */
+.pedidos__resumen {
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.pedidos__resumen-fila {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1rem;
+  padding: 0.8rem 1.2rem;
+  border-bottom: 1px solid #eee;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem;
+}
+
+.pedidos__resumen-total {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1rem;
+  padding: 0.8rem 1.2rem;
+  background: var(--blue);
+  color: white;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.pedidos__resumen-btns {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.pedidos__btn-secundario {
+  background: white;
+  border: 2px solid var(--blue);
+  color: var(--blue);
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pedidos__btn-secundario:hover {
+  background: var(--blue);
+  color: white;
+}
+
+/* confirmado */
+.pedidos__confirmado {
+  display: flex;
+  justify-content: center;
+}
+
+.pedidos__confirmado-card {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 2.5rem;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.pedidos__confirmado-icon {
+  font-size: 3rem;
+}
+
+.pedidos__confirmado-card h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--blue);
+}
+
+.pedidos__telefono {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--purple);
+}
+
+.pedidos__transferencia {
+  background: #f4f4f4;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.pedidos__select-wrap {
+  width: 100%;
+  max-width: 400px;
+}
+
+.pedidos__select {
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  border: 2px solid var(--blue);
+  border-radius: 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--blue);
+  background: white;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231a3a8f' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+}
+
+.pedidos__select:focus {
+  outline: none;
+  border-color: var(--purple);
+}
+
+.pedidos__nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.pedidos__cancelar {
+  background: var(--red);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.pedidos__cancelar:hover { opacity: 0.8; }
+
+.pedidos__modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.pedidos__modal {
+  background: white;
+  border-radius: 14px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pedidos__modal-texto {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--blue);
+}
+
+.pedidos__modal-btns {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.pedidos__cerrado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin-bottom: 2rem;
+  padding: 1.2rem 1.5rem;
+  background: #fff3f3;
+  border: 2px solid var(--red);
+  border-radius: 12px;
+}
+
+.pedidos__cerrado-icon {
+  font-size: 2rem;
+}
+
+.pedidos__cerrado-texto {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--red);
+}
+
+.pedidos__cerrado-fechas {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.pedidos__cat-btn--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(100%);
+}
+
+@media (max-width: 768px) {
+  .pedidos__resumen-fila,
+  .pedidos__resumen-total {
+    grid-template-columns: 1fr auto;
+  }
+}
+
+.pedidos__cedula-wrap {
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pedidos__cedula-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.pedidos__cedula-hint {
+  font-size: 0.85rem;
+  color: #888;
+  margin: 0;
+}
+
+.pedidos__cedula-input {
+  padding: 0.8rem 1rem;
+  border: 2px solid var(--blue);
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-family: 'Barlow', sans-serif;
+  max-width: 300px;
+  transition: border-color 0.2s;
+}
+
+.pedidos__cedula-input:focus {
+  outline: none;
+  border-color: var(--purple);
+}
+
+.pedidos__cedula-input--error {
+  border-color: var(--red);
+}
+
+.pedidos__cedula-error {
+  color: var(--red);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0;
+}

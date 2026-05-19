@@ -1,0 +1,147 @@
+.categoria {
+  max-width: 1100px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+  flex: 1;
+  width: 100%;
+}
+
+.categoria__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.categoria__titulo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--blue);
+  margin: 0;
+}
+
+.categoria__tabla-btn {
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.03em;
+  transition: opacity 0.2s;
+}
+
+.categoria__tabla-btn:hover { opacity: 0.85; }
+
+.categoria__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.categoria__card {
+  border: 2px solid #e0e0e0;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.categoria__card:hover {
+  box-shadow: 0 6px 20px rgba(26, 58, 143, 0.12);
+  border-color: var(--blue);
+}
+
+.categoria__foto-wrap {
+  background: #f4f4f4;
+  height: 240px;
+  overflow: hidden;
+}
+
+.categoria__foto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.categoria__info {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.categoria__nombre {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--blue);
+  margin: 0;
+}
+
+.categoria__dato {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #444;
+  margin: 0;
+}
+
+.categoria__label {
+  font-weight: 700;
+  color: var(--purple);
+  font-family: 'Barlow Condensed', sans-serif;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.categoria__cargando,
+.categoria__vacio {
+  color: #888;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-top: 3rem;
+}
+
+@media (max-width: 768px) {
+  .categoria__grid { grid-template-columns: repeat(2, 1fr); }
+  .categoria__titulo { font-size: 2.5rem; }
+}
+
+.categoria__card--entrenador {
+  border-color: var(--green);
+}
+
+.categoria__card--entrenador:hover {
+  border-color: var(--green);
+  box-shadow: 0 6px 20px rgba(0,168,120,0.15);
+}
+
+.categoria__entrenador-badge {
+  background: linear-gradient(135deg, var(--green), var(--blue));
+  color: white;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  display: inline-block;
+  letter-spacing: 0.05em;
+}
+
+.categoria__card--clickeable {
+  cursor: pointer;
+}
+
+.categoria__card--clickeable:hover {
+  box-shadow: 0 6px 20px rgba(26, 58, 143, 0.12);
+  border-color: var(--blue);
+}

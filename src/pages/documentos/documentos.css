@@ -1,0 +1,211 @@
+.documentos {
+  max-width: 900px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+  flex: 1;
+  width: 100%;
+}
+
+.documentos__volver {
+  background: none;
+  border: none;
+  color: var(--blue);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 2rem;
+  display: block;
+}
+
+.documentos__volver:hover { opacity: 0.7; }
+
+/* paso cédula */
+.documentos__cedula-paso {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.documentos__cedula-card {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 2.5rem;
+  max-width: 460px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.documentos__cedula-icon { font-size: 3rem; }
+
+.documentos__cedula-titulo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--blue);
+  margin: 0;
+}
+
+.documentos__cedula-sub {
+  color: #555;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.documentos__cedula-hint {
+  font-size: 0.8rem;
+  color: #888;
+  margin: 0;
+}
+
+.documentos__cedula-input {
+  padding: 0.8rem 1rem;
+  border: 2px solid var(--blue);
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-family: 'Barlow', sans-serif;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+
+.documentos__cedula-input:focus {
+  outline: none;
+  border-color: var(--purple);
+}
+
+.documentos__cedula-input--error { border-color: var(--red); }
+
+.documentos__cedula-error {
+  color: var(--red);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.documentos__cedula-btn {
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.85rem 2rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  width: 100%;
+  transition: opacity 0.2s;
+}
+
+.documentos__cedula-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.documentos__cedula-btn:not(:disabled):hover { opacity: 0.85; }
+
+/* docs */
+.documentos__titulo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--blue);
+  margin-bottom: 0.3rem;
+}
+
+.documentos__cat {
+  color: var(--purple);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+
+.documentos__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.documentos__card {
+  border: 2px solid #e0e0e0;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.documentos__card-titulo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--blue);
+  padding: 1rem 1.2rem 0.5rem;
+  margin: 0;
+}
+
+.documentos__img-wrap {
+  height: 250px;
+  background: #f4f4f4;
+  overflow: hidden;
+}
+
+.documentos__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.documentos__sin-img {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-size: 1rem;
+  font-family: 'Barlow Condensed', sans-serif;
+}
+
+.documentos__vencimiento {
+  padding: 0.8rem 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.95rem;
+}
+
+.documentos__vencimiento-label {
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.documentos__vencimiento-fecha {
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.documentos__vencimiento--ok { background: #f0fff4; color: var(--green); }
+.documentos__vencimiento--proximo { background: #fff8e6; color: var(--orange); }
+.documentos__vencimiento--urgente { background: #fff0f0; color: var(--red); }
+.documentos__vencimiento--vencido { background: #ffe0e0; color: var(--red); }
+.documentos__vencimiento--gris { background: #f4f4f4; color: #888; }
+
+.documentos__cargando,
+.documentos__error {
+  text-align: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.2rem;
+  color: #888;
+  margin-top: 3rem;
+}
+
+@media (max-width: 768px) {
+  .documentos__grid { grid-template-columns: 1fr; }
+}
