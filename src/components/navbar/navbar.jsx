@@ -20,7 +20,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar__logo">
-        <a href="/home"><img src="/logo.png" alt="CEVVEN Handball" /></a>
+        <a href="/"><img src="/logo.png" alt="CEVVEN Handball" /></a>
       </div>
 
       <button className="navbar__burger" onClick={() => setOpen(!open)}>
