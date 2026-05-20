@@ -173,5 +173,28 @@
 }
 
 @media (max-width: 768px) {
-  .contacto { flex-direction: column; gap: 2rem; }
+  .contacto {
+    padding: 0 1rem;
+    margin: 1.5rem auto;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .contacto__titulo { font-size: 2.5rem; }
+
+  .contacto__izq {
+    width: 100%;
+  }
+
+  .contacto__der {
+    width: 100%;
+  }
+
+  .contacto__form-card {
+    padding: 1.5rem;
+    width: 100%;
+  }
+
+  .contacto__enviado { padding: 2rem 1rem; }
 }
