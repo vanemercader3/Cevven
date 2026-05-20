@@ -145,3 +145,37 @@
   box-shadow: 0 6px 20px rgba(26, 58, 143, 0.12);
   border-color: var(--blue);
 }
+
+@media (max-width: 768px) {
+  .categoria {
+    padding: 0 1rem;
+    margin: 1.5rem auto;
+  }
+
+  .categoria__titulo { font-size: 2rem; }
+
+  .categoria__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .categoria__tabla-btn {
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+  }
+
+  .categoria__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .categoria__foto-wrap { height: 160px; }
+
+  .categoria__nombre { font-size: 1rem; }
+
+  .categoria__dato { font-size: 0.8rem; }
+
+  .categoria__info { padding: 0.7rem; gap: 0.3rem; }
+}
