@@ -67,6 +67,8 @@ export default function Home() {
   const noticiaDestacada = noticias.find(n => n.destacada)
   const noticiasSecundarias = noticias.filter(n => !n.destacada)
 
+  
+
   return (
     <>
       <main>
@@ -87,7 +89,7 @@ export default function Home() {
                 className={`hero__dot ${i === actual ? 'hero__dot--active' : ''}`}
                 onClick={() => setActual(i)}
               />
-            ))}
+            ))} 
           </div>
         </section>
 
@@ -192,6 +194,16 @@ export default function Home() {
                 <span className="home-pedidos__foto-nombre">{p.nombre}</span>
               </a>
             ))}
+          </div>
+        </section>
+
+        {/* SPONSORS */}
+        <section className="home-sponsors">
+          <p className="home-sponsors__label">NUESTROS SPONSORS</p>
+          <div className="home-sponsors__logos">
+            <img src="/sponsors/neu-millan.png" alt="Neu Millán" className="home-sponsors__logo" />
+            <img src="/sponsors/bocatti.png" alt="Bocatti" className="home-sponsors__logo" />
+            <img src="/sponsors/la-soniada.png" alt="La Soñada" className="home-sponsors__logo" />
           </div>
         </section>
 
