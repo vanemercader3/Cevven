@@ -617,7 +617,8 @@
   .home-pedidos__fotos { height: 160px; width: 100%; }
 
   /* SPONSORS */
-  .home-sponsors { padding: 3rem 1.5rem; gap: 2rem; }
-  .home-sponsors__logos { gap: 2.5rem; }
-  .home-sponsors__logo { height: 40px; max-width: 120px; }
+  .home-sponsors { padding: 2rem 1.5rem; gap: 0.8rem; }
+  .home-sponsors__label { font-size: 0.75rem; }
+  .home-sponsors__logos { gap: 1.5rem; }
+  .home-sponsors__logo { height: 200px; max-width: 120px; }
 }
