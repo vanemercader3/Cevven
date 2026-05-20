@@ -540,15 +540,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4rem;
+  gap: 5rem;
   flex-wrap: wrap;
   width: 100%;
 }
 
 .home-sponsors__logo {
-  height: clamp(60px, 10vw, 150px);
+  height: 400px;
   width: auto;
-  max-width: 200px;
+  max-width: 220px;
   object-fit: contain;
   filter: grayscale(100%) opacity(40%);
   transition: filter 0.3s;
@@ -618,8 +618,8 @@
   .home-pedidos__fotos { height: 160px; width: 100%; }
 
   /* SPONSORS */
-  .home-sponsors { padding: 2rem 1rem; gap: 1rem; }
-  .home-sponsors__label { font-size: 0.75rem; }
-  .home-sponsors__logos { gap: 1.5rem; flex-wrap: nowrap; }
-  .home-sponsors__logo { height: clamp(40px, 15vw, 100px); max-width: none; flex-shrink: 1; }
+  .home-sponsors { padding: 2rem 1rem; gap: 1.5rem; }
+  .home-sponsors__label { font-size: 0.85rem; }
+  .home-sponsors__logos { gap: 2rem; flex-wrap: wrap; justify-content: center; }
+  .home-sponsors__logo { height: 150px; max-width: none; flex-shrink: 0; width: calc(33% - 1.5rem); }
 }
