@@ -83,7 +83,7 @@ export default function Home() {
           <div className="hero__dots">
             {imagenes.map((_, i) => (
               <button
-                key={i}
+                key={i} 
                 className={`hero__dot ${i === actual ? 'hero__dot--active' : ''}`}
                 onClick={() => setActual(i)}
               />

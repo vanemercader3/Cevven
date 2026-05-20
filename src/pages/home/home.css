@@ -579,3 +579,96 @@
   .home-pedidos__fotos { height: 200px; }
   .home-pedidos__content { width: 220px; height: 220px; min-width: 220px; }
 }
+
+@media (max-width: 768px) {
+
+  /* HERO */
+  .hero { height: 220px; }
+
+  /* FIXTURE */
+  .fixture {
+    flex-direction: column;
+    padding: 1.5rem 1.2rem;
+    gap: 1.5rem;
+    overflow: hidden;
+  }
+
+  .fixture::before,
+  .fixture::after { display: none; }
+
+  .fixture__title { min-width: unset; text-align: center; }
+  .fixture__title h2 { font-size: 1.8rem; }
+
+  .fixture__matches {
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-right: 0;
+    padding: 1.5rem;
+    border-radius: 20px;
+    width: 100%;
+  }
+
+  .fixture__match img { width: 55px; height: 55px; }
+  .fixture__vs { font-size: 1.4rem; }
+
+  /* NOTICIAS */
+  .home-noticias {
+    padding: 2rem 1.2rem;
+    margin-top: 1.5rem;
+  }
+
+  .home-noticias__titulo { font-size: 2rem; }
+  .home-noticias__grid { grid-template-columns: 1fr; }
+  .home-noticias__img { height: 200px; }
+
+  .home-noticias__item-img {
+    width: 90px;
+    height: 70px;
+  }
+
+  /* INDUMENTARIA */
+  .home-indumentaria {
+    padding: 2rem 1.5rem;
+    margin-top: 1.5rem;
+    min-height: 220px;
+  }
+
+  .home-indumentaria__titulo { font-size: 2.5rem; }
+  .home-indumentaria__img {
+    height: 160px;
+    right: 0;
+    opacity: 0.35;
+  }
+
+  .home-indumentaria__deco1,
+  .home-indumentaria__deco2,
+  .home-indumentaria__deco3,
+  .home-indumentaria__deco4,
+  .home-indumentaria__deco5,
+  .home-indumentaria__deco6,
+  .home-indumentaria__deco7 {
+    display: none;
+  }
+
+  /* PEDIDOS */
+  .home-pedidos {
+    flex-direction: column;
+    padding: 1.5rem 1.2rem;
+    margin-top: 1.5rem;
+    min-height: unset;
+    gap: 1rem;
+  }
+
+  .home-pedidos__content {
+    width: 200px;
+    height: 200px;
+    min-width: 200px;
+  }
+
+  .home-pedidos__titulo { font-size: 2rem; }
+
+  .home-pedidos__fotos {
+    height: 160px;
+    width: 100%;
+  }
+}
