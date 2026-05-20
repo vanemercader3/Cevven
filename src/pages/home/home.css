@@ -621,5 +621,5 @@
   .home-sponsors { padding: 2rem 1rem; gap: 1.5rem; }
   .home-sponsors__label { font-size: 0.85rem; }
   .home-sponsors__logos { gap: 2rem; flex-wrap: wrap; justify-content: center; }
-  .home-sponsors__logo { height: 150px; max-width: none; flex-shrink: 0; width: calc(33% - 1.5rem); }
+  .home-sponsors__logo { height: 100px; max-width: none; flex-shrink: 0; width: calc(33% - 1.5rem); }
 }
