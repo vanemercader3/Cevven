@@ -59,9 +59,7 @@
   object-fit: contain;
 }
 
-.producto__placeholder {
-  font-size: 4rem;
-}
+.producto__placeholder { font-size: 4rem; }
 
 .producto__info {
   padding: 1.2rem;
@@ -93,7 +91,6 @@
   gap: 0.5rem;
 }
 
-
 .producto__talle {
   padding: 0.3rem 0.7rem;
   border: 2px solid var(--blue);
@@ -107,15 +104,8 @@
   transition: all 0.15s;
 }
 
-.producto__talle:hover {
-  background: var(--blue);
-  color: white;
-}
-
-.producto__talle--activo {
-  background: var(--blue);
-  color: white;
-}
+.producto__talle:hover { background: var(--blue); color: white; }
+.producto__talle--activo { background: var(--blue); color: white; }
 
 .producto__talle-unico {
   font-family: 'Barlow Condensed', sans-serif;
@@ -129,7 +119,7 @@
   bottom: 80px;
   right: -8px;
   background: linear-gradient(135deg, var(--red), var(--orange));
-  color: rgb(255, 255, 255);
+  color: white;
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 900;
   font-size: 1rem;
@@ -163,6 +153,7 @@
 }
 
 .producto__btn:hover { opacity: 0.85; }
+.producto__btn--agregado { background: var(--green) !important; }
 
 /* barra carrito */
 .indumentaria__carrito-bar {
@@ -186,9 +177,7 @@
   font-size: 1rem;
 }
 
-.indumentaria__carrito-info strong {
-  font-size: 1.4rem;
-}
+.indumentaria__carrito-info strong { font-size: 1.4rem; }
 
 .indumentaria__carrito-btn {
   background: var(--purple);
@@ -244,18 +233,19 @@
 
 .indumentaria__resumen-fila {
   display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 1rem;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 0.8rem;
   padding: 0.7rem 1rem;
   border-bottom: 1px solid #eee;
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 1rem;
+  align-items: center;
 }
 
 .indumentaria__resumen-total {
   display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 1rem;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 0.8rem;
   padding: 0.7rem 1rem;
   background: var(--blue);
   color: white;
@@ -299,6 +289,25 @@
 }
 
 .indumentaria__btn-pedir:hover { opacity: 0.85; }
+
+.indumentaria__resumen-borrar {
+  background: none;
+  border: none;
+  color: var(--red);
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 900;
+  padding: 0;
+  justify-self: end;
+}
+
+.indumentaria__resumen-borrar:hover { opacity: 0.7; }
+
+.indumentaria__resumen-regalo {
+  background: #f0fff4;
+  color: var(--green);
+  font-weight: 700;
+}
 
 /* pasos */
 .indumentaria__paso {
@@ -408,55 +417,6 @@
   line-height: 1.8;
 }
 
-.producto__btn--agregado {
-  background: var(--green) !important;
-}
-
-.indumentaria__resumen-fila {
-  display: grid;
-  grid-template-columns: 1fr auto auto auto;
-  gap: 0.8rem;
-  padding: 0.7rem 1rem;
-  border-bottom: 1px solid #eee;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1rem;
-  align-items: center;
-}
-
-.indumentaria__resumen-total {
-  display: grid;
-  grid-template-columns: 1fr auto auto auto;
-  gap: 0.8rem;
-  padding: 0.7rem 1rem;
-  background: var(--blue);
-  color: white;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 900;
-  font-size: 1.1rem;
-}
-
-.indumentaria__resumen-borrar {
-  background: none;
-  border: none;
-  color: var(--red);
-  font-size: 1rem;
-  cursor: pointer;
-  font-weight: 900;
-  padding: 0;
-}
-
-.indumentaria__resumen-borrar:hover { opacity: 0.7; }
-
-.indumentaria__resumen-regalo {
-  background: #f0fff4;
-  color: var(--green);
-  font-weight: 700;
-}
-
-@media (max-width: 768px) {
-  .indumentaria__grid { grid-template-columns: 1fr; }
-}
-
 .indumentaria__cedula-input {
   padding: 0.8rem 1rem;
   border: 2px solid var(--blue);
@@ -474,9 +434,7 @@
   border-color: var(--purple);
 }
 
-.indumentaria__cedula-input--error {
-  border-color: var(--red);
-}
+.indumentaria__cedula-input--error { border-color: var(--red); }
 
 .indumentaria__cedula-error {
   color: var(--red);
@@ -484,4 +442,65 @@
   font-weight: 700;
   font-size: 1rem;
   margin-top: 0.5rem;
+}
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  .indumentaria {
+    padding: 0 1rem;
+    margin: 1.5rem auto;
+  }
+
+  .indumentaria__titulo { font-size: 2.5rem; }
+
+  .indumentaria__grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .producto__imagen { height: 200px; }
+
+  .producto__badge {
+    width: 100px;
+    height: 100px;
+    font-size: 0.85rem;
+    bottom: 60px;
+  }
+
+  .indumentaria__carrito-bar { padding: 0.8rem 1rem; }
+  .indumentaria__carrito-btn { padding: 0.6rem 1.2rem; font-size: 1rem; }
+
+  .indumentaria__modal { padding: 1.5rem; width: 95%; }
+
+  .indumentaria__modal-btns { flex-direction: column; }
+
+  .indumentaria__btn-sec,
+  .indumentaria__btn-pedir {
+    width: 100%;
+    text-align: center;
+  }
+
+  .indumentaria__resumen-fila {
+    grid-template-columns: 1fr auto auto auto;
+    font-size: 0.85rem;
+    gap: 0.4rem;
+    padding: 0.6rem 0.8rem;
+    align-items: center;
+  }
+
+  .indumentaria__resumen-borrar {
+    justify-self: end;
+    align-self: center;
+  }
+
+  .indumentaria__categorias { gap: 0.6rem; }
+
+  .indumentaria__cat-btn {
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .indumentaria__select-wrap { max-width: 100%; }
+
+  .indumentaria__confirmado-card { padding: 1.5rem; }
 }
