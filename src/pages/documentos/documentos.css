@@ -207,5 +207,25 @@
 }
 
 @media (max-width: 768px) {
-  .documentos__grid { grid-template-columns: 1fr; }
+  .documentos {
+    padding: 0 1rem;
+    margin: 1.5rem auto;
+  }
+
+  .documentos__titulo { font-size: 2rem; }
+
+  .documentos__grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .documentos__cedula-card { padding: 1.5rem; }
+
+  .documentos__img-wrap { height: 180px; }
+
+  .documentos__vencimiento {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
 }
