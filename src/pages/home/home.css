@@ -488,14 +488,9 @@
   transition: transform 0.4s;
 }
 
-.home-pedidos__foto-wrap:nth-child(3) .home-pedidos__foto {
-  object-fit: contain;
+.home-pedidos__foto--contain {
+  object-fit: contain !important;
   background: #f9f9f9;
-}
-
-.home-pedidos__foto-wrap:nth-child(5) .home-pedidos__foto {
-  object-fit: contain;
-  background: white;
 }
 
 .home-pedidos__foto-wrap:hover .home-pedidos__foto { transform: scale(1.08); }

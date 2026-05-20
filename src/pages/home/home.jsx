@@ -18,6 +18,18 @@ const noticias = [
   { tag: 'NOTICIAS', titulo: 'Termino la temporada de Beach Handball', img: '/noticias/noticia5.jpg' },
 ]
 
+const fotos = [
+  { img: '/pedidos/empanadas.jpg', nombre: 'Empanadas' },
+  { img: '/pedidos/pollo-spiedo.jpg', nombre: 'Pollo al Spiedo' },
+  { img: '/pedidos/pasta.jpg', nombre: 'Pasta' },
+  { img: '/pedidos/pizza.jpg', nombre: 'Pizza', contain: true },
+  { img: '/pedidos/alfa-choco-blanco.jpg', nombre: 'Alfajores Blanco', contain: true },
+  { img: '/pedidos/vino.jpg', nombre: 'Vinos' },
+  { img: '/pedidos/mila-pollo.jpg', nombre: 'Milanesa de Pollo' },
+  { img: '/pedidos/alfa-choco-negro.jpg', nombre: 'Alfajores Negro', contain: true },
+  
+]
+
 function parsearCSV(texto) {
   const filas = texto.trim().split('\n')
   const headers = filas[0].split(',').map(h => h.trim())
@@ -43,11 +55,19 @@ function nombreALogo(nombre) {
 export default function Home() {
   const [actual, setActual] = useState(0)
   const [fixtures, setFixtures] = useState([])
+  const [fotosOffset, setFotosOffset] = useState(0)
 
   useEffect(() => {
     const timer = setInterval(() => {
       setActual(prev => (prev + 1) % imagenes.length)
     }, 4000)
+    return () => clearInterval(timer)
+  }, [])
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setFotosOffset(prev => (prev + 1) % fotos.length)
+    }, 2500)
     return () => clearInterval(timer)
   }, [])
 
@@ -66,8 +86,7 @@ export default function Home() {
 
   const noticiaDestacada = noticias.find(n => n.destacada)
   const noticiasSecundarias = noticias.filter(n => !n.destacada)
-
-  
+  const fotosVisibles = [...fotos.slice(fotosOffset), ...fotos.slice(0, fotosOffset)].slice(0, 5)
 
   return (
     <>
@@ -85,11 +104,11 @@ export default function Home() {
           <div className="hero__dots">
             {imagenes.map((_, i) => (
               <button
-                key={i} 
+                key={i}
                 className={`hero__dot ${i === actual ? 'hero__dot--active' : ''}`}
                 onClick={() => setActual(i)}
               />
-            ))} 
+            ))}
           </div>
         </section>
 
@@ -141,7 +160,6 @@ export default function Home() {
                 <span className="home-noticias__link">→ MÁS</span>
               </div>
             </a>
-
             <div className="home-noticias__lista">
               {noticiasSecundarias.map((n, i) => (
                 <a key={i} href="/noticias" className="home-noticias__item">
@@ -182,15 +200,13 @@ export default function Home() {
             <a href="/pedidos" className="home-pedidos__btn">HACER UN PEDIDO →</a>
           </div>
           <div className="home-pedidos__fotos">
-            {[
-              { img: '/pedidos/empanadas.jpg', nombre: 'Empanadas' },
-              { img: '/pedidos/pasta.jpg', nombre: 'Pasta' },
-              { img: '/pedidos/pizza.jpg', nombre: 'Pizza' },
-              { img: '/pedidos/vino.jpg', nombre: 'Vinos' },
-              { img: '/pedidos/alfa-choco-negro.jpg', nombre: 'Alfajores' },
-            ].map((p, i) => (
-              <a key={i} href="/pedidos" className="home-pedidos__foto-wrap">
-                <img src={p.img} alt={p.nombre} className="home-pedidos__foto" />
+            {fotosVisibles.map((p, i) => (
+              <a key={`${fotosOffset}-${i}`} href="/pedidos" className="home-pedidos__foto-wrap">
+                <img 
+                  src={p.img} 
+                  alt={p.nombre} 
+                  className={`home-pedidos__foto ${p.contain ? 'home-pedidos__foto--contain' : ''}`}
+                />
                 <span className="home-pedidos__foto-nombre">{p.nombre}</span>
               </a>
             ))}
