@@ -86,8 +86,8 @@ export default function Home() {
 
   const noticiaDestacada = noticias.find(n => n.destacada)
   const noticiasSecundarias = noticias.filter(n => !n.destacada)
-  const fotosVisibles = [...fotos.slice(fotosOffset), ...fotos.slice(0, fotosOffset)].slice(0, 5)
-
+  const isMobile = window.innerWidth <= 768
+  const fotosVisibles = [...fotos.slice(fotosOffset), ...fotos.slice(0, fotosOffset)].slice(0, isMobile ? 4 : 5)
   return (
     <>
       <main>
