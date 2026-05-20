@@ -10,6 +10,7 @@ import Pedidos from './pages/pedidos/pedidos'
 import Categoria from './pages/categoria/categoria'
 import Landing from './pages/landing/landing'
 import Documentos from './pages/documentos/documentos'
+import Construccion from './pages/construccion/construccion'
 
 
 function Layout({ children }) {
@@ -35,6 +36,7 @@ function App() {
         <Route path="/pedidos" element={<Layout><Pedidos /></Layout>} />
         <Route path="/categoria/:cat" element={<Layout><Categoria /></Layout>} />
         <Route path="/documentos/:cat/:nombre" element={<Layout><Documentos /></Layout>} />
+        <Route path="/construccion" element={<Construccion />} />
 
       </Routes>
     </BrowserRouter>
