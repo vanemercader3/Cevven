@@ -126,7 +126,8 @@ export default function Pedidos() {
   }
 
   const jugadorasFiltradas = jugadoras.filter(j =>
-    j.categoria?.trim().toLowerCase() === categoriaSeleccionada?.trim().toLowerCase()
+    j.categoria?.trim().toLowerCase() === categoriaSeleccionada?.trim().toLowerCase() &&
+    j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
   )
 
   const sumar = (id) => setCantidades(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }))
