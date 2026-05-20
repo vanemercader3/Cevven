@@ -1,10 +1,12 @@
 import './nosotros.css'
 import PageFooter from '../../components/pageFooter/pageFooter'
+import BackButton from '../../components/backButton/backButton'
 
 export default function Nosotros() {
   return (
     <>
       <main className="nosotros">
+        <BackButton />
         <h1 className="nosotros__titulo">¿Quiénes Somos?</h1>
         <p className="nosotros__texto">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor 

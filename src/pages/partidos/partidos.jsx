@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import './partidos.css'
 import PageFooter from '../../components/pageFooter/pageFooter'
-import { ArrowLeft } from 'lucide-react'
+import BackButton from '../../components/backButton/backButton'
+/*import { ArrowLeft } from 'lucide-react'*/
 
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=0&single=true&output=csv'
 
@@ -78,10 +79,12 @@ export default function Partidos() {
   return (
     <>
       <main className="partidos">
-        <a href="/" className="partidos__volver">
+        <BackButton />
+
+        {/* <a href="/" className="partidos__volver">
           <ArrowLeft size={20} />
           Volver al inicio
-        </a>
+        </a> */}
         <h1 className="partidos__titulo">FIXTURE</h1>
         <p className="partidos__sub">Partidos del fin de semana</p>
 

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import emailjs from '@emailjs/browser'
 import './contacto.css'
 import PageFooter from '../../components/pageFooter/pageFooter'
+import BackButton from '../../components/backButton/backButton'
 import { Mail, Phone, MapPin } from 'lucide-react'
 
 const SERVICE_ID = 'service_eus8zan'
@@ -48,6 +49,7 @@ export default function Contacto() {
   return (
     <>
       <main className="contacto">
+        <BackButton />
         <div className="contacto__izq">
           <h1 className="contacto__titulo">CONTACTO</h1>
           <p className="contacto__sub">¿En qué te podemos ayudar?</p>

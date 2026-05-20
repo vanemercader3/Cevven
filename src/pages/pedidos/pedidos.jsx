@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import './pedidos.css'
 import PageFooter from '../../components/pageFooter/pageFooter'
+import BackButton from '../../components/backButton/backButton'
 
 const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzadHnefQOSp5CcFqIJq1WAUVYCBEuxghq6QVcXipvlLnb4WBTIyNNbrskPaXDW6z6X/exec'
@@ -197,6 +198,8 @@ export default function Pedidos() {
   return (
     <>
       <main className="pedidos">
+        {paso === 1 && <BackButton />}
+
 
         {/* PASO 1 */}
         {paso === 1 && (

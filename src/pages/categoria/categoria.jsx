@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import './categoria.css'
 import PageFooter from '../../components/pageFooter/pageFooter'
+import BackButton from '../../components/backButton/backButton'
 
 const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
 
@@ -55,6 +56,7 @@ export default function Categoria() {
   return (
     <>
       <main className="categoria">
+        <BackButton />
         <div className="categoria__header">
           <h1 className="categoria__titulo">{info.nombre}</h1>
           {info.url !== '#' && (

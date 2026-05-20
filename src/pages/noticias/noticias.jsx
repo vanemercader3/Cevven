@@ -1,5 +1,6 @@
 import './noticias.css'
 import PageFooter from '../../components/pageFooter/pageFooter'
+import BackButton from '../../components/backButton/backButton'
 
 const noticias = [
   {
@@ -38,6 +39,7 @@ export default function Noticias() {
   return (
     <>
       <main className="noticias">
+        <BackButton />
         <h1 className="noticias__titulo">NOTICIAS</h1>
         <div className="noticias__grid">
           {noticias.map((n, i) => (
