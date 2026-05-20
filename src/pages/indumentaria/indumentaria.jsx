@@ -105,7 +105,8 @@ export default function Indumentaria() {
   }, [])
 
   const jugadorasFiltradas = jugadoras.filter(j =>
-    j.categoria?.trim().toLowerCase() === categoriaSeleccionada?.trim().toLowerCase()
+    j.categoria?.trim().toLowerCase() === categoriaSeleccionada?.trim().toLowerCase() &&
+    j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
   )
 
   const agregarAlCarrito = (producto, talle) => {
@@ -192,7 +193,7 @@ export default function Indumentaria() {
   return (
     <>
       <main className="indumentaria">
-        <BackButton />
+        {paso === 'tienda' && <BackButton />}
 
         {/* TIENDA */}
         {paso === 'tienda' && (
