@@ -508,3 +508,69 @@
   font-size: 1rem;
   margin: 0;
 }
+
+@media (max-width: 768px) {
+  .pedidos {
+    padding: 0 1rem;
+    margin: 1.5rem auto;
+  }
+
+  .pedidos__titulo { font-size: 2.2rem; }
+
+  .pedidos__categorias { gap: 0.6rem; }
+
+  .pedidos__cat-btn {
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .pedidos__select-wrap { max-width: 100%; }
+
+  .pedidos__item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+
+  .pedidos__contador { align-self: flex-end; }
+
+  .pedidos__resumen-fila {
+    grid-template-columns: 1fr auto auto;
+    font-size: 0.9rem;
+    gap: 0.5rem;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .pedidos__resumen-total {
+    grid-template-columns: 1fr auto auto;
+    font-size: 1rem;
+    gap: 0.5rem;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .pedidos__resumen-btns {
+    flex-direction: column;
+  }
+
+  .pedidos__btn-secundario,
+  .pedidos__btn-pedir {
+    width: 100%;
+    text-align: center;
+  }
+
+  .pedidos__cedula-input {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .pedidos__confirmado-card { padding: 1.5rem; }
+
+  .pedidos__modal-btns { flex-direction: column; }
+
+  .pedidos__modal-btns .pedidos__btn-secundario,
+  .pedidos__modal-btns .pedidos__cancelar {
+    width: 100%;
+  }
+
+  .pedidos__total-bar { padding: 0.8rem 1rem; }
+}
