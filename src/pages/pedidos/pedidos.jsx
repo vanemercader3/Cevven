@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react'
 import './pedidos.css'
 import PageFooter from '../../components/pageFooter/pageFooter'
 import BackButton from '../../components/backButton/backButton'
+import emailjs from '@emailjs/browser'
 
 const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzadHnefQOSp5CcFqIJq1WAUVYCBEuxghq6QVcXipvlLnb4WBTIyNNbrskPaXDW6z6X/exec'
 const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1223710762&single=true&output=csv'
+const EMAILJS_SERVICE = 'service_eus8zan'
+const EMAILJS_TEMPLATE_PEDIDO = 'template_9mz3d68'
+const EMAILJS_KEY = '6mltD84C_kgv-YML0'
 
 const categorias = ['Infantiles', 'U13', 'U14', 'U15', 'U16', 'U18', 'U21', 'Senior', 'Inter Masc', 'Plus 35', 'Entrenadores']
 
@@ -177,6 +181,26 @@ export default function Pedidos() {
       })
     } catch (err) {
       console.error('Error guardando pedido:', err)
+    }
+    // armar resumen del pedido
+    const resumenLineas = itemsConCantidad.map(item =>
+      `- ${item.nombre}: ${cantidades[item.id]} x $${item.precio} = $${(cantidades[item.id] * item.precio).toLocaleString()}`
+    ).join('\n')
+
+    // buscar mail de la jugadora
+    const mailJugadora = jugadoraSeleccionada.mail?.trim()
+
+    if (mailJugadora) {
+      try {
+        await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE_PEDIDO, {
+          nombre: `${jugadoraSeleccionada.nombre} ${jugadoraSeleccionada.apellido}`,
+          resumen: resumenLineas,
+          total: total.toLocaleString(),
+          to_email: mailJugadora, 
+        }, EMAILJS_KEY)
+      } catch (err) {
+        console.error('Error enviando mail:', err)
+      }
     }
     setGuardando(false)
     setPaso(5)
