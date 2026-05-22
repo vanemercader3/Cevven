@@ -56,9 +56,33 @@ export default function Navbar() {
         <a href="/"><img src="/logo.png" alt="CEVVEN Handball" /></a>
       </div>
 
-      <button className="navbar__burger" onClick={() => setOpen(!open)}>
-        {open ? <X size={24} /> : <Menu size={24} />}
-      </button>
+      <div className="navbar__mobile-user-burger">
+        <div className="navbar__user navbar__user--mobile" ref={userMenuRef}>
+          <button className="navbar__user-btn" onClick={() => usuario ? setUserMenuOpen(!userMenuOpen) : handleLogin()}>
+            {usuario?.photoURL
+              ? <img src={usuario.photoURL} alt={usuario.displayName} className="navbar__user-foto" />
+              : <User size={20} />
+            }
+          </button>
+          {userMenuOpen && usuario && (
+            <div className="navbar__user-menu">
+              <div className="navbar__user-info">
+                {usuario.photoURL && <img src={usuario.photoURL} alt="" className="navbar__user-menu-foto" />}
+                <div>
+                  <p className="navbar__user-nombre">{usuario.displayName}</p>
+                  <p className="navbar__user-email">{usuario.email}</p>
+                </div>
+              </div>
+              <button className="navbar__user-logout" onClick={handleLogout}>
+                Cerrar sesión
+              </button>
+            </div>
+          )}
+        </div>
+        <button className="navbar__burger" onClick={() => setOpen(!open)}>
+          {open ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
 
       <ul className={`navbar__links ${open ? 'navbar__links--open' : ''}`}>
         <li><a href="/nosotros" onClick={() => setOpen(false)}>Nosotros</a></li>

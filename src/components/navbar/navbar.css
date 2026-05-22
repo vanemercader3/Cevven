@@ -369,3 +369,18 @@
     left: auto;
   }
 }
+
+.navbar__mobile-user-burger {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-left: auto;
+  }
+
+  .navbar__burger {
+    margin-left: 0;
+  }
+
+  .navbar__user--mobile {
+    display: flex;
+  }
