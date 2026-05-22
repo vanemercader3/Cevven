@@ -371,7 +371,7 @@
 }
 
 .navbar__mobile-user-burger {
-    display: flex;
+    display: none;
     align-items: center;
     gap: 0.6rem;
     margin-left: auto;
