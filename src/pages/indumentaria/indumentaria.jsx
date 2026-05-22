@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import './indumentaria.css'
 import PageFooter from '../../components/pageFooter/pageFooter'
 import BackButton from '../../components/backButton/backButton'
+import { useAuth } from '../../context/AuthContext'
+import { loginConGoogle } from '../../firebase'
 
 const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzadHnefQOSp5CcFqIJq1WAUVYCBEuxghq6QVcXipvlLnb4WBTIyNNbrskPaXDW6z6X/exec'
@@ -42,6 +44,8 @@ function ProductoCard({ producto, onAgregar }) {
     setAgregado(true)
     setTimeout(() => setAgregado(false), 2000)
   }
+
+
 
   return (
     <div className="producto__card">
@@ -87,6 +91,7 @@ function ProductoCard({ producto, onAgregar }) {
 }
 
 export default function Indumentaria() {
+  const { usuario } = useAuth()
   const [carrito, setCarrito] = useState([])
   const [paso, setPaso] = useState('tienda')
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null)
@@ -258,7 +263,21 @@ export default function Indumentaria() {
                 <button
                   className="indumentaria__btn-pedir"
                   disabled={carrito.length === 0}
-                  onClick={() => { setMostrarResumen(false); setPaso('categoria') }}
+                  onClick={async () => {
+                    setMostrarResumen(false)
+                    if (!usuario) {
+                      alert('Para confirmar el pedido necesitás iniciar sesión con tu cuenta de Google del club.')
+                      try {
+                        await loginConGoogle()
+                      } catch (err) {
+                        if (err.message === 'no_autorizado') {
+                          alert('Tu cuenta de Google no está asociada a ninguna jugadora de CEVVEN. Usá el mail registrado en el club.')
+                        }
+                        return
+                      }
+                    }
+                    setPaso('categoria')
+                  }}
                 >
                   CONFIRMAR PEDIDO →
                 </button>

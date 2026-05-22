@@ -1,5 +1,5 @@
 .pedidos {
-  max-width: 800px;
+  max-width: 900px;
   margin: 3rem auto;
   padding: 0 2rem;
   flex: 1;
@@ -20,6 +20,76 @@
   margin-bottom: 2rem;
 }
 
+/* ── VITRINA ── */
+.pedidos__vitrina {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.2rem;
+  margin-bottom: 2.5rem;
+}
+
+.pedidos__vitrina-card {
+  border: 2px solid #e0e0e0;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.pedidos__vitrina-card:hover {
+  box-shadow: 0 6px 20px rgba(26,58,143,0.12);
+  border-color: var(--blue);
+}
+
+.pedidos__vitrina-img-wrap {
+  height: 160px;
+  overflow: hidden;
+  background: #f8f8f8;
+}
+
+.pedidos__vitrina-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  padding: 0.5rem;
+  transition: transform 0.3s;
+}
+
+.pedidos__vitrina-card:hover .pedidos__vitrina-img {
+  transform: scale(1.05);
+}
+
+.pedidos__vitrina-info {
+  padding: 0.8rem 1rem;
+}
+
+.pedidos__vitrina-nombre {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--blue);
+  margin: 0 0 0.2rem;
+}
+
+.pedidos__vitrina-desc {
+  font-size: 0.82rem;
+  color: #777;
+  margin: 0;
+}
+
+.pedidos__vitrina-cta {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.pedidos__btn-pedir--grande {
+  font-size: 1.3rem !important;
+  padding: 1rem 3rem !important;
+  border-radius: 12px !important;
+}
+
+/* ── NAV ── */
 .pedidos__volver {
   background: none;
   border: none;
@@ -60,36 +130,7 @@
   color: white;
 }
 
-/* jugadoras */
-.pedidos__jugadoras {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-}
-
-.pedidos__jug-btn {
-  background: white;
-  border: 2px solid #e0e0e0;
-  color: var(--dark);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 700;
-  font-size: 1.1rem;
-  padding: 0.8rem 1.2rem;
-  border-radius: 10px;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.15s;
-}
-
-.pedidos__jug-btn:hover {
-  border-color: var(--blue);
-  color: var(--blue);
-}
-
-.pedidos__vacio {
-  color: #aaa;
-  font-style: italic;
-}
+.pedidos__vacio { color: #aaa; font-style: italic; }
 
 /* productos */
 .pedidos__productos {
@@ -195,7 +236,7 @@
   color: var(--blue);
 }
 
-/* barra total fija abajo */
+/* barra total fija */
 .pedidos__total-bar {
   position: fixed;
   bottom: 0;
@@ -310,9 +351,7 @@
   gap: 0.8rem;
 }
 
-.pedidos__confirmado-icon {
-  font-size: 3rem;
-}
+.pedidos__confirmado-icon { font-size: 3rem; }
 
 .pedidos__confirmado-card h2 {
   font-family: 'Barlow Condensed', sans-serif;
@@ -433,9 +472,7 @@
   border-radius: 12px;
 }
 
-.pedidos__cerrado-icon {
-  font-size: 2rem;
-}
+.pedidos__cerrado-icon { font-size: 2rem; }
 
 .pedidos__cerrado-texto {
   font-family: 'Barlow Condensed', sans-serif;
@@ -447,19 +484,6 @@
 .pedidos__cerrado-fechas {
   font-size: 0.95rem;
   color: #555;
-}
-
-.pedidos__cat-btn--disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  filter: grayscale(100%);
-}
-
-@media (max-width: 768px) {
-  .pedidos__resumen-fila,
-  .pedidos__resumen-total {
-    grid-template-columns: 1fr auto;
-  }
 }
 
 .pedidos__cedula-wrap {
@@ -497,9 +521,7 @@
   border-color: var(--purple);
 }
 
-.pedidos__cedula-input--error {
-  border-color: var(--red);
-}
+.pedidos__cedula-input--error { border-color: var(--red); }
 
 .pedidos__cedula-error {
   color: var(--red);
@@ -509,6 +531,7 @@
   margin: 0;
 }
 
+/* ── MOBILE ── */
 @media (max-width: 768px) {
   .pedidos {
     padding: 0 1rem;
@@ -516,6 +539,23 @@
   }
 
   .pedidos__titulo { font-size: 2.2rem; }
+
+  .pedidos__vitrina {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+
+  .pedidos__vitrina-img-wrap { height: 120px; }
+
+  .pedidos__vitrina-nombre { font-size: 1rem; }
+
+  .pedidos__vitrina-desc { font-size: 0.75rem; }
+
+  .pedidos__btn-pedir--grande {
+    font-size: 1.1rem !important;
+    padding: 0.9rem 2rem !important;
+    width: 100%;
+  }
 
   .pedidos__categorias { gap: 0.6rem; }
 
@@ -548,9 +588,7 @@
     padding: 0.6rem 0.8rem;
   }
 
-  .pedidos__resumen-btns {
-    flex-direction: column;
-  }
+  .pedidos__resumen-btns { flex-direction: column; }
 
   .pedidos__btn-secundario,
   .pedidos__btn-pedir {

@@ -3,6 +3,8 @@ import './pedidos.css'
 import PageFooter from '../../components/pageFooter/pageFooter'
 import BackButton from '../../components/backButton/backButton'
 import emailjs from '@emailjs/browser'
+import { useAuth } from '../../context/AuthContext'
+import { loginConGoogle } from '../../firebase'
 
 const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzadHnefQOSp5CcFqIJq1WAUVYCBEuxghq6QVcXipvlLnb4WBTIyNNbrskPaXDW6z6X/exec'
@@ -13,34 +15,45 @@ const EMAILJS_KEY = '6mltD84C_kgv-YML0'
 
 const categorias = ['Infantiles', 'U13', 'U14', 'U15', 'U16', 'U18', 'U21', 'Senior', 'Inter Masc', 'Plus 35', 'Entrenadores']
 
+const vitrina = [
+  { id: 'pasta',     nombre: 'Pasta',      imagen: '/pedidos/pasta.jpg',      descripcion: 'Tallarines, ñoquis, ravioles y más' },
+  { id: 'empanadas', nombre: 'Empanadas',  imagen: '/pedidos/empanadas.jpg',  descripcion: 'Docenas con distintos rellenos' },
+  { id: 'pizzas',    nombre: 'Pizzas',     imagen: '/pedidos/pizza.jpg',       descripcion: 'Cajas de 2 unidades' },
+  { id: 'alfajores', nombre: 'Alfajores Neg.', imagen: '/pedidos/alfa-choco-negro.jpg', descripcion: 'Pack x10 chocolate negro' },
+  { id: 'alfajores2', nombre: 'Alfajores Blan.', imagen: '/pedidos/alfa-choco-blanco.jpg', descripcion: 'Pack x10 chocolate blanco' },
+  { id: 'vinos',     nombre: 'Vinos',      imagen: '/pedidos/vino.jpg',        descripcion: 'Pack x2 unidades' },
+  { id: 'pollo',     nombre: 'Pollo al Spiedo', imagen: '/pedidos/pollo-spiedo.jpg', descripcion: 'Pollo al spiedo' },
+  { id: 'milanesa',  nombre: 'Milanesa de Pollo', imagen: '/pedidos/mila-pollo.jpg', descripcion: 'Milanesas de pollo' },
+]
+
 const productos = [
   {
     id: 'pasta', nombre: 'Pasta', emoji: '🍝',
     items: [
-      { id: 'tal_esp', nombre: 'Tallarines Espinaca Gruesos', precio: 275, unidad: 'kg' },
-      { id: 'tal_yema', nombre: 'Tallarines Yema Finos', precio: 275, unidad: 'kg' },
-      { id: 'noquis', nombre: 'Ñoquis', precio: 275, unidad: 'kg' },
-      { id: 'rav_verd', nombre: 'Ravioles Verdura (150 ud.)', precio: 330, unidad: 'pack' },
-      { id: 'rav_jq', nombre: 'Ravioles J&Q (150 ud.)', precio: 330, unidad: 'pack' },
-      { id: 'rav_ric', nombre: 'Ravioles Ricotta (150 ud.)', precio: 330, unidad: 'pack' },
+      { id: 'tal_esp',  nombre: 'Tallarines Espinaca Gruesos', precio: 275, unidad: 'kg' },
+      { id: 'tal_yema', nombre: 'Tallarines Yema Finos',       precio: 275, unidad: 'kg' },
+      { id: 'noquis',   nombre: 'Ñoquis',                      precio: 275, unidad: 'kg' },
+      { id: 'rav_verd', nombre: 'Ravioles Verdura (150 ud.)',   precio: 330, unidad: 'pack' },
+      { id: 'rav_jq',   nombre: 'Ravioles J&Q (150 ud.)',      precio: 330, unidad: 'pack' },
+      { id: 'rav_ric',  nombre: 'Ravioles Ricotta (150 ud.)',   precio: 330, unidad: 'pack' },
     ]
   },
   {
     id: 'empanadas', nombre: 'Empanadas', emoji: '🥟',
     items: [
-      { id: 'emp_carne_ac', nombre: 'Carne con Aceitunas', precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_carne_sin', nombre: 'Carne sin Aceituna', precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_pollo', nombre: 'Pollo', precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_qyc', nombre: 'Queso y Cebolla', precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_4q', nombre: 'Cuatro Quesos', precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_cap', nombre: 'Capresse', precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_esp', nombre: 'Espinaca', precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_qya', nombre: 'Queso y Aceituna', precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_jyq', nombre: 'Jamón y Queso', precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_pyc', nombre: 'Panceta y Cebolla', precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_polloch', nombre: 'Pollo con Champi', precio: 360, unidad: 'x5 ud.' },
-      { id: 'emp_int', nombre: 'Integral', precio: 360, unidad: 'x5 ud.' },
-      { id: 'emp_chil', nombre: 'Chilena', precio: 390, unidad: 'x5 ud.' },
+      { id: 'emp_carne_ac',  nombre: 'Carne con Aceitunas', precio: 430, unidad: 'x5 ud.' },
+      { id: 'emp_carne_sin', nombre: 'Carne sin Aceituna',  precio: 430, unidad: 'x5 ud.' },
+      { id: 'emp_pollo',     nombre: 'Pollo',               precio: 430, unidad: 'x5 ud.' },
+      { id: 'emp_qyc',       nombre: 'Queso y Cebolla',     precio: 430, unidad: 'x5 ud.' },
+      { id: 'emp_4q',        nombre: 'Cuatro Quesos',       precio: 430, unidad: 'x5 ud.' },
+      { id: 'emp_cap',       nombre: 'Capresse',            precio: 430, unidad: 'x5 ud.' },
+      { id: 'emp_esp',       nombre: 'Espinaca',            precio: 430, unidad: 'x5 ud.' },
+      { id: 'emp_qya',       nombre: 'Queso y Aceituna',    precio: 430, unidad: 'x5 ud.' },
+      { id: 'emp_jyq',       nombre: 'Jamón y Queso',       precio: 430, unidad: 'x5 ud.' },
+      { id: 'emp_pyc',       nombre: 'Panceta y Cebolla',   precio: 430, unidad: 'x5 ud.' },
+      { id: 'emp_polloch',   nombre: 'Pollo con Champi',    precio: 360, unidad: 'x5 ud.' },
+      { id: 'emp_int',       nombre: 'Integral',            precio: 360, unidad: 'x5 ud.' },
+      { id: 'emp_chil',      nombre: 'Chilena',             precio: 390, unidad: 'x5 ud.' },
     ]
   },
   {
@@ -52,7 +65,7 @@ const productos = [
   {
     id: 'alfajores', nombre: 'Alfajores', emoji: '🍫',
     items: [
-      { id: 'alf_neg', nombre: 'Chocolate Negro (x10)', precio: 550, unidad: 'pack' },
+      { id: 'alf_neg',   nombre: 'Chocolate Negro (x10)',  precio: 550, unidad: 'pack' },
       { id: 'alf_blanc', nombre: 'Chocolate Blanco (x10)', precio: 550, unidad: 'pack' },
     ]
   },
@@ -60,6 +73,18 @@ const productos = [
     id: 'vinos', nombre: 'Vinos', emoji: '🍷',
     items: [
       { id: 'vino', nombre: 'Pack Vinos x2', precio: 390, unidad: 'pack' },
+    ]
+  },
+  {
+    id: 'pollo', nombre: 'Pollo al Spiedo', emoji: '🍗',
+    items: [
+      { id: 'pollo_sp', nombre: 'Pollo al Spiedo', precio: 0, unidad: 'ud.' },
+    ]
+  },
+  {
+    id: 'milanesa', nombre: 'Milanesa de Pollo', emoji: '🍖',
+    items: [
+      { id: 'mila_pollo', nombre: 'Milanesa de Pollo', precio: 0, unidad: 'ud.' },
     ]
   },
 ]
@@ -76,7 +101,8 @@ function parsearCSV(texto) {
 }
 
 export default function Pedidos() {
-  const [paso, setPaso] = useState(1)
+  const { usuario } = useAuth()
+  const [paso, setPaso] = useState(0) // 0 = vitrina, 1 = categorias, 2 = jugadora, 3 = productos, 4 = resumen, 5 = confirmado
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null)
   const [jugadoraSeleccionada, setJugadoraSeleccionada] = useState(null)
   const [jugadoras, setJugadoras] = useState([])
@@ -120,7 +146,7 @@ export default function Pedidos() {
 
   const cancelar = () => {
     setMostrarConfirmCancel(false)
-    setPaso(1)
+    setPaso(0)
     setCategoriaSeleccionada(null)
     setJugadoraSeleccionada(null)
     setCantidades({})
@@ -139,6 +165,22 @@ export default function Pedidos() {
 
   const itemsConCantidad = productos.flatMap(p => p.items).filter(i => cantidades[i.id] > 0)
   const total = itemsConCantidad.reduce((acc, i) => acc + i.precio * cantidades[i.id], 0)
+
+  const handlePedir = async () => {
+    if (!pedidosActivos) return
+    if (!usuario) {
+      alert('Tenés que iniciar sesión para hacer un pedido.')
+      try {
+        await loginConGoogle()
+      } catch (err) {
+        if (err.message === 'no_autorizado') {
+          alert('Tu cuenta de Google no está asociada a ninguna jugadora de CEVVEN.')
+        }
+        return
+      }
+    }
+    setPaso(1)
+  }
 
   const confirmarPedido = async () => {
     setGuardando(true)
@@ -170,6 +212,8 @@ export default function Pedidos() {
       'Alf Chocolate Negro': cantidades['alf_neg'] || 0,
       'Alf Chocolate Blanco': cantidades['alf_blanc'] || 0,
       'Pack Vinos': cantidades['vino'] || 0,
+      'Pollo al Spiedo': cantidades['pollo_sp'] || 0,
+      'Milanesa de Pollo': cantidades['mila_pollo'] || 0,
       total,
     }
     try {
@@ -182,21 +226,19 @@ export default function Pedidos() {
     } catch (err) {
       console.error('Error guardando pedido:', err)
     }
-    // armar resumen del pedido
+
     const resumenLineas = itemsConCantidad.map(item =>
       `- ${item.nombre}: ${cantidades[item.id]} x $${item.precio} = $${(cantidades[item.id] * item.precio).toLocaleString()}`
     ).join('\n')
 
-    // buscar mail de la jugadora
     const mailJugadora = jugadoraSeleccionada.mail?.trim()
-
     if (mailJugadora) {
       try {
         await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE_PEDIDO, {
           nombre: `${jugadoraSeleccionada.nombre} ${jugadoraSeleccionada.apellido}`,
           resumen: resumenLineas,
           total: total.toLocaleString(),
-          to_email: mailJugadora, 
+          to_email: mailJugadora,
         }, EMAILJS_KEY)
       } catch (err) {
         console.error('Error enviando mail:', err)
@@ -223,14 +265,15 @@ export default function Pedidos() {
   return (
     <>
       <main className="pedidos">
-        {paso === 1 && <BackButton />}
+        {paso === 0 && <BackButton />}
 
-
-        {/* PASO 1 */}
-        {paso === 1 && (
+        {/* PASO 0 — VITRINA */}
+        {paso === 0 && (
           <div className="pedidos__paso">
             <h1 className="pedidos__titulo">PEDIDOS</h1>
-            {!pedidosActivos ? (
+            <p className="pedidos__sub">Apoyá a las chicas comprando nuestros productos</p>
+
+            {!pedidosActivos && (
               <div className="pedidos__cerrado">
                 <span className="pedidos__cerrado-icon">🔒</span>
                 <p className="pedidos__cerrado-texto">Los pedidos están cerrados</p>
@@ -238,20 +281,48 @@ export default function Pedidos() {
                   Período de pedidos: <strong>{fechaInicio}</strong> al <strong>{fechaFin}</strong>
                 </p>
               </div>
-            ) : (
-              <p className="pedidos__sub">Seleccioná la categoría de la jugadora</p>
             )}
+
+            <div className="pedidos__vitrina">
+              {vitrina.map(item => (
+                <div key={item.id} className="pedidos__vitrina-card">
+                  <div className="pedidos__vitrina-img-wrap">
+                    <img src={item.imagen} alt={item.nombre} className="pedidos__vitrina-img" />
+                  </div>
+                  <div className="pedidos__vitrina-info">
+                    <h3 className="pedidos__vitrina-nombre">{item.nombre}</h3>
+                    <p className="pedidos__vitrina-desc">{item.descripcion}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="pedidos__vitrina-cta">
+              <button
+                className={`pedidos__btn-pedir pedidos__btn-pedir--grande ${!pedidosActivos ? 'pedidos__btn-pedir--disabled' : ''}`}
+                disabled={!pedidosActivos}
+                onClick={handlePedir}
+              >
+                HACER UN PEDIDO →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* PASO 1 — CATEGORÍAS */}
+        {paso === 1 && (
+          <div className="pedidos__paso">
+            <div className="pedidos__nav">
+              <button className="pedidos__volver" onClick={() => setPaso(0)}>← Volver</button>
+            </div>
+            <h2 className="pedidos__titulo">Seleccioná la categoría</h2>
+            <p className="pedidos__sub">¿De qué categoría es la jugadora?</p>
             <div className="pedidos__categorias">
               {categorias.map(cat => (
                 <button
                   key={cat}
-                  className={`pedidos__cat-btn ${!pedidosActivos ? 'pedidos__cat-btn--disabled' : ''}`}
-                  onClick={() => {
-                    if (!pedidosActivos) return
-                    setCategoriaSeleccionada(cat)
-                    setPaso(2)
-                  }}
-                  disabled={!pedidosActivos}
+                  className="pedidos__cat-btn"
+                  onClick={() => { setCategoriaSeleccionada(cat); setPaso(2) }}
                 >
                   {cat}
                 </button>
@@ -260,7 +331,7 @@ export default function Pedidos() {
           </div>
         )}
 
-        {/* PASO 2 */}
+        {/* PASO 2 — JUGADORA */}
         {paso === 2 && (
           <div className="pedidos__paso">
             <div className="pedidos__nav">
@@ -294,7 +365,7 @@ export default function Pedidos() {
           </div>
         )}
 
-        {/* PASO 3 */}
+        {/* PASO 3 — PRODUCTOS */}
         {paso === 3 && (
           <div className="pedidos__paso">
             <div className="pedidos__nav">
@@ -319,7 +390,7 @@ export default function Pedidos() {
                         <div key={item.id} className="pedidos__item">
                           <div className="pedidos__item-info">
                             <span className="pedidos__item-nombre">{item.nombre}</span>
-                            <span className="pedidos__item-precio">${item.precio} / {item.unidad}</span>
+                            {item.precio > 0 && <span className="pedidos__item-precio">${item.precio} / {item.unidad}</span>}
                           </div>
                           <div className="pedidos__contador">
                             <button onClick={() => restar(item.id)}>−</button>
@@ -346,7 +417,7 @@ export default function Pedidos() {
           </div>
         )}
 
-        {/* PASO 4 */}
+        {/* PASO 4 — RESUMEN */}
         {paso === 4 && (
           <div className="pedidos__paso">
             <div className="pedidos__nav">
@@ -400,7 +471,7 @@ export default function Pedidos() {
           </div>
         )}
 
-        {/* PASO 5 */}
+        {/* PASO 5 — CONFIRMADO */}
         {paso === 5 && (
           <div className="pedidos__paso pedidos__confirmado">
             <div className="pedidos__confirmado-card">
