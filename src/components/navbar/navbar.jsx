@@ -1,5 +1,7 @@
-import { useState } from 'react'
-import { Menu, X, ChevronDown } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { Menu, X, ChevronDown, User } from 'lucide-react'
+import { useAuth } from '../../context/AuthContext'
+import { loginConGoogle, logout } from '../../firebase'
 import './navbar.css'
 
 const categorias = [
@@ -16,6 +18,37 @@ const categorias = [
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const userMenuRef = useRef(null)
+  const { usuario } = useAuth()
+
+  // Cerrar el menú de usuario al hacer click afuera
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setUserMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const handleLogin = async () => {
+    try {
+      await loginConGoogle()
+    } catch (err) {
+      if (err.message === 'no_autorizado') {
+        alert('Tu cuenta de Google no está asociada a ninguna jugadora de CEVVEN. Usá el mail registrado en el club.')
+      } else {
+        console.error('Error al iniciar sesión:', err)
+      }
+    }
+  }
+
+  const handleLogout = async () => {
+    await logout()
+    setUserMenuOpen(false)
+  }
 
   return (
     <nav className="navbar">
@@ -51,8 +84,8 @@ export default function Navbar() {
             </ul>
           )}
         </li>
-        <li><a href="/indumentaria" onClick={() => setOpen(false)}>Indumentaria</a></li>
-        <li><a href="/pedidos" onClick={() => setOpen(false)}>Pedidos</a></li>
+        {usuario && <li><a href="/indumentaria" onClick={() => setOpen(false)}>Indumentaria</a></li>}
+        {usuario && <li><a href="/pedidos" onClick={() => setOpen(false)}>Pedidos</a></li>}
         <li><a href="/contacto" onClick={() => setOpen(false)}>Contacto</a></li>
 
         <li className="navbar__mobile-extra">
@@ -83,7 +116,34 @@ export default function Navbar() {
             <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M24 12.1C24 5.4 18.6 0 12 0S0 5.4 0 12.1C0 18.1 4.4 23.1 10.1 24v-8.4H7.1v-3.5h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9v2.3h3.4l-.5 3.5h-2.8V24C19.6 23.1 24 18.1 24 12.1z"/></svg>
           </a>
         </div>
+
         <a href="https://www.youtube.com/@MundoCevven" target="_blank" rel="noopener noreferrer" className="navbar__live">EN VIVO</a>
+
+        {/* ── USUARIO ── */}
+        <div className="navbar__user" ref={userMenuRef}>
+          <button className="navbar__user-btn" onClick={() => usuario ? setUserMenuOpen(!userMenuOpen) : handleLogin()}>
+            {usuario?.photoURL
+              ? <img src={usuario.photoURL} alt={usuario.displayName} className="navbar__user-foto" />
+              : <User size={22} />
+            }
+          </button>
+
+          {userMenuOpen && usuario && (
+            <div className="navbar__user-menu">
+              <div className="navbar__user-info">
+                {usuario.photoURL && <img src={usuario.photoURL} alt="" className="navbar__user-menu-foto" />}
+                <div>
+                  <p className="navbar__user-nombre">{usuario.displayName}</p>
+                  <p className="navbar__user-email">{usuario.email}</p>
+                </div>
+              </div>
+              <button className="navbar__user-logout" onClick={handleLogout}>
+                Cerrar sesión
+              </button>
+            </div>
+          )}
+        </div>
+
       </div>
     </nav>
   )

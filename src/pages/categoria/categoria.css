@@ -146,6 +146,16 @@
   border-color: var(--blue);
 }
 
+.categoria__card--bloqueada {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.categoria__card--bloqueada:hover {
+  box-shadow: none;
+  border-color: #e0e0e0;
+}
+
 @media (max-width: 768px) {
   .categoria {
     padding: 0 1rem;

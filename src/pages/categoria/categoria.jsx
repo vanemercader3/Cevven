@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import './categoria.css'
 import PageFooter from '../../components/pageFooter/pageFooter'
 import BackButton from '../../components/backButton/backButton'
+import { useAuth } from '../../context/AuthContext'
 
 const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
 
@@ -39,6 +40,8 @@ export default function Categoria() {
   const [cargando, setCargando] = useState(true)
 
   const info = categoriaInfo[cat] || { nombre: cat, url: '#' }
+
+  const { usuario } = useAuth()
 
   useEffect(() => {
     fetch(JUGADORAS_URL)
@@ -77,9 +80,9 @@ export default function Categoria() {
               return (
                 <div
                   key={i}
-                  className={`categoria__card ${esEntrenador ? 'categoria__card--entrenador' : 'categoria__card--clickeable'}`}
+                  className={`categoria__card ${esEntrenador ? 'categoria__card--entrenador' : usuario ? 'categoria__card--clickeable' : 'categoria__card--bloqueada'}`}
                   onClick={() => {
-                    if (!esEntrenador) {
+                    if (!esEntrenador && usuario) {
                       navigate(`/documentos/${cat}/${encodeURIComponent(`${j.nombre} ${j.apellido}`)}`)
                     }
                   }}

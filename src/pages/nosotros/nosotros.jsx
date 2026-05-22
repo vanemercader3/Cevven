@@ -1,12 +1,11 @@
 import './nosotros.css'
 import PageFooter from '../../components/pageFooter/pageFooter'
-import BackButton from '../../components/backButton/backButton'
 
 export default function Nosotros() {
   return (
     <>
       <main className="nosotros">
-        <BackButton />
+        
 
         <div className="nosotros__hero">
           <img src="/home/hero2.png" alt="CEVVEN Handball" className="nosotros__hero-img" />

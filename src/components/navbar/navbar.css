@@ -24,6 +24,7 @@
   flex-shrink: 0;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  min-width: 80px;
 }
 
 .navbar__logo a {
@@ -41,11 +42,13 @@
 .navbar__links {
   display: flex;
   align-items: center;
-  gap: 2.5rem;
+  gap: 3.5rem;
   list-style: none;
-  margin: 0 auto;
   padding: 0;
-  position: relative;
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 10;
 }
 
@@ -156,6 +159,101 @@
   flex-shrink: 0;
 }
 
+/* ── USUARIO ── */
+.navbar__user {
+  position: relative;
+  z-index: 10;
+}
+
+.navbar__user-btn {
+  background: rgba(255,255,255,0.2);
+  border: 2px solid rgba(255,255,255,0.7);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: background 0.2s, transform 0.2s;
+  padding: 0;
+  overflow: hidden;
+}
+
+.navbar__user-btn:hover {
+  background: rgba(255,255,255,0.35);
+  transform: scale(1.05);
+}
+
+.navbar__user-foto {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.navbar__user-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  min-width: 240px;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.navbar__user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.navbar__user-menu-foto {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.navbar__user-nombre {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--dark);
+  margin: 0;
+}
+
+.navbar__user-email {
+  font-size: 0.8rem;
+  color: #888;
+  margin: 0;
+}
+
+.navbar__user-logout {
+  display: block;
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--red);
+  transition: background 0.15s;
+}
+
+.navbar__user-logout:hover {
+  background: #fff0f0;
+}
+
 /* ── MOBILE ── */
 @media (max-width: 768px) {
   .navbar {
@@ -180,6 +278,16 @@
   .navbar__burger {
     display: block;
     margin-left: auto;
+  }
+
+  /* Ícono de usuario visible en mobile, antes del burger */
+  .navbar__user-mobile {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: 0.6rem;
+    position: relative;
+    z-index: 10;
   }
 
   .navbar__links {
@@ -267,5 +375,10 @@
 
   .navbar__mobile-extra .navbar__live--mobile {
     color: white !important;
+  }
+
+  .navbar__user-menu {
+    right: 0;
+    left: auto;
   }
 }
