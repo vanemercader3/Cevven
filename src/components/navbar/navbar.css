@@ -306,12 +306,11 @@
     padding: 0.8rem 0;
   }
 
-  .navbar__links > li a {
+  .navbar__links > li a:not(.navbar__live--mobile) {
     font-size: 1.3rem;
     color: var(--blue) !important;
     text-shadow: none !important;
   }
-
   .navbar__submenu {
     position: static;
     border: none;
