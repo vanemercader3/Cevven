@@ -367,6 +367,7 @@
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 1rem;
     font-weight: 800;
+    text-shadow: none !important;
   }
 
   /* ── USUARIO MOBILE ── */
@@ -379,7 +380,7 @@
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    background: linear-gradient(135deg, var(--blue), var(--purple));
+    background: linear-gradient(135deg, var(--green), var(--orange));
     color: white;
     border: none;
     border-radius: 8px;
