@@ -4,12 +4,17 @@ import PageFooter from '../../components/pageFooter/pageFooter'
 import BackButton from '../../components/backButton/backButton'
 import { useAuth } from '../../context/AuthContext'
 import { loginConGoogle } from '../../firebase'
+import emailjs from '@emailjs/browser'
 
 const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzadHnefQOSp5CcFqIJq1WAUVYCBEuxghq6QVcXipvlLnb4WBTIyNNbrskPaXDW6z6X/exec'
 
 const talles = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
 const categorias = ['Infantiles', 'U13', 'U14', 'U15', 'U16', 'U18', 'U21', 'Senior', 'Inter Masc', 'Plus 35', 'Entrenadores']
+
+const EMAILJS_SERVICE = 'service_eus8zan'
+const EMAILJS_TEMPLATE_PEDIDO = 'template_9mz3d68'
+const EMAILJS_KEY = '6mltD84C_kgv-YML0'
 
 const productos = [
   { id: 1, nombre: 'Pantalón Largo', precio: 1000, imagen: '/indumentaria/pantalon.png', talleUnico: false },
@@ -175,6 +180,24 @@ export default function Indumentaria() {
       })
     } catch (err) {
       console.error('Error guardando pedido:', err)
+    }
+
+    const resumenLineas = carrito.map(item =>
+      `- ${item.nombre}${item.talle !== 'Único' ? ` (${item.talle})` : ''}: ${item.cantidad} x $${item.precio} = $${(item.cantidad * item.precio).toLocaleString()}`
+    ).join('\n')
+
+    const mailJugadora = jugadora.mail?.trim()
+    if (mailJugadora) {
+      try {
+        await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE_PEDIDO, {
+          nombre: `${jugadora.nombre} ${jugadora.apellido}`,
+          resumen: resumenLineas,
+          total: total.toLocaleString(),
+          to_email: mailJugadora,
+        }, EMAILJS_KEY)
+      } catch (err) {
+        console.error('Error enviando mail:', err)
+      }
     }
 
     setGuardando(false)
