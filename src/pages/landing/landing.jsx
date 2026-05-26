@@ -17,6 +17,10 @@ export default function Landing() {
           <img src="/landing/fitness.png" alt="Fitness" className="landing__btn-img" />
           <span className="landing__btn-label">FITNESS<br/>Y ALTO RENDIMIENTO</span>
         </a>
+        <a href="/construccion" className="landing__btn landing__btn--vasca">
+          <img src="/landing/paleta-vasca.png" alt="Paleta Vasca" className="landing__btn-img landing__btn-img--vasca" />
+          <span className="landing__btn-label">PELOTA<br/>VASCA</span>
+        </a>
       </div>
     </div>
   )
