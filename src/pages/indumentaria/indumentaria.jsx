@@ -17,12 +17,12 @@ const EMAILJS_TEMPLATE_PEDIDO = 'template_9mz3d68'
 const EMAILJS_KEY = '6mltD84C_kgv-YML0'
 
 const productos = [
-  { id: 1, nombre: 'Pantalón Largo', precio: 1000, imagen: '/indumentaria/pantalon.png', talleUnico: false },
-  { id: 2, nombre: 'Canguro', precio: 1100, imagen: '/indumentaria/canguro.png', talleUnico: false },
-  { id: 3, nombre: 'Medio Cierre Polar', precio: 1000, imagen: '/indumentaria/polar.png', talleUnico: false },
-  { id: 4, nombre: 'Camperón de Invierno', precio: 1800, imagen: '/indumentaria/camperon.png', talleUnico: false },
-  { id: 5, nombre: 'Remera de Entrenamiento', precio: 500, imagen: '/indumentaria/remera.png', talleUnico: false },
-  { id: 6, nombre: 'Cuellito Polar', precio: 200, imagen: '/indumentaria/cuellito.png', talleUnico: true },
+  { id: 1, nombre: 'Pantalón Largo',          precio: 1000, imagen: '/indumentaria/pantalon.png',  talleUnico: false },
+  { id: 2, nombre: 'Canguro',                  precio: 1100, imagen: '/indumentaria/canguro.png',   talleUnico: false },
+  { id: 3, nombre: 'Medio Cierre Polar',        precio: 1000, imagen: '/indumentaria/polar.png',     talleUnico: false },
+  { id: 4, nombre: 'Camperón de Invierno',      precio: 1800, imagen: '/indumentaria/camperon.png',  talleUnico: false },
+  { id: 5, nombre: 'Remera de Entrenamiento',   precio: 500,  imagen: '/indumentaria/remera.png',    talleUnico: false },
+  { id: 6, nombre: 'Cuellito Polar',            precio: 200,  imagen: '/indumentaria/cuellito.png',  talleUnico: true  },
 ]
 
 function parsearCSV(texto) {
@@ -49,8 +49,6 @@ function ProductoCard({ producto, onAgregar }) {
     setAgregado(true)
     setTimeout(() => setAgregado(false), 2000)
   }
-
-
 
   return (
     <div className="producto__card">
@@ -102,6 +100,7 @@ export default function Indumentaria() {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null)
   const [jugadoraSeleccionada, setJugadoraSeleccionada] = useState(null)
   const [jugadoras, setJugadoras] = useState([])
+  const [jugadorasDelUsuario, setJugadorasDelUsuario] = useState([])
   const [guardando, setGuardando] = useState(false)
   const [mostrarResumen, setMostrarResumen] = useState(false)
   const [cedulaIngresada, setCedulaIngresada] = useState('')
@@ -113,6 +112,16 @@ export default function Indumentaria() {
       .then(res => res.text())
       .then(texto => setJugadoras(parsearCSV(texto)))
   }, [])
+
+  useEffect(() => {
+    if (!usuario || jugadoras.length === 0) return
+    const mailUsuario = usuario.email?.toLowerCase().trim()
+    const coinciden = jugadoras.filter(j =>
+      j.mail?.toLowerCase().trim() === mailUsuario &&
+      j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
+    )
+    setJugadorasDelUsuario(coinciden)
+  }, [usuario, jugadoras])
 
   const jugadorasFiltradas = jugadoras.filter(j =>
     j.categoria?.trim().toLowerCase() === categoriaSeleccionada?.trim().toLowerCase() &&
@@ -139,6 +148,38 @@ export default function Indumentaria() {
 
   const total = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0)
   const totalPrendas = carrito.reduce((a, i) => a + i.cantidad, 0)
+
+  const handleConfirmarResumen = async () => {
+    setMostrarResumen(false)
+    if (!usuario) {
+      alert('Para confirmar el pedido necesitás iniciar sesión con tu cuenta de Google del club.')
+      try {
+        await loginConGoogle()
+      } catch (err) {
+        if (err.message === 'no_autorizado') {
+          alert('Tu cuenta de Google no está asociada a ninguna jugadora de CEVVEN. Usá el mail registrado en el club.')
+        }
+        return
+      }
+    }
+
+    const mailUsuario = usuario?.email?.toLowerCase().trim()
+    const coinciden = jugadoras.filter(j =>
+      j.mail?.toLowerCase().trim() === mailUsuario &&
+      j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
+    )
+
+    if (coinciden.length === 1) {
+      setJugadoraSeleccionada(coinciden[0])
+      setCategoriaSeleccionada(coinciden[0].categoria?.trim())
+      setPaso('cedula')
+    } else if (coinciden.length > 1) {
+      setJugadorasDelUsuario(coinciden)
+      setPaso('jugadora-hermanas')
+    } else {
+      setPaso('categoria')
+    }
+  }
 
   const confirmarPedidoConJugadora = async (jugadora) => {
     setGuardando(true)
@@ -218,6 +259,16 @@ export default function Indumentaria() {
     await confirmarPedidoConJugadora(jugadoraSeleccionada)
   }
 
+  const resetear = () => {
+    setPaso('tienda')
+    setCarrito([])
+    setCategoriaSeleccionada(null)
+    setJugadoraSeleccionada(null)
+    setJugadorasDelUsuario([])
+    setCedulaIngresada('')
+    setCedulaError(false)
+  }
+
   return (
     <>
       <main className="indumentaria">
@@ -286,21 +337,7 @@ export default function Indumentaria() {
                 <button
                   className="indumentaria__btn-pedir"
                   disabled={carrito.length === 0}
-                  onClick={async () => {
-                    setMostrarResumen(false)
-                    if (!usuario) {
-                      alert('Para confirmar el pedido necesitás iniciar sesión con tu cuenta de Google del club.')
-                      try {
-                        await loginConGoogle()
-                      } catch (err) {
-                        if (err.message === 'no_autorizado') {
-                          alert('Tu cuenta de Google no está asociada a ninguna jugadora de CEVVEN. Usá el mail registrado en el club.')
-                        }
-                        return
-                      }
-                    }
-                    setPaso('categoria')
-                  }}
+                  onClick={handleConfirmarResumen}
                 >
                   CONFIRMAR PEDIDO →
                 </button>
@@ -309,7 +346,32 @@ export default function Indumentaria() {
           </div>
         )}
 
-        {/* PASO CATEGORIA */}
+        {/* PASO HERMANAS — elegir entre jugadoras con el mismo mail */}
+        {paso === 'jugadora-hermanas' && (
+          <div className="indumentaria__paso">
+            <button className="indumentaria__volver" onClick={() => setPaso('tienda')}>← Volver</button>
+            <h2 className="indumentaria__titulo">¿Para quién es el pedido?</h2>
+            <p className="indumentaria__subtitulo">Encontramos más de una jugadora asociada a tu cuenta</p>
+            <div className="indumentaria__categorias">
+              {jugadorasDelUsuario.map((j, i) => (
+                <button
+                  key={i}
+                  className="indumentaria__cat-btn"
+                  onClick={() => {
+                    setJugadoraSeleccionada(j)
+                    setCategoriaSeleccionada(j.categoria?.trim())
+                    setPaso('cedula')
+                  }}
+                >
+                  {j.nombre} {j.apellido}
+                  <span style={{ fontSize: '0.85rem', opacity: 0.7, marginLeft: '6px' }}>— {j.categoria}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* PASO CATEGORIA — solo si no se encontró jugadora por mail */}
         {paso === 'categoria' && (
           <div className="indumentaria__paso">
             <button className="indumentaria__volver" onClick={() => setPaso('tienda')}>← Volver</button>
@@ -325,7 +387,7 @@ export default function Indumentaria() {
           </div>
         )}
 
-        {/* PASO JUGADORA */}
+        {/* PASO JUGADORA — flujo normal sin mail asociado */}
         {paso === 'jugadora' && (
           <div className="indumentaria__paso">
             <button className="indumentaria__volver" onClick={() => setPaso('categoria')}>← Volver</button>
@@ -359,7 +421,15 @@ export default function Indumentaria() {
         {/* PASO CEDULA */}
         {paso === 'cedula' && jugadoraSeleccionada && (
           <div className="indumentaria__paso">
-            <button className="indumentaria__volver" onClick={() => setPaso('jugadora')}>← Volver</button>
+            <button className="indumentaria__volver" onClick={() => {
+              if (jugadorasDelUsuario.length > 1) {
+                setPaso('jugadora-hermanas')
+              } else if (jugadorasDelUsuario.length === 1) {
+                setPaso('tienda')
+              } else {
+                setPaso('jugadora')
+              }
+            }}>← Volver</button>
             <h2 className="indumentaria__titulo">Verificación</h2>
             <p className="indumentaria__subtitulo">
               Ingresá la cédula de <strong>{jugadoraSeleccionada.nombre} {jugadoraSeleccionada.apellido}</strong> para confirmar
@@ -404,14 +474,7 @@ export default function Indumentaria() {
                 <p>Número de cuenta: [Número]</p>
                 <p>Titular: [Nombre del titular]</p>
               </div>
-              <button className="indumentaria__btn-pedir" onClick={() => {
-                setPaso('tienda')
-                setCarrito([])
-                setCategoriaSeleccionada(null)
-                setJugadoraSeleccionada(null)
-                setCedulaIngresada('')
-                setCedulaError(false)
-              }}>
+              <button className="indumentaria__btn-pedir" onClick={resetear}>
                 HACER OTRO PEDIDO
               </button>
             </div>

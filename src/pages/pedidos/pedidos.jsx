@@ -16,14 +16,14 @@ const EMAILJS_KEY = '6mltD84C_kgv-YML0'
 const categorias = ['Infantiles', 'U13', 'U14', 'U15', 'U16', 'U18', 'U21', 'Senior', 'Inter Masc', 'Plus 35', 'Entrenadores']
 
 const vitrina = [
-  { id: 'pasta',     nombre: 'Pasta',      imagen: '/pedidos/pasta.jpg',      descripcion: 'Tallarines, ñoquis, ravioles y más' },
-  { id: 'empanadas', nombre: 'Empanadas',  imagen: '/pedidos/empanadas.jpg',  descripcion: 'Docenas con distintos rellenos' },
-  { id: 'pizzas',    nombre: 'Pizzas',     imagen: '/pedidos/pizza.jpg',       descripcion: 'Cajas de 2 unidades' },
-  { id: 'alfajores', nombre: 'Alfajores Neg.', imagen: '/pedidos/alfa-choco-negro.jpg', descripcion: 'Pack x10 chocolate negro' },
-  { id: 'alfajores2', nombre: 'Alfajores Blan.', imagen: '/pedidos/alfa-choco-blanco.jpg', descripcion: 'Pack x10 chocolate blanco' },
-  { id: 'vinos',     nombre: 'Vinos',      imagen: '/pedidos/vino.jpg',        descripcion: 'Pack x2 unidades' },
-  { id: 'pollo',     nombre: 'Pollo al Spiedo', imagen: '/pedidos/pollo-spiedo.jpg', descripcion: 'Pollo al spiedo' },
-  { id: 'milanesa',  nombre: 'Milanesa de Pollo', imagen: '/pedidos/mila-pollo.jpg', descripcion: 'Milanesas de pollo' },
+  { id: 'pasta',      nombre: 'Pasta',             imagen: '/pedidos/pasta.jpg',           descripcion: 'Tallarines, ñoquis, ravioles y más' },
+  { id: 'empanadas',  nombre: 'Empanadas',          imagen: '/pedidos/empanadas.jpg',       descripcion: 'Docenas con distintos rellenos' },
+  { id: 'pizzas',     nombre: 'Pizzas',             imagen: '/pedidos/pizza.jpg',           descripcion: 'Cajas de 2 unidades' },
+  { id: 'alfajores',  nombre: 'Alfajores Neg.',     imagen: '/pedidos/alfa-choco-negro.jpg',descripcion: 'Pack x10 chocolate negro' },
+  { id: 'alfajores2', nombre: 'Alfajores Blan.',    imagen: '/pedidos/alfa-choco-blanco.jpg',descripcion: 'Pack x10 chocolate blanco' },
+  { id: 'vinos',      nombre: 'Vinos',              imagen: '/pedidos/vino.jpg',            descripcion: 'Pack x2 unidades' },
+  { id: 'pollo',      nombre: 'Pollo al Spiedo',    imagen: '/pedidos/pollo-spiedo.jpg',    descripcion: 'Pollo al spiedo' },
+  { id: 'milanesa',   nombre: 'Milanesa de Pollo',  imagen: '/pedidos/mila-pollo.jpg',      descripcion: 'Milanesas de pollo' },
 ]
 
 const productos = [
@@ -102,10 +102,11 @@ function parsearCSV(texto) {
 
 export default function Pedidos() {
   const { usuario } = useAuth()
-  const [paso, setPaso] = useState(0) // 0 = vitrina, 1 = categorias, 2 = jugadora, 3 = productos, 4 = resumen, 5 = confirmado
+  const [paso, setPaso] = useState(0)
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null)
   const [jugadoraSeleccionada, setJugadoraSeleccionada] = useState(null)
   const [jugadoras, setJugadoras] = useState([])
+  const [jugadorasDelUsuario, setJugadorasDelUsuario] = useState([])
   const [productoAbierto, setProductoAbierto] = useState(null)
   const [cantidades, setCantidades] = useState({})
   const [guardando, setGuardando] = useState(false)
@@ -144,11 +145,22 @@ export default function Pedidos() {
       })
   }, [])
 
+  useEffect(() => {
+    if (!usuario || jugadoras.length === 0) return
+    const mailUsuario = usuario.email?.toLowerCase().trim()
+    const coinciden = jugadoras.filter(j =>
+      j.mail?.toLowerCase().trim() === mailUsuario &&
+      j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
+    )
+    setJugadorasDelUsuario(coinciden)
+  }, [usuario, jugadoras])
+
   const cancelar = () => {
     setMostrarConfirmCancel(false)
     setPaso(0)
     setCategoriaSeleccionada(null)
     setJugadoraSeleccionada(null)
+    setJugadorasDelUsuario([])
     setCantidades({})
     setProductoAbierto(null)
     setCedulaIngresada('')
@@ -179,7 +191,23 @@ export default function Pedidos() {
         return
       }
     }
-    setPaso(1)
+
+    const mailUsuario = usuario?.email?.toLowerCase().trim()
+    const coinciden = jugadoras.filter(j =>
+      j.mail?.toLowerCase().trim() === mailUsuario &&
+      j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
+    )
+
+    if (coinciden.length === 1) {
+      setJugadoraSeleccionada(coinciden[0])
+      setCategoriaSeleccionada(coinciden[0].categoria?.trim())
+      setPaso(3)
+    } else if (coinciden.length > 1) {
+      setJugadorasDelUsuario(coinciden)
+      setPaso(2)
+    } else {
+      setPaso(1)
+    }
   }
 
   const confirmarPedido = async () => {
@@ -309,7 +337,7 @@ export default function Pedidos() {
           </div>
         )}
 
-        {/* PASO 1 — CATEGORÍAS */}
+        {/* PASO 1 — CATEGORÍAS (solo si no se encontró jugadora por mail) */}
         {paso === 1 && (
           <div className="pedidos__paso">
             <div className="pedidos__nav">
@@ -335,32 +363,58 @@ export default function Pedidos() {
         {paso === 2 && (
           <div className="pedidos__paso">
             <div className="pedidos__nav">
-              <button className="pedidos__volver" onClick={() => setPaso(1)}>← Volver</button>
+              <button className="pedidos__volver" onClick={() => jugadorasDelUsuario.length > 1 ? setPaso(0) : setPaso(1)}>← Volver</button>
               <button className="pedidos__cancelar" onClick={() => setMostrarConfirmCancel(true)}>✕ Cancelar</button>
             </div>
-            <h2 className="pedidos__titulo">{categoriaSeleccionada}</h2>
-            <p className="pedidos__sub">Seleccionar jugador/a</p>
-            {jugadorasFiltradas.length === 0 ? (
-              <p className="pedidos__vacio">No hay jugadoras en esta categoría</p>
-            ) : (
-              <div className="pedidos__select-wrap">
-                <select
-                  className="pedidos__select"
-                  defaultValue=""
-                  onChange={(e) => {
-                    const idx = e.target.value
-                    if (idx !== '') {
-                      setJugadoraSeleccionada(jugadorasFiltradas[idx])
-                      setPaso(3)
-                    }
-                  }}
-                >
-                  <option value="" disabled>Seleccioná una jugadora...</option>
-                  {jugadorasFiltradas.map((j, i) => (
-                    <option key={i} value={i}>{j.nombre} {j.apellido}</option>
+
+            {jugadorasDelUsuario.length > 1 ? (
+              <>
+                <h2 className="pedidos__titulo">¿Para quién es el pedido?</h2>
+                <p className="pedidos__sub">Encontramos más de una jugadora asociada a tu cuenta</p>
+                <div className="pedidos__categorias">
+                  {jugadorasDelUsuario.map((j, i) => (
+                    <button
+                      key={i}
+                      className="pedidos__cat-btn"
+                      onClick={() => {
+                        setJugadoraSeleccionada(j)
+                        setCategoriaSeleccionada(j.categoria?.trim())
+                        setPaso(3)
+                      }}
+                    >
+                      {j.nombre} {j.apellido}
+                      <span style={{ fontSize: '0.85rem', opacity: 0.7, marginLeft: '6px' }}>— {j.categoria}</span>
+                    </button>
                   ))}
-                </select>
-              </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="pedidos__titulo">{categoriaSeleccionada}</h2>
+                <p className="pedidos__sub">Seleccionar jugador/a</p>
+                {jugadorasFiltradas.length === 0 ? (
+                  <p className="pedidos__vacio">No hay jugadoras en esta categoría</p>
+                ) : (
+                  <div className="pedidos__select-wrap">
+                    <select
+                      className="pedidos__select"
+                      defaultValue=""
+                      onChange={(e) => {
+                        const idx = e.target.value
+                        if (idx !== '') {
+                          setJugadoraSeleccionada(jugadorasFiltradas[idx])
+                          setPaso(3)
+                        }
+                      }}
+                    >
+                      <option value="" disabled>Seleccioná una jugadora...</option>
+                      {jugadorasFiltradas.map((j, i) => (
+                        <option key={i} value={i}>{j.nombre} {j.apellido}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
@@ -369,7 +423,15 @@ export default function Pedidos() {
         {paso === 3 && (
           <div className="pedidos__paso">
             <div className="pedidos__nav">
-              <button className="pedidos__volver" onClick={() => setPaso(2)}>← Volver</button>
+              <button className="pedidos__volver" onClick={() => {
+                if (jugadorasDelUsuario.length === 1) {
+                  setPaso(0)
+                } else if (jugadorasDelUsuario.length > 1) {
+                  setPaso(2)
+                } else {
+                  setPaso(2)
+                }
+              }}>← Volver</button>
               <button className="pedidos__cancelar" onClick={() => setMostrarConfirmCancel(true)}>✕ Cancelar</button>
             </div>
             <h2 className="pedidos__titulo">Pedido para {jugadoraSeleccionada.nombre} {jugadoraSeleccionada.apellido}</h2>
