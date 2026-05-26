@@ -3,7 +3,7 @@ import './landing.css'
 export default function Landing() {
   return (
     <div className="landing">
-      <img src="/logo.png" alt="CEVVEN Handball" className="landing__logo" />
+      <img src="/cevven-fitydep.png" alt="CEVVEN Handball" className="landing__logo" />
       <div className="landing__btns">
         <a href="/construccion" className="landing__btn landing__btn--beach">
           <img src="/landing/beach.png" alt="Beach" className="landing__btn-img" />
