@@ -11,6 +11,7 @@ import Categoria from './pages/categoria/categoria'
 import Landing from './pages/landing/landing'
 import Documentos from './pages/documentos/documentos'
 import Construccion from './pages/construccion/construccion'
+import NoticiaDetalle from './pages/noticias/noticiaDetalle'
 
 
 function Layout({ children }) {
@@ -37,6 +38,7 @@ function App() {
         <Route path="/categoria/:cat" element={<Layout><Categoria /></Layout>} />
         <Route path="/documentos/:cat/:nombre" element={<Layout><Documentos /></Layout>} />
         <Route path="/construccion" element={<Construccion />} />
+        <Route path="/noticias/:id" element={<Layout><NoticiaDetalle /></Layout>} />
 
       </Routes>
     </BrowserRouter>
