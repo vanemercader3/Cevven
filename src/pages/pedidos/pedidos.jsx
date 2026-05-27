@@ -30,6 +30,7 @@ const productos = [
   {
     id: 'pasta', nombre: 'Pasta', emoji: '🍝',
     items: [
+      { id: 'queso_ray',  nombre: 'Queso Rayado Artesano', precio: 190, unidad: '150gr' },
       { id: 'tal_esp',  nombre: 'Tallarines Espinaca Gruesos', precio: 275, unidad: 'kg' },
       { id: 'tal_yema', nombre: 'Tallarines Yema Finos',       precio: 275, unidad: 'kg' },
       { id: 'noquis',   nombre: 'Ñoquis',                      precio: 275, unidad: 'kg' },
@@ -78,13 +79,13 @@ const productos = [
   {
     id: 'pollo', nombre: 'Pollo al Spiedo', emoji: '🍗',
     items: [
-      { id: 'pollo_sp', nombre: 'Pollo al Spiedo', precio: 0, unidad: 'ud.' },
+      { id: 'pollo_sp', nombre: 'Pollo al Spiedo', precio: 690, unidad: 'ud.' },
     ]
   },
   {
     id: 'milanesa', nombre: 'Milanesa de Pollo', emoji: '🍖',
     items: [
-      { id: 'mila_pollo', nombre: 'Milanesa de Pollo', precio: 0, unidad: 'ud.' },
+      { id: 'mila_pollo', nombre: 'Milanesa de Pollo', precio: 550, unidad: 'kg.' },
     ]
   },
 ]
@@ -244,6 +245,7 @@ export default function Pedidos() {
       'Pack Vinos': cantidades['vino'] || 0,
       'Pollo al Spiedo': cantidades['pollo_sp'] || 0,
       'Milanesa de Pollo': cantidades['mila_pollo'] || 0,
+      'Queso Rayado Artesano': cantidades['queso_ray'] || 0,
       total,
     }
     try {
