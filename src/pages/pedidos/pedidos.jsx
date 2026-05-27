@@ -149,7 +149,8 @@ export default function Pedidos() {
     if (!usuario || jugadoras.length === 0) return
     const mailUsuario = usuario.email?.toLowerCase().trim()
     const coinciden = jugadoras.filter(j =>
-      j.mail?.toLowerCase().trim() === mailUsuario &&
+      (j.mail?.toLowerCase().trim() === mailUsuario ||
+      j.mail2?.toLowerCase().trim() === mailUsuario) &&
       j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
     )
     setJugadorasDelUsuario(coinciden)
@@ -194,7 +195,8 @@ export default function Pedidos() {
 
     const mailUsuario = usuario?.email?.toLowerCase().trim()
     const coinciden = jugadoras.filter(j =>
-      j.mail?.toLowerCase().trim() === mailUsuario &&
+      (j.mail?.toLowerCase().trim() === mailUsuario ||
+      j.mail2?.toLowerCase().trim() === mailUsuario) &&
       j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
     )
 

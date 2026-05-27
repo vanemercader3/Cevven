@@ -28,10 +28,16 @@ async function obtenerMailsAutorizados() {
   const filas = texto.trim().split("\n");
   const headers = filas[0].split(",").map((h) => h.trim());
   const idxMail = headers.indexOf("mail");
-  return filas
-    .slice(1)
-    .map((fila) => fila.split(",")[idxMail]?.trim().toLowerCase())
-    .filter(Boolean);
+  const idxMail2 = headers.indexOf("mail2");
+
+  const mails = [];
+  filas.slice(1).forEach((fila) => {
+    const cols = fila.split(",").map((v) => v.trim());
+    if (cols[idxMail]) mails.push(cols[idxMail].toLowerCase());
+    if (idxMail2 >= 0 && cols[idxMail2])
+      mails.push(cols[idxMail2].toLowerCase());
+  });
+  return mails;
 }
 
 export const loginConGoogle = async () => {
