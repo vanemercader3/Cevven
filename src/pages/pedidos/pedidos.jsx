@@ -30,7 +30,7 @@ const productos = [
   {
     id: 'pasta', nombre: 'Pasta', emoji: '🍝',
     items: [
-      { id: 'queso_ray',  nombre: 'Queso Rayado Artesano', precio: 190, unidad: '150gr' },
+      { id: 'queso_rall',  nombre: 'Queso Rallado Artesano', precio: 190, unidad: '150gr' },
       { id: 'tal_esp',  nombre: 'Tallarines Espinaca Gruesos', precio: 275, unidad: 'kg' },
       { id: 'tal_yema', nombre: 'Tallarines Yema Finos',       precio: 275, unidad: 'kg' },
       { id: 'noquis',   nombre: 'Ñoquis',                      precio: 275, unidad: 'kg' },
@@ -245,7 +245,7 @@ export default function Pedidos() {
       'Pack Vinos': cantidades['vino'] || 0,
       'Pollo al Spiedo': cantidades['pollo_sp'] || 0,
       'Milanesa de Pollo': cantidades['mila_pollo'] || 0,
-      'Queso Rayado Artesano': cantidades['queso_ray'] || 0,
+      'Queso Rallado Artesano': cantidades['queso_rall'] || 0,
       total,
     }
     try {
