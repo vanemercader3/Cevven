@@ -263,7 +263,7 @@ export default function Pedidos() {
       `- ${item.nombre}: ${cantidades[item.id]} x $${item.precio} = $${(cantidades[item.id] * item.precio).toLocaleString()}`
     ).join('\n')
 
-    const mailJugadora = jugadoraSeleccionada.mail?.trim()
+    const mailJugadora = usuario?.email?.trim() || jugadoraSeleccionada.mail?.trim()
     if (mailJugadora) {
       try {
         await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE_PEDIDO, {

@@ -229,7 +229,7 @@ export default function Indumentaria() {
       `- ${item.nombre}${item.talle !== 'Único' ? ` (${item.talle})` : ''}: ${item.cantidad} x $${item.precio} = $${(item.cantidad * item.precio).toLocaleString()}`
     ).join('\n')
 
-    const mailJugadora = jugadora.mail?.trim()
+    const mailJugadora = usuario?.email?.trim() || jugadora.mail?.trim()
     if (mailJugadora) {
       try {
         await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE_PEDIDO, {
