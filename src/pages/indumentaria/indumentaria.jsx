@@ -469,12 +469,12 @@ export default function Indumentaria() {
               <h2>¡Pedido confirmado!</h2>
               <p>El total es <strong>${total.toLocaleString()}</strong></p>
               <p>Enviá el comprobante a:</p>
-              <p className="indumentaria__telefono">📱 +598 99 999 999 — Leo Parilla</p>
-              <div className="indumentaria__transferencia">
+              <p className="pedidos__telefono">📱 +598 99 027 944 — Leo Parilla</p>
+              <div className="pedidos__transferencia">
                 <p><strong>Datos para transferir:</strong></p>
-                <p>Banco: [Nombre del banco]</p>
-                <p>Número de cuenta: [Número]</p>
-                <p>Titular: [Nombre del titular]</p>
+                <p>Banco: B.R.O.U.</p>
+                <p>Número de cuenta: 000420453-00001</p>
+                <p>Titular: Leonardo Parrilla</p>
               </div>
               <button className="indumentaria__btn-pedir" onClick={resetear}>
                 HACER OTRO PEDIDO
