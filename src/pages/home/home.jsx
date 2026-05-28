@@ -4,10 +4,11 @@ import './home.css'
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=0&single=true&output=csv'
 
 const imagenes = [
-  '/home/hero.png',
-  '/home/hero2.png',
-  '/home/hero3.png',
-  '/home/hero4.png',
+  { src: '/home/hero.png',  position: 'center 60%' },
+  { src: '/home/hero3.png', position: 'center 65%' },
+  { src: '/home/hero4.png', position: 'center center' },
+  { src: '/home/hero5.png', position: 'center 30%' },
+  { src: '/home/hero6.png', position: 'center center' },
 ]
 
 const noticias = [
@@ -96,9 +97,13 @@ export default function Home() {
           {imagenes.map((img, i) => (
             <img
               key={i}
-              src={img}
+              src={img.src}
               alt={`Slide ${i + 1}`}
               className={`hero__img ${i === actual ? 'hero__img--active' : ''}`}
+              style={{ 
+                objectPosition: img.position,
+                objectFit: img.contain ? 'contain' : 'cover'
+              }}
             />
           ))}
           <div className="hero__dots">

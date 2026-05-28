@@ -1,7 +1,7 @@
 /* ── HERO / CARRUSEL ── */
 .hero {
   position: relative;
-  height: 400px;
+  height: 500px;
   overflow: hidden;
 }
 
@@ -557,7 +557,7 @@
 @media (max-width: 768px) {
 
   /* HERO */
-  .hero { height: 220px; }
+  .hero { height: 250px; }
 
   /* FIXTURE */
   .fixture {
