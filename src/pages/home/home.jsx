@@ -226,6 +226,7 @@ export default function Home() {
             <img src="/sponsors/neu-millan.png" alt="Neu Millán" className="home-sponsors__logo" />
             <img src="/sponsors/bocatti.png" alt="Bocatti" className="home-sponsors__logo" />
             <img src="/sponsors/la-soniada.png" alt="La Soñada" className="home-sponsors__logo" />
+            <img src="/sponsors/pichones.png" alt="Pichones" className="home-sponsors__logo" />
           </div>
         </section>
 
