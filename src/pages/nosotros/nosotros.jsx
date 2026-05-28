@@ -8,7 +8,7 @@ export default function Nosotros() {
         
 
         <div className="nosotros__hero">
-          <img src="/home/hero2.png" alt="CEVVEN Handball" className="nosotros__hero-img" />
+          <img src="/home/hero3.png" alt="CEVVEN Handball" className="nosotros__hero-img" />
           <div className="nosotros__hero-overlay">
             <h1 className="nosotros__titulo">Bienvenidos a la familia de CEVVEN</h1>
           </div>

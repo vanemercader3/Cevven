@@ -9,6 +9,7 @@ const imagenes = [
   { src: '/home/hero4.png', position: 'center center' },
   { src: '/home/hero5.png', position: 'center 30%' },
   { src: '/home/hero6.png', position: 'center center' },
+  { src: '/home/hero7.png', position: 'center center' },
 ]
 
 const noticias = [

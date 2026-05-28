@@ -16,27 +16,27 @@ const EMAILJS_KEY = '6mltD84C_kgv-YML0'
 const categorias = ['Infantiles', 'U13', 'U14', 'U15', 'U16', 'U18', 'U21', 'Senior', 'Inter Masc', 'Plus 35', 'Entrenadores']
 
 const vitrina = [
-  { id: 'pasta',      nombre: 'Pasta',             imagen: '/pedidos/pasta.jpg',           descripcion: 'Tallarines, ñoquis, ravioles y más' },
-  { id: 'empanadas',  nombre: 'Empanadas',          imagen: '/pedidos/empanadas.jpg',       descripcion: 'Docenas con distintos rellenos' },
-  { id: 'pizzas',     nombre: 'Pizzas',             imagen: '/pedidos/pizza.jpg',           descripcion: 'Cajas de 2 unidades' },
-  { id: 'alfajores',  nombre: 'Alfajores Neg.',     imagen: '/pedidos/alfa-choco-negro.jpg',descripcion: 'Pack x10 chocolate negro' },
+  { id: 'pasta',      nombre: 'Pasta',             imagen: '/pedidos/pasta.jpg',            descripcion: 'Tallarines, ñoquis, ravioles y más' },
+  { id: 'empanadas',  nombre: 'Empanadas',          imagen: '/pedidos/empanadas.jpg',        descripcion: 'Docenas con distintos rellenos' },
+  { id: 'pizzas',     nombre: 'Pizzas',             imagen: '/pedidos/pizza.jpg',            descripcion: 'Cajas de 2 unidades' },
+  { id: 'alfajores',  nombre: 'Alfajores Neg.',     imagen: '/pedidos/alfa-choco-negro.jpg', descripcion: 'Pack x10 chocolate negro' },
   { id: 'alfajores2', nombre: 'Alfajores Blan.',    imagen: '/pedidos/alfa-choco-blanco.jpg',descripcion: 'Pack x10 chocolate blanco' },
-  { id: 'vinos',      nombre: 'Vinos',              imagen: '/pedidos/vino.jpg',            descripcion: 'Pack x2 unidades' },
-  { id: 'pollo',      nombre: 'Pollo al Spiedo',    imagen: '/pedidos/pollo-spiedo.jpg',    descripcion: 'Pollo al spiedo' },
-  { id: 'milanesa',   nombre: 'Milanesa de Pollo',  imagen: '/pedidos/mila-pollo.jpg',      descripcion: 'Milanesas de pollo' },
+  { id: 'vinos',      nombre: 'Vinos',              imagen: '/pedidos/vino.jpg',             descripcion: 'Pack x2 unidades' },
+  { id: 'pollo',      nombre: 'Pollo al Spiedo',    imagen: '/pedidos/pollo-spiedo.jpg',     descripcion: 'Pollo al spiedo' },
+  { id: 'milanesa',   nombre: 'Milanesa de Pollo',  imagen: '/pedidos/mila-pollo.jpg',       descripcion: 'Milanesas de pollo' },
 ]
 
 const productos = [
   {
     id: 'pasta', nombre: 'Pasta', emoji: '🍝',
     items: [
-      { id: 'queso_rall',  nombre: 'Queso Rallado Artesano', precio: 190, unidad: '150gr' },
-      { id: 'tal_esp',  nombre: 'Tallarines Espinaca Gruesos', precio: 275, unidad: 'kg' },
-      { id: 'tal_yema', nombre: 'Tallarines Yema Finos',       precio: 275, unidad: 'kg' },
-      { id: 'noquis',   nombre: 'Ñoquis',                      precio: 275, unidad: 'kg' },
-      { id: 'rav_verd', nombre: 'Ravioles Verdura (150 ud.)',   precio: 330, unidad: 'pack' },
-      { id: 'rav_jq',   nombre: 'Ravioles J&Q (150 ud.)',      precio: 330, unidad: 'pack' },
-      { id: 'rav_ric',  nombre: 'Ravioles Ricotta (150 ud.)',   precio: 330, unidad: 'pack' },
+      { id: 'queso_rall', nombre: 'Queso Rallado Artesano',     precio: 190, unidad: '150gr' },
+      { id: 'tal_esp',    nombre: 'Tallarines Espinaca Gruesos', precio: 275, unidad: 'kg' },
+      { id: 'tal_yema',   nombre: 'Tallarines Yema Finos',       precio: 275, unidad: 'kg' },
+      { id: 'noquis',     nombre: 'Ñoquis',                      precio: 275, unidad: 'kg' },
+      { id: 'rav_verd',   nombre: 'Ravioles Verdura (150 ud.)',   precio: 330, unidad: 'pack' },
+      { id: 'rav_jq',     nombre: 'Ravioles J&Q (150 ud.)',      precio: 330, unidad: 'pack' },
+      { id: 'rav_ric',    nombre: 'Ravioles Ricotta (150 ud.)',   precio: 330, unidad: 'pack' },
     ]
   },
   {
@@ -118,6 +118,7 @@ export default function Pedidos() {
   const [cedulaIngresada, setCedulaIngresada] = useState('')
   const [cedulaError, setCedulaError] = useState(false)
   const [verificando, setVerificando] = useState(false)
+  const [mailLogueado, setMailLogueado] = useState(null)
 
   useEffect(() => {
     fetch(JUGADORAS_URL)
@@ -148,10 +149,11 @@ export default function Pedidos() {
 
   useEffect(() => {
     if (!usuario || jugadoras.length === 0) return
-    const mailUsuario = usuario.email?.toLowerCase().trim()
+    const mail = usuario.email?.toLowerCase().trim()
+    setMailLogueado(mail)
     const coinciden = jugadoras.filter(j =>
-      (j.mail?.toLowerCase().trim() === mailUsuario ||
-      j.mail2?.toLowerCase().trim() === mailUsuario) &&
+      (j.mail?.toLowerCase().trim() === mail ||
+      j.mail2?.toLowerCase().trim() === mail) &&
       j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
     )
     setJugadorasDelUsuario(coinciden)
@@ -182,10 +184,15 @@ export default function Pedidos() {
 
   const handlePedir = async () => {
     if (!pedidosActivos) return
+
+    let mailUsuario = usuario?.email?.toLowerCase().trim() || mailLogueado
+
     if (!usuario) {
       alert('Tenés que iniciar sesión para hacer un pedido.')
       try {
-        await loginConGoogle()
+        const resultado = await loginConGoogle()
+        mailUsuario = resultado.user.email.toLowerCase().trim()
+        setMailLogueado(mailUsuario)
       } catch (err) {
         if (err.message === 'no_autorizado') {
           alert('Tu cuenta de Google no está asociada a ninguna jugadora de CEVVEN.')
@@ -194,7 +201,6 @@ export default function Pedidos() {
       }
     }
 
-    const mailUsuario = usuario?.email?.toLowerCase().trim()
     const coinciden = jugadoras.filter(j =>
       (j.mail?.toLowerCase().trim() === mailUsuario ||
       j.mail2?.toLowerCase().trim() === mailUsuario) &&
@@ -263,7 +269,7 @@ export default function Pedidos() {
       `- ${item.nombre}: ${cantidades[item.id]} x $${item.precio} = $${(cantidades[item.id] * item.precio).toLocaleString()}`
     ).join('\n')
 
-    const mailJugadora = usuario?.email?.trim() || jugadoraSeleccionada.mail?.trim()
+    const mailJugadora = mailLogueado || usuario?.email?.trim() || jugadoraSeleccionada.mail?.trim() || jugadoraSeleccionada.mail2?.trim()
     if (mailJugadora) {
       try {
         await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE_PEDIDO, {
@@ -271,6 +277,10 @@ export default function Pedidos() {
           resumen: resumenLineas,
           total: total.toLocaleString(),
           to_email: mailJugadora,
+          banco: 'B.R.O.U.',
+          cuenta: '000420453-00001',
+          titular: 'Leonardo Parrilla',
+          telefono: '+598 99 027 944',
         }, EMAILJS_KEY)
       } catch (err) {
         console.error('Error enviando mail:', err)
@@ -304,7 +314,6 @@ export default function Pedidos() {
           <div className="pedidos__paso">
             <h1 className="pedidos__titulo">PEDIDOS</h1>
             <p className="pedidos__sub">Apoyá a las chicas comprando nuestros productos</p>
-
             {!pedidosActivos && (
               <div className="pedidos__cerrado">
                 <span className="pedidos__cerrado-icon">🔒</span>
@@ -314,7 +323,6 @@ export default function Pedidos() {
                 </p>
               </div>
             )}
-
             <div className="pedidos__vitrina">
               {vitrina.map(item => (
                 <div key={item.id} className="pedidos__vitrina-card">
@@ -328,7 +336,6 @@ export default function Pedidos() {
                 </div>
               ))}
             </div>
-
             <div className="pedidos__vitrina-cta">
               <button
                 className={`pedidos__btn-pedir pedidos__btn-pedir--grande ${!pedidosActivos ? 'pedidos__btn-pedir--disabled' : ''}`}
@@ -341,7 +348,7 @@ export default function Pedidos() {
           </div>
         )}
 
-        {/* PASO 1 — CATEGORÍAS (solo si no se encontró jugadora por mail) */}
+        {/* PASO 1 — CATEGORÍAS */}
         {paso === 1 && (
           <div className="pedidos__paso">
             <div className="pedidos__nav">
@@ -351,11 +358,8 @@ export default function Pedidos() {
             <p className="pedidos__sub">¿De qué categoría es la jugadora?</p>
             <div className="pedidos__categorias">
               {categorias.map(cat => (
-                <button
-                  key={cat}
-                  className="pedidos__cat-btn"
-                  onClick={() => { setCategoriaSeleccionada(cat); setPaso(2) }}
-                >
+                <button key={cat} className="pedidos__cat-btn"
+                  onClick={() => { setCategoriaSeleccionada(cat); setPaso(2) }}>
                   {cat}
                 </button>
               ))}
@@ -370,22 +374,14 @@ export default function Pedidos() {
               <button className="pedidos__volver" onClick={() => jugadorasDelUsuario.length > 1 ? setPaso(0) : setPaso(1)}>← Volver</button>
               <button className="pedidos__cancelar" onClick={() => setMostrarConfirmCancel(true)}>✕ Cancelar</button>
             </div>
-
             {jugadorasDelUsuario.length > 1 ? (
               <>
                 <h2 className="pedidos__titulo">¿Para quién es el pedido?</h2>
                 <p className="pedidos__sub">Encontramos más de una jugadora asociada a tu cuenta</p>
                 <div className="pedidos__categorias">
                   {jugadorasDelUsuario.map((j, i) => (
-                    <button
-                      key={i}
-                      className="pedidos__cat-btn"
-                      onClick={() => {
-                        setJugadoraSeleccionada(j)
-                        setCategoriaSeleccionada(j.categoria?.trim())
-                        setPaso(3)
-                      }}
-                    >
+                    <button key={i} className="pedidos__cat-btn"
+                      onClick={() => { setJugadoraSeleccionada(j); setCategoriaSeleccionada(j.categoria?.trim()); setPaso(3) }}>
                       {j.nombre} {j.apellido}
                       <span style={{ fontSize: '0.85rem', opacity: 0.7, marginLeft: '6px' }}>— {j.categoria}</span>
                     </button>
@@ -400,17 +396,11 @@ export default function Pedidos() {
                   <p className="pedidos__vacio">No hay jugadoras en esta categoría</p>
                 ) : (
                   <div className="pedidos__select-wrap">
-                    <select
-                      className="pedidos__select"
-                      defaultValue=""
+                    <select className="pedidos__select" defaultValue=""
                       onChange={(e) => {
                         const idx = e.target.value
-                        if (idx !== '') {
-                          setJugadoraSeleccionada(jugadorasFiltradas[idx])
-                          setPaso(3)
-                        }
-                      }}
-                    >
+                        if (idx !== '') { setJugadoraSeleccionada(jugadorasFiltradas[idx]); setPaso(3) }
+                      }}>
                       <option value="" disabled>Seleccioná una jugadora...</option>
                       {jugadorasFiltradas.map((j, i) => (
                         <option key={i} value={i}>{j.nombre} {j.apellido}</option>
@@ -427,15 +417,7 @@ export default function Pedidos() {
         {paso === 3 && (
           <div className="pedidos__paso">
             <div className="pedidos__nav">
-              <button className="pedidos__volver" onClick={() => {
-                if (jugadorasDelUsuario.length === 1) {
-                  setPaso(0)
-                } else if (jugadorasDelUsuario.length > 1) {
-                  setPaso(2)
-                } else {
-                  setPaso(2)
-                }
-              }}>← Volver</button>
+              <button className="pedidos__volver" onClick={() => jugadorasDelUsuario.length === 1 ? setPaso(0) : setPaso(2)}>← Volver</button>
               <button className="pedidos__cancelar" onClick={() => setMostrarConfirmCancel(true)}>✕ Cancelar</button>
             </div>
             <h2 className="pedidos__titulo">Pedido para {jugadoraSeleccionada.nombre} {jugadoraSeleccionada.apellido}</h2>
@@ -445,8 +427,7 @@ export default function Pedidos() {
                 <div key={p.id} className="pedidos__producto">
                   <button
                     className={`pedidos__producto-header ${productoAbierto === p.id ? 'pedidos__producto-header--activo' : ''}`}
-                    onClick={() => setProductoAbierto(productoAbierto === p.id ? null : p.id)}
-                  >
+                    onClick={() => setProductoAbierto(productoAbierto === p.id ? null : p.id)}>
                     <span>{p.emoji} {p.nombre}</span>
                     <span>{productoAbierto === p.id ? '▲' : '▼'}</span>
                   </button>
@@ -472,11 +453,7 @@ export default function Pedidos() {
             </div>
             <div className="pedidos__total-bar">
               <span>Total: <strong>${total.toLocaleString()}</strong></span>
-              <button
-                className="pedidos__btn-pedir"
-                disabled={total === 0}
-                onClick={() => setPaso(4)}
-              >
+              <button className="pedidos__btn-pedir" disabled={total === 0} onClick={() => setPaso(4)}>
                 VER PEDIDO
               </button>
             </div>
@@ -501,12 +478,10 @@ export default function Pedidos() {
                 </div>
               ))}
               <div className="pedidos__resumen-total">
-                <span>TOTAL</span>
-                <span></span>
+                <span>TOTAL</span><span></span>
                 <span>${total.toLocaleString()}</span>
               </div>
             </div>
-
             <div className="pedidos__cedula-wrap">
               <label className="pedidos__cedula-label">
                 Ingresá la cédula de <strong>{jugadoraSeleccionada.nombre}</strong> para confirmar
@@ -521,16 +496,10 @@ export default function Pedidos() {
               />
               {cedulaError && <p className="pedidos__cedula-error">❌ Cédula incorrecta. Intentá de nuevo.</p>}
             </div>
-
             <div className="pedidos__resumen-btns">
-              <button className="pedidos__btn-secundario" onClick={() => setPaso(3)}>
-                ← Seguir comprando
-              </button>
-              <button
-                className="pedidos__btn-pedir"
-                onClick={verificarYConfirmar}
-                disabled={guardando || verificando || !cedulaIngresada}
-              >
+              <button className="pedidos__btn-secundario" onClick={() => setPaso(3)}>← Seguir comprando</button>
+              <button className="pedidos__btn-pedir" onClick={verificarYConfirmar}
+                disabled={guardando || verificando || !cedulaIngresada}>
                 {guardando ? 'GUARDANDO...' : verificando ? 'VERIFICANDO...' : 'CONFIRMAR PEDIDO ✓'}
               </button>
             </div>
@@ -552,9 +521,7 @@ export default function Pedidos() {
                 <p>Número de cuenta: 000420453-00001</p>
                 <p>Titular: Leonardo Parrilla</p>
               </div>
-              <button className="pedidos__btn-pedir" onClick={cancelar}>
-                HACER OTRO PEDIDO
-              </button>
+              <button className="pedidos__btn-pedir" onClick={cancelar}>HACER OTRO PEDIDO</button>
             </div>
           </div>
         )}
@@ -565,17 +532,12 @@ export default function Pedidos() {
             <div className="pedidos__modal">
               <p className="pedidos__modal-texto">¿Seguro que querés cancelar el pedido?</p>
               <div className="pedidos__modal-btns">
-                <button className="pedidos__btn-secundario" onClick={() => setMostrarConfirmCancel(false)}>
-                  Seguir comprando
-                </button>
-                <button className="pedidos__cancelar" onClick={cancelar}>
-                  ✕ Cancelar pedido
-                </button>
+                <button className="pedidos__btn-secundario" onClick={() => setMostrarConfirmCancel(false)}>Seguir comprando</button>
+                <button className="pedidos__cancelar" onClick={cancelar}>✕ Cancelar pedido</button>
               </div>
             </div>
           </div>
         )}
-
       </main>
       <PageFooter />
     </>

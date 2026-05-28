@@ -53,9 +53,7 @@ function ProductoCard({ producto, onAgregar }) {
   return (
     <div className="producto__card">
       {producto.id === 6 && (
-        <div className="producto__badge">
-          ¡Con 2 prendas o más te lo llevás de regalo!
-        </div>
+        <div className="producto__badge">¡Con 2 prendas o más te lo llevás de regalo!</div>
       )}
       <div className="producto__imagen">
         {producto.imagen ? (
@@ -72,20 +70,15 @@ function ProductoCard({ producto, onAgregar }) {
             <span className="producto__talle-unico">Talle único</span>
           ) : (
             talles.map(t => (
-              <button
-                key={t}
+              <button key={t}
                 className={`producto__talle ${talleSeleccionado === t ? 'producto__talle--activo' : ''}`}
-                onClick={() => setTalleSeleccionado(t)}
-              >
+                onClick={() => setTalleSeleccionado(t)}>
                 {t}
               </button>
             ))
           )}
         </div>
-        <button
-          className={`producto__btn ${agregado ? 'producto__btn--agregado' : ''}`}
-          onClick={handlePedir}
-        >
+        <button className={`producto__btn ${agregado ? 'producto__btn--agregado' : ''}`} onClick={handlePedir}>
           {agregado ? '✓ AGREGADO' : 'AGREGAR AL PEDIDO'}
         </button>
       </div>
@@ -106,6 +99,7 @@ export default function Indumentaria() {
   const [cedulaIngresada, setCedulaIngresada] = useState('')
   const [cedulaError, setCedulaError] = useState(false)
   const [verificando, setVerificando] = useState(false)
+  const [mailLogueado, setMailLogueado] = useState(null)
 
   useEffect(() => {
     fetch(JUGADORAS_URL)
@@ -115,10 +109,11 @@ export default function Indumentaria() {
 
   useEffect(() => {
     if (!usuario || jugadoras.length === 0) return
-    const mailUsuario = usuario.email?.toLowerCase().trim()
+    const mail = usuario.email?.toLowerCase().trim()
+    setMailLogueado(mail)
     const coinciden = jugadoras.filter(j =>
-      (j.mail?.toLowerCase().trim() === mailUsuario ||
-      j.mail2?.toLowerCase().trim() === mailUsuario) &&
+      (j.mail?.toLowerCase().trim() === mail ||
+      j.mail2?.toLowerCase().trim() === mail) &&
       j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
     )
     setJugadorasDelUsuario(coinciden)
@@ -133,17 +128,8 @@ export default function Indumentaria() {
     setCarrito(prev => {
       const key = `${producto.id}-${talle}`
       const existe = prev.find(i => i.key === key)
-      if (existe) {
-        return prev.map(i => i.key === key ? { ...i, cantidad: i.cantidad + 1 } : i)
-      }
-      return [...prev, {
-        key,
-        id: producto.id,
-        nombre: producto.nombre,
-        precio: producto.precio,
-        talle: talle || 'Único',
-        cantidad: 1
-      }]
+      if (existe) return prev.map(i => i.key === key ? { ...i, cantidad: i.cantidad + 1 } : i)
+      return [...prev, { key, id: producto.id, nombre: producto.nombre, precio: producto.precio, talle: talle || 'Único', cantidad: 1 }]
     })
   }
 
@@ -152,10 +138,15 @@ export default function Indumentaria() {
 
   const handleConfirmarResumen = async () => {
     setMostrarResumen(false)
+
+    let mailUsuario = usuario?.email?.toLowerCase().trim() || mailLogueado
+
     if (!usuario) {
       alert('Para confirmar el pedido necesitás iniciar sesión con tu cuenta de Google del club.')
       try {
-        await loginConGoogle()
+        const resultado = await loginConGoogle()
+        mailUsuario = resultado.user.email.toLowerCase().trim()
+        setMailLogueado(mailUsuario)
       } catch (err) {
         if (err.message === 'no_autorizado') {
           alert('Tu cuenta de Google no está asociada a ninguna jugadora de CEVVEN. Usá el mail registrado en el club.')
@@ -164,7 +155,6 @@ export default function Indumentaria() {
       }
     }
 
-    const mailUsuario = usuario?.email?.toLowerCase().trim()
     const coinciden = jugadoras.filter(j =>
       (j.mail?.toLowerCase().trim() === mailUsuario ||
       j.mail2?.toLowerCase().trim() === mailUsuario) &&
@@ -229,7 +219,7 @@ export default function Indumentaria() {
       `- ${item.nombre}${item.talle !== 'Único' ? ` (${item.talle})` : ''}: ${item.cantidad} x $${item.precio} = $${(item.cantidad * item.precio).toLocaleString()}`
     ).join('\n')
 
-    const mailJugadora = usuario?.email?.trim() || jugadora.mail?.trim()
+    const mailJugadora = mailLogueado || usuario?.email?.trim() || jugadora.mail?.trim() || jugadora.mail2?.trim()
     if (mailJugadora) {
       try {
         await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE_PEDIDO, {
@@ -237,6 +227,10 @@ export default function Indumentaria() {
           resumen: resumenLineas,
           total: total.toLocaleString(),
           to_email: mailJugadora,
+          banco: 'B.R.O.U.',
+          cuenta: '000420453-00001',
+          titular: 'Leonardo Parrilla',
+          telefono: '+598 99 027 944',
         }, EMAILJS_KEY)
       } catch (err) {
         console.error('Error enviando mail:', err)
@@ -311,36 +305,24 @@ export default function Indumentaria() {
                     <span>{item.nombre} {item.talle !== 'Único' ? `— ${item.talle}` : ''}</span>
                     <span>{item.cantidad} x ${item.precio}</span>
                     <span>${(item.cantidad * item.precio).toLocaleString()}</span>
-                    <button
-                      className="indumentaria__resumen-borrar"
-                      onClick={() => setCarrito(prev => prev.filter(i => i.key !== item.key))}
-                    >✕</button>
+                    <button className="indumentaria__resumen-borrar"
+                      onClick={() => setCarrito(prev => prev.filter(i => i.key !== item.key))}>✕</button>
                   </div>
                 ))}
                 {totalPrendas >= 2 && (
                   <div className="indumentaria__resumen-fila indumentaria__resumen-regalo">
                     <span>🎁 Cuellito Polar — REGALO</span>
-                    <span>1 x $0</span>
-                    <span>$0</span>
-                    <span></span>
+                    <span>1 x $0</span><span>$0</span><span></span>
                   </div>
                 )}
                 <div className="indumentaria__resumen-total">
-                  <span>TOTAL</span>
-                  <span></span>
-                  <span>${total.toLocaleString()}</span>
-                  <span></span>
+                  <span>TOTAL</span><span></span>
+                  <span>${total.toLocaleString()}</span><span></span>
                 </div>
               </div>
               <div className="indumentaria__modal-btns">
-                <button className="indumentaria__btn-sec" onClick={() => setMostrarResumen(false)}>
-                  ← Seguir eligiendo
-                </button>
-                <button
-                  className="indumentaria__btn-pedir"
-                  disabled={carrito.length === 0}
-                  onClick={handleConfirmarResumen}
-                >
+                <button className="indumentaria__btn-sec" onClick={() => setMostrarResumen(false)}>← Seguir eligiendo</button>
+                <button className="indumentaria__btn-pedir" disabled={carrito.length === 0} onClick={handleConfirmarResumen}>
                   CONFIRMAR PEDIDO →
                 </button>
               </div>
@@ -348,7 +330,7 @@ export default function Indumentaria() {
           </div>
         )}
 
-        {/* PASO HERMANAS — elegir entre jugadoras con el mismo mail */}
+        {/* PASO HERMANAS */}
         {paso === 'jugadora-hermanas' && (
           <div className="indumentaria__paso">
             <button className="indumentaria__volver" onClick={() => setPaso('tienda')}>← Volver</button>
@@ -356,15 +338,8 @@ export default function Indumentaria() {
             <p className="indumentaria__subtitulo">Encontramos más de una jugadora asociada a tu cuenta</p>
             <div className="indumentaria__categorias">
               {jugadorasDelUsuario.map((j, i) => (
-                <button
-                  key={i}
-                  className="indumentaria__cat-btn"
-                  onClick={() => {
-                    setJugadoraSeleccionada(j)
-                    setCategoriaSeleccionada(j.categoria?.trim())
-                    setPaso('cedula')
-                  }}
-                >
+                <button key={i} className="indumentaria__cat-btn"
+                  onClick={() => { setJugadoraSeleccionada(j); setCategoriaSeleccionada(j.categoria?.trim()); setPaso('cedula') }}>
                   {j.nombre} {j.apellido}
                   <span style={{ fontSize: '0.85rem', opacity: 0.7, marginLeft: '6px' }}>— {j.categoria}</span>
                 </button>
@@ -373,7 +348,7 @@ export default function Indumentaria() {
           </div>
         )}
 
-        {/* PASO CATEGORIA — solo si no se encontró jugadora por mail */}
+        {/* PASO CATEGORIA */}
         {paso === 'categoria' && (
           <div className="indumentaria__paso">
             <button className="indumentaria__volver" onClick={() => setPaso('tienda')}>← Volver</button>
@@ -389,7 +364,7 @@ export default function Indumentaria() {
           </div>
         )}
 
-        {/* PASO JUGADORA — flujo normal sin mail asociado */}
+        {/* PASO JUGADORA */}
         {paso === 'jugadora' && (
           <div className="indumentaria__paso">
             <button className="indumentaria__volver" onClick={() => setPaso('categoria')}>← Volver</button>
@@ -399,17 +374,11 @@ export default function Indumentaria() {
               <p>No hay jugadoras en esta categoría</p>
             ) : (
               <div className="indumentaria__select-wrap">
-                <select
-                  className="indumentaria__select"
-                  defaultValue=""
+                <select className="indumentaria__select" defaultValue=""
                   onChange={(e) => {
                     const idx = e.target.value
-                    if (idx !== '') {
-                      setJugadoraSeleccionada(jugadorasFiltradas[idx])
-                      setPaso('cedula')
-                    }
-                  }}
-                >
+                    if (idx !== '') { setJugadoraSeleccionada(jugadorasFiltradas[idx]); setPaso('cedula') }
+                  }}>
                   <option value="" disabled>Seleccionar jugador/a...</option>
                   {jugadorasFiltradas.map((j, i) => (
                     <option key={i} value={i}>{j.nombre} {j.apellido}</option>
@@ -424,13 +393,9 @@ export default function Indumentaria() {
         {paso === 'cedula' && jugadoraSeleccionada && (
           <div className="indumentaria__paso">
             <button className="indumentaria__volver" onClick={() => {
-              if (jugadorasDelUsuario.length > 1) {
-                setPaso('jugadora-hermanas')
-              } else if (jugadorasDelUsuario.length === 1) {
-                setPaso('tienda')
-              } else {
-                setPaso('jugadora')
-              }
+              if (jugadorasDelUsuario.length > 1) setPaso('jugadora-hermanas')
+              else if (jugadorasDelUsuario.length === 1) setPaso('tienda')
+              else setPaso('jugadora')
             }}>← Volver</button>
             <h2 className="indumentaria__titulo">Verificación</h2>
             <p className="indumentaria__subtitulo">
@@ -439,22 +404,16 @@ export default function Indumentaria() {
             <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '1rem' }}>
               Sin puntos ni guiones. Ej: 1.234.567-8 → 12345678
             </p>
-            <input
-              type="text"
+            <input type="text"
               className={`indumentaria__cedula-input ${cedulaError ? 'indumentaria__cedula-input--error' : ''}`}
               placeholder="12345678"
               value={cedulaIngresada}
               onChange={(e) => { setCedulaIngresada(e.target.value); setCedulaError(false) }}
             />
-            {cedulaError && (
-              <p className="indumentaria__cedula-error">❌ Cédula incorrecta. Intentá de nuevo.</p>
-            )}
+            {cedulaError && <p className="indumentaria__cedula-error">❌ Cédula incorrecta. Intentá de nuevo.</p>}
             <div style={{ marginTop: '1.5rem' }}>
-              <button
-                className="indumentaria__btn-pedir"
-                onClick={verificarYConfirmar}
-                disabled={guardando || verificando || !cedulaIngresada}
-              >
+              <button className="indumentaria__btn-pedir" onClick={verificarYConfirmar}
+                disabled={guardando || verificando || !cedulaIngresada}>
                 {guardando ? 'GUARDANDO...' : verificando ? 'VERIFICANDO...' : 'CONFIRMAR PEDIDO ✓'}
               </button>
             </div>
@@ -476,9 +435,7 @@ export default function Indumentaria() {
                 <p>Número de cuenta: 000420453-00001</p>
                 <p>Titular: Leonardo Parrilla</p>
               </div>
-              <button className="indumentaria__btn-pedir" onClick={resetear}>
-                HACER OTRO PEDIDO
-              </button>
+              <button className="indumentaria__btn-pedir" onClick={resetear}>HACER OTRO PEDIDO</button>
             </div>
           </div>
         )}
