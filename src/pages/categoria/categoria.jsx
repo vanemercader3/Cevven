@@ -102,6 +102,10 @@ export default function Categoria() {
                     ) : (
                       <>
                         <p className="categoria__dato">
+                          <span className="categoria__label">Número</span>
+                          <span>{j.numero || '—'}</span>
+                        </p>
+                        <p className="categoria__dato">
                           <span className="categoria__label">Posición</span>
                           <span>{j.posicion || '—'}</span>
                         </p>

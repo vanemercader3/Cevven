@@ -3,8 +3,8 @@ import './pedidos.css'
 import PageFooter from '../../components/pageFooter/pageFooter'
 import BackButton from '../../components/backButton/backButton'
 import emailjs from '@emailjs/browser'
-import { useAuth } from '../../context/AuthContext'
-import { loginConGoogle } from '../../firebase'
+// import { useAuth } from '../../context/AuthContext'   // ← desactivado: antes se usaba para login con Google
+// import { loginConGoogle } from '../../firebase'       // ← desactivado: antes se usaba para login con Google
 
 const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzadHnefQOSp5CcFqIJq1WAUVYCBEuxghq6QVcXipvlLnb4WBTIyNNbrskPaXDW6z6X/exec'
@@ -24,6 +24,8 @@ const vitrina = [
   { id: 'vinos',      nombre: 'Vinos',              imagen: '/pedidos/vino.jpg',             descripcion: 'Pack x2 unidades' },
   { id: 'pollo',      nombre: 'Pollo al Spiedo',    imagen: '/pedidos/pollo-spiedo.jpg',     descripcion: 'Pollo al spiedo' },
   { id: 'milanesa',   nombre: 'Milanesa de Pollo',  imagen: '/pedidos/mila-pollo.jpg',       descripcion: 'Milanesas de pollo' },
+  { id: 'barritas',     nombre: 'Barritas',       imagen: '/pedidos/barritas.jpg',      descripcion: 'Caja surtida x12 unidades' },
+  { id: 'boxcafeteria', nombre: 'Box Cafetería',   imagen: '/pedidos/box-cafeteria.jpg', descripcion: 'Medialunas, Rolls de Canela y Cookies' },
 ]
 
 const productos = [
@@ -88,6 +90,18 @@ const productos = [
       { id: 'mila_pollo', nombre: 'Milanesa de Pollo', precio: 550, unidad: 'kg.' },
     ]
   },
+  {
+    id: 'barritas', nombre: 'Barritas', emoji: '🍫',
+    items: [
+      { id: 'barritas_caja', nombre: 'Caja Surtida x12 (4 choco naranja, 2 frutos rojos, 2 brownie, 2 arándano, 2 coco)', precio: 550, unidad: 'caja' },
+    ]
+  },
+  {
+    id: 'boxcafeteria', nombre: 'Box Cafetería', emoji: '🍪',
+    items: [
+      { id: 'box_cafe', nombre: 'Box Cafetería (2 medialunas, 2 rolls de canela, 4 cookies)', precio: 550, unidad: 'box' },
+    ]
+  },
 ]
 
 function parsearCSV(texto) {
@@ -102,12 +116,12 @@ function parsearCSV(texto) {
 }
 
 export default function Pedidos() {
-  const { usuario } = useAuth()
+  // const { usuario } = useAuth()   // ← desactivado: antes se usaba para verificar si había usuario logueado
   const [paso, setPaso] = useState(0)
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null)
   const [jugadoraSeleccionada, setJugadoraSeleccionada] = useState(null)
   const [jugadoras, setJugadoras] = useState([])
-  const [jugadorasDelUsuario, setJugadorasDelUsuario] = useState([])
+  // const [jugadorasDelUsuario, setJugadorasDelUsuario] = useState([])   // ← desactivado: se usaba para jugadoras asociadas al mail del usuario logueado
   const [productoAbierto, setProductoAbierto] = useState(null)
   const [cantidades, setCantidades] = useState({})
   const [guardando, setGuardando] = useState(false)
@@ -118,7 +132,9 @@ export default function Pedidos() {
   const [cedulaIngresada, setCedulaIngresada] = useState('')
   const [cedulaError, setCedulaError] = useState(false)
   const [verificando, setVerificando] = useState(false)
-  const [mailLogueado, setMailLogueado] = useState(null)
+  // const [mailLogueado, setMailLogueado] = useState(null)   // ← desactivado: se usaba para guardar el mail del usuario logueado
+  const [nombreSolicitante, setNombreSolicitante] = useState('')
+  const [nombreError, setNombreError] = useState(false)
 
   useEffect(() => {
     fetch(JUGADORAS_URL)
@@ -147,34 +163,38 @@ export default function Pedidos() {
       })
   }, [])
 
-  useEffect(() => {
-    if (!usuario || jugadoras.length === 0) return
-    const mail = usuario.email?.toLowerCase().trim()
-    setMailLogueado(mail)
-    const coinciden = jugadoras.filter(j =>
-      (j.mail?.toLowerCase().trim() === mail ||
-      j.mail2?.toLowerCase().trim() === mail) &&
-      j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
-    )
-    setJugadorasDelUsuario(coinciden)
-  }, [usuario, jugadoras])
+  // ← desactivado: este useEffect buscaba las jugadoras asociadas al mail del usuario logueado
+  // useEffect(() => {
+  //   if (!usuario || jugadoras.length === 0) return
+  //   const mail = usuario.email?.toLowerCase().trim()
+  //   setMailLogueado(mail)
+  //   const coinciden = jugadoras.filter(j =>
+  //     (j.mail?.toLowerCase().trim() === mail ||
+  //     j.mail2?.toLowerCase().trim() === mail) &&
+  //     j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
+  //   )
+  //   setJugadorasDelUsuario(coinciden)
+  // }, [usuario, jugadoras])
 
   const cancelar = () => {
     setMostrarConfirmCancel(false)
     setPaso(0)
     setCategoriaSeleccionada(null)
     setJugadoraSeleccionada(null)
-    setJugadorasDelUsuario([])
+    // setJugadorasDelUsuario([])   // ← desactivado: se usaba para limpiar jugadoras del usuario logueado
     setCantidades({})
     setProductoAbierto(null)
     setCedulaIngresada('')
     setCedulaError(false)
+    setNombreSolicitante('')
+    setNombreError(false)
   }
 
-  const jugadorasFiltradas = jugadoras.filter(j =>
-    j.categoria?.trim().toLowerCase() === categoriaSeleccionada?.trim().toLowerCase() &&
-    j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
-  )
+  // ← desactivado: jugadorasFiltradas se usaba en el paso 2 para mostrar jugadoras por categoría cuando no había usuario
+  // const jugadorasFiltradas = jugadoras.filter(j =>
+  //   j.categoria?.trim().toLowerCase() === categoriaSeleccionada?.trim().toLowerCase() &&
+  //   j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
+  // )
 
   const sumar = (id) => setCantidades(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }))
   const restar = (id) => setCantidades(prev => ({ ...prev, [id]: Math.max(0, (prev[id] || 0) - 1) }))
@@ -182,41 +202,42 @@ export default function Pedidos() {
   const itemsConCantidad = productos.flatMap(p => p.items).filter(i => cantidades[i.id] > 0)
   const total = itemsConCantidad.reduce((acc, i) => acc + i.precio * cantidades[i.id], 0)
 
-  const handlePedir = async () => {
+  // ← handlePedir reemplazado: antes verificaba si había usuario logueado y hacía login con Google si no había
+  // const handlePedir = async () => {
+  //   if (!pedidosActivos) return
+  //   let mailUsuario = usuario?.email?.toLowerCase().trim() || mailLogueado
+  //   if (!usuario) {
+  //     alert('Tenés que iniciar sesión para hacer un pedido.')
+  //     try {
+  //       const resultado = await loginConGoogle()
+  //       mailUsuario = resultado.user.email.toLowerCase().trim()
+  //       setMailLogueado(mailUsuario)
+  //     } catch (err) {
+  //       if (err.message === 'no_autorizado') {
+  //         alert('Tu cuenta de Google no está asociada a ninguna jugadora de CEVVEN.')
+  //       }
+  //       return
+  //     }
+  //   }
+  //   const coinciden = jugadoras.filter(j =>
+  //     (j.mail?.toLowerCase().trim() === mailUsuario ||
+  //     j.mail2?.toLowerCase().trim() === mailUsuario) &&
+  //     j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
+  //   )
+  //   if (coinciden.length === 1) {
+  //     setJugadoraSeleccionada(coinciden[0])
+  //     setCategoriaSeleccionada(coinciden[0].categoria?.trim())
+  //     setPaso(3)
+  //   } else if (coinciden.length > 1) {
+  //     setJugadorasDelUsuario(coinciden)
+  //     setPaso(2)
+  //   } else {
+  //     setPaso(1)
+  //   }
+  // }
+  const handlePedir = () => {
     if (!pedidosActivos) return
-
-    let mailUsuario = usuario?.email?.toLowerCase().trim() || mailLogueado
-
-    if (!usuario) {
-      alert('Tenés que iniciar sesión para hacer un pedido.')
-      try {
-        const resultado = await loginConGoogle()
-        mailUsuario = resultado.user.email.toLowerCase().trim()
-        setMailLogueado(mailUsuario)
-      } catch (err) {
-        if (err.message === 'no_autorizado') {
-          alert('Tu cuenta de Google no está asociada a ninguna jugadora de CEVVEN.')
-        }
-        return
-      }
-    }
-
-    const coinciden = jugadoras.filter(j =>
-      (j.mail?.toLowerCase().trim() === mailUsuario ||
-      j.mail2?.toLowerCase().trim() === mailUsuario) &&
-      j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
-    )
-
-    if (coinciden.length === 1) {
-      setJugadoraSeleccionada(coinciden[0])
-      setCategoriaSeleccionada(coinciden[0].categoria?.trim())
-      setPaso(3)
-    } else if (coinciden.length > 1) {
-      setJugadorasDelUsuario(coinciden)
-      setPaso(2)
-    } else {
-      setPaso(1)
-    }
+    setPaso(1)
   }
 
   const confirmarPedido = async () => {
@@ -252,6 +273,8 @@ export default function Pedidos() {
       'Pollo al Spiedo': cantidades['pollo_sp'] || 0,
       'Milanesa de Pollo': cantidades['mila_pollo'] || 0,
       'Queso Rallado Artesano': cantidades['queso_rall'] || 0,
+      'Barritas': cantidades['barritas_caja'] || 0,
+      'Box Cafetería': cantidades['box_cafe'] || 0,
       total,
     }
     try {
@@ -269,40 +292,49 @@ export default function Pedidos() {
       `- ${item.nombre}: ${cantidades[item.id]} x $${item.precio} = $${(cantidades[item.id] * item.precio).toLocaleString()}`
     ).join('\n')
 
-    const mailJugadora = mailLogueado || usuario?.email?.trim() || jugadoraSeleccionada.mail?.trim() || jugadoraSeleccionada.mail2?.trim()
-    if (mailJugadora) {
+    // ← mailJugadora reemplazado: antes usaba mailLogueado o usuario?.email como primera opción
+    // const mailJugadora = mailLogueado || usuario?.email?.trim() || jugadoraSeleccionada.mail?.trim() || jugadoraSeleccionada.mail2?.trim()
+    const mails = [
+      jugadoraSeleccionada.mail?.trim(),
+      jugadoraSeleccionada.mail2?.trim()
+    ].filter(Boolean)
+
+    for (const mail of mails) {
       try {
         await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE_PEDIDO, {
           nombre: `${jugadoraSeleccionada.nombre} ${jugadoraSeleccionada.apellido}`,
+          solicitante: nombreSolicitante,
           resumen: resumenLineas,
           total: total.toLocaleString(),
-          to_email: mailJugadora,
+          to_email: mail,
           banco: 'B.R.O.U.',
           cuenta: '000420453-00001',
           titular: 'Leonardo Parrilla',
           telefono: '+598 99 027 944',
         }, EMAILJS_KEY)
       } catch (err) {
-        console.error('Error enviando mail:', err)
+        console.error('Error enviando mail a', mail, err)
       }
     }
     setGuardando(false)
     setPaso(5)
   }
 
-  const verificarYConfirmar = async () => {
-    setVerificando(true)
-    setCedulaError(false)
-    const cedulaLimpia = cedulaIngresada.replace(/[.\-\s]/g, '').trim()
-    const cedulaJugadora = jugadoraSeleccionada.cedula?.replace(/[.\-\s]/g, '').trim()
-    if (cedulaLimpia !== cedulaJugadora) {
-      setCedulaError(true)
-      setVerificando(false)
-      return
-    }
-    setVerificando(false)
-    await confirmarPedido()
-  }
+  // ← verificarYConfirmar reemplazado: antes verificaba la cédula en el paso 4 (resumen)
+  // ahora la cédula se verifica en el paso 1 (identificación) y acá se confirma directo
+  // const verificarYConfirmar = async () => {
+  //   setVerificando(true)
+  //   setCedulaError(false)
+  //   const cedulaLimpia = cedulaIngresada.replace(/[.\-\s]/g, '').trim()
+  //   const cedulaJugadora = jugadoraSeleccionada.cedula?.replace(/[.\-\s]/g, '').trim()
+  //   if (cedulaLimpia !== cedulaJugadora) {
+  //     setCedulaError(true)
+  //     setVerificando(false)
+  //     return
+  //   }
+  //   setVerificando(false)
+  //   await confirmarPedido()
+  // }
 
   return (
     <>
@@ -348,14 +380,16 @@ export default function Pedidos() {
           </div>
         )}
 
-        {/* PASO 1 — CATEGORÍAS */}
+        {/* PASO 1 — IDENTIFICACIÓN (antes era selección de categoría) */}
         {paso === 1 && (
           <div className="pedidos__paso">
             <div className="pedidos__nav">
               <button className="pedidos__volver" onClick={() => setPaso(0)}>← Volver</button>
             </div>
-            <h2 className="pedidos__titulo">Seleccioná la categoría</h2>
-            <p className="pedidos__sub">¿De qué categoría es la jugadora?</p>
+            <h2 className="pedidos__titulo">¿Para quién es el pedido?</h2>
+            <p className="pedidos__sub">Ingresá los datos para continuar</p>
+
+            {/* ← desactivado: antes este paso mostraba las categorías para elegir
             <div className="pedidos__categorias">
               {categorias.map(cat => (
                 <button key={cat} className="pedidos__cat-btn"
@@ -363,12 +397,64 @@ export default function Pedidos() {
                   {cat}
                 </button>
               ))}
+            </div> */}
+
+            <div className="pedidos__cedula-wrap">
+              <label className="pedidos__cedula-label">Cédula de la jugadora</label>
+              <p className="pedidos__cedula-hint">Sin puntos ni guiones. Ej: 1.234.567-8 → 12345678</p>
+              <input
+                type="text"
+                className={`pedidos__cedula-input ${cedulaError ? 'pedidos__cedula-input--error' : ''}`}
+                placeholder="12345678"
+                value={cedulaIngresada}
+                onChange={(e) => { setCedulaIngresada(e.target.value); setCedulaError(false) }}
+              />
+              {cedulaError && <p className="pedidos__cedula-error">❌ No encontramos una jugadora con esa cédula.</p>}
+            </div>
+
+            <div className="pedidos__cedula-wrap" style={{ marginTop: '1.2rem' }}>
+              <label className="pedidos__cedula-label">Tu nombre (quien hace el pedido)</label>
+              <input
+                type="text"
+                className={`pedidos__cedula-input ${nombreError ? 'pedidos__cedula-input--error' : ''}`}
+                placeholder="Ej: María González"
+                value={nombreSolicitante}
+                onChange={(e) => { setNombreSolicitante(e.target.value); setNombreError(false) }}
+              />
+              {nombreError && <p className="pedidos__cedula-error">❌ Ingresá tu nombre para continuar.</p>}
+            </div>
+
+            <div style={{ marginTop: '1.5rem' }}>
+              <button
+                className="pedidos__btn-pedir"
+                disabled={!cedulaIngresada || !nombreSolicitante}
+                onClick={() => {
+                  const cedulaLimpia = cedulaIngresada.replace(/[.\-\s]/g, '').trim()
+                  const jugadora = jugadoras.find(j =>
+                    j.cedula?.replace(/[.\-\s]/g, '').trim() === cedulaLimpia &&
+                    j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
+                  )
+                  if (!jugadora) {
+                    setCedulaError(true)
+                    return
+                  }
+                  if (!nombreSolicitante.trim()) {
+                    setNombreError(true)
+                    return
+                  }
+                  setJugadoraSeleccionada(jugadora)
+                  setCategoriaSeleccionada(jugadora.categoria?.trim())
+                  setPaso(3)
+                }}
+              >
+                CONTINUAR →
+              </button>
             </div>
           </div>
         )}
 
-        {/* PASO 2 — JUGADORA */}
-        {paso === 2 && (
+        {/* PASO 2 — desactivado: antes era selección de jugadora (por categoría o por múltiples asociadas al usuario) */}
+        {/* {paso === 2 && (
           <div className="pedidos__paso">
             <div className="pedidos__nav">
               <button className="pedidos__volver" onClick={() => jugadorasDelUsuario.length > 1 ? setPaso(0) : setPaso(1)}>← Volver</button>
@@ -411,13 +497,13 @@ export default function Pedidos() {
               </>
             )}
           </div>
-        )}
+        )} */}
 
         {/* PASO 3 — PRODUCTOS */}
         {paso === 3 && (
           <div className="pedidos__paso">
             <div className="pedidos__nav">
-              <button className="pedidos__volver" onClick={() => jugadorasDelUsuario.length === 1 ? setPaso(0) : setPaso(2)}>← Volver</button>
+              <button className="pedidos__volver" onClick={() => setPaso(1)}>← Volver</button>
               <button className="pedidos__cancelar" onClick={() => setMostrarConfirmCancel(true)}>✕ Cancelar</button>
             </div>
             <h2 className="pedidos__titulo">Pedido para {jugadoraSeleccionada.nombre} {jugadoraSeleccionada.apellido}</h2>
@@ -482,6 +568,8 @@ export default function Pedidos() {
                 <span>${total.toLocaleString()}</span>
               </div>
             </div>
+
+            {/* ← desactivado: antes el paso 4 pedía la cédula para verificar antes de confirmar
             <div className="pedidos__cedula-wrap">
               <label className="pedidos__cedula-label">
                 Ingresá la cédula de <strong>{jugadoraSeleccionada.nombre}</strong> para confirmar
@@ -495,12 +583,12 @@ export default function Pedidos() {
                 onChange={(e) => { setCedulaIngresada(e.target.value); setCedulaError(false) }}
               />
               {cedulaError && <p className="pedidos__cedula-error">❌ Cédula incorrecta. Intentá de nuevo.</p>}
-            </div>
+            </div> */}
+
             <div className="pedidos__resumen-btns">
               <button className="pedidos__btn-secundario" onClick={() => setPaso(3)}>← Seguir comprando</button>
-              <button className="pedidos__btn-pedir" onClick={verificarYConfirmar}
-                disabled={guardando || verificando || !cedulaIngresada}>
-                {guardando ? 'GUARDANDO...' : verificando ? 'VERIFICANDO...' : 'CONFIRMAR PEDIDO ✓'}
+              <button className="pedidos__btn-pedir" onClick={confirmarPedido} disabled={guardando}>
+                {guardando ? 'GUARDANDO...' : 'CONFIRMAR PEDIDO ✓'}
               </button>
             </div>
           </div>

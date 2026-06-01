@@ -84,8 +84,8 @@ export default function Navbar() {
             </ul>
           )}
         </li>
-        {usuario && <li><a href="/indumentaria" onClick={() => setOpen(false)}>Indumentaria</a></li>}
-        {usuario && <li><a href="/pedidos" onClick={() => setOpen(false)}>Pedidos</a></li>}
+        <li><a href="/indumentaria" onClick={() => setOpen(false)}>Indumentaria</a></li>
+        <li><a href="/pedidos" onClick={() => setOpen(false)}>Pedidos</a></li>
         <li><a href="/contacto" onClick={() => setOpen(false)}>Contacto</a></li>
 
         {/* ── MOBILE EXTRA (redes, en vivo, usuario) ── */}

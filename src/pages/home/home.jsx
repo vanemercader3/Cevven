@@ -21,15 +21,16 @@ const noticias = [
 ]
 
 const fotos = [
-  { img: '/pedidos/empanadas.jpg', nombre: 'Empanadas', contain: true  },
-  { img: '/pedidos/pollo-spiedo.jpg', nombre: 'Pollo al Spiedo', contain: true  },
-  { img: '/pedidos/pasta.jpg', nombre: 'Pasta', contain: true },
-  { img: '/pedidos/pizza.jpg', nombre: 'Pizza', contain: true },
-  { img: '/pedidos/alfa-choco-blanco.jpg', nombre: 'Alfajores Blanco', contain: true },
-  { img: '/pedidos/vino.jpg', nombre: 'Vinos', contain: true  },
-  { img: '/pedidos/mila-pollo.jpg', nombre: 'Milanesa de Pollo', contain: true  },
-  { img: '/pedidos/alfa-choco-negro.jpg', nombre: 'Alfajores Negro', contain: true },
-  
+  { img: '/pedidos/empanadas.jpg',        nombre: 'Empanadas',        contain: true },
+  { img: '/pedidos/pollo-spiedo.jpg',     nombre: 'Pollo al Spiedo',  contain: true },
+  { img: '/pedidos/pasta.jpg',            nombre: 'Pasta',            contain: true },
+  { img: '/pedidos/pizza.jpg',            nombre: 'Pizza',            contain: true },
+  { img: '/pedidos/alfa-choco-blanco.jpg',nombre: 'Alfajores Blanco', contain: true },
+  { img: '/pedidos/vino.jpg',             nombre: 'Vinos',            contain: true },
+  { img: '/pedidos/mila-pollo.jpg',       nombre: 'Milanesa de Pollo',contain: true },
+  { img: '/pedidos/alfa-choco-negro.jpg', nombre: 'Alfajores Negro',  contain: true },
+  { img: '/pedidos/barritas.jpg',         nombre: 'Barritas',         contain: true },  // ← nueva
+  { img: '/pedidos/box-cafeteria.jpg',    nombre: 'Box Cafetería',    contain: true },  // ← nueva
 ]
 
 function parsearCSV(texto) {
