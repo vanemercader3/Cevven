@@ -502,7 +502,7 @@ export default function Indumentaria() {
               <h2>¡Pedido confirmado!</h2>
               <p>El total es <strong>${total.toLocaleString()}</strong></p>
               <p>Enviá el comprobante a:</p>
-              <p className="pedidos__telefono">📱 +598 99 027 944 — Leo Parilla</p>
+              <p className="pedidos__telefono">📱 +598 99 027 944 — Leo Parrilla</p>
               <div className="pedidos__transferencia">
                 <p><strong>Datos para transferir:</strong></p>
                 <p>Banco: B.R.O.U.</p>

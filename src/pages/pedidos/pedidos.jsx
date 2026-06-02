@@ -17,13 +17,13 @@ const categorias = ['Infantiles', 'U13', 'U14', 'U15', 'U16', 'U18', 'U21', 'Sen
 
 const vitrina = [
   { id: 'pasta',      nombre: 'Pasta',             imagen: '/pedidos/pasta.jpg',            descripcion: 'Tallarines, ñoquis, ravioles y más' },
-  { id: 'empanadas',  nombre: 'Empanadas',          imagen: '/pedidos/empanadas.jpg',        descripcion: 'Docenas con distintos rellenos' },
-  { id: 'pizzas',     nombre: 'Pizzas',             imagen: '/pedidos/pizza.jpg',            descripcion: 'Cajas de 2 unidades' },
-  { id: 'alfajores',  nombre: 'Alfajores Neg.',     imagen: '/pedidos/alfa-choco-negro.jpg', descripcion: 'Pack x10 chocolate negro' },
-  { id: 'alfajores2', nombre: 'Alfajores Blan.',    imagen: '/pedidos/alfa-choco-blanco.jpg',descripcion: 'Pack x10 chocolate blanco' },
+  { id: 'empanadas',  nombre: 'Empanadas',          imagen: '/pedidos/empanadas.jpg',        descripcion: 'Distintos rellenos' },
+  { id: 'pizzas',     nombre: 'Pizzas',             imagen: '/pedidos/pizza.jpg',            descripcion: 'Caja de 2 unidades' },
+  { id: 'alfajores',  nombre: 'Alfajores Neg.',     imagen: '/pedidos/alfa-choco-negro.jpg', descripcion: 'Caja x10 chocolate negro' },
+  { id: 'alfajores2', nombre: 'Alfajores Blan.',    imagen: '/pedidos/alfa-choco-blanco.jpg',descripcion: 'Caja x10 chocolate blanco' },
   { id: 'vinos',      nombre: 'Vinos',              imagen: '/pedidos/vino.jpg',             descripcion: 'Pack x2 unidades' },
-  { id: 'pollo',      nombre: 'Pollo al Spiedo',    imagen: '/pedidos/pollo-spiedo.jpg',     descripcion: 'Pollo al spiedo' },
-  { id: 'milanesa',   nombre: 'Milanesa de Pollo',  imagen: '/pedidos/mila-pollo.jpg',       descripcion: 'Milanesas de pollo' },
+  { id: 'pollo',      nombre: 'Pollo al Spiedo',    imagen: '/pedidos/pollo-spiedo.jpg',     descripcion: 'Pollo al Spiedo' },
+  { id: 'milanesa',   nombre: 'Milanesa de Pollo',  imagen: '/pedidos/mila-pollo.jpg',       descripcion: 'Milanesa de pollo' },
   { id: 'barritas',     nombre: 'Barritas',       imagen: '/pedidos/barritas.jpg',      descripcion: 'Caja surtida x12 unidades' },
   { id: 'boxcafeteria', nombre: 'Box Cafetería',   imagen: '/pedidos/box-cafeteria.jpg', descripcion: 'Medialunas, Rolls de Canela y Cookies' },
 ]
@@ -32,10 +32,11 @@ const productos = [
   {
     id: 'pasta', nombre: 'Pasta', emoji: '🍝',
     items: [
-      { id: 'queso_rall', nombre: 'Queso Rallado Artesano',     precio: 190, unidad: '150gr' },
-      { id: 'tal_esp',    nombre: 'Tallarines Espinaca Gruesos', precio: 275, unidad: 'kg' },
-      { id: 'tal_yema',   nombre: 'Tallarines Yema Finos',       precio: 275, unidad: 'kg' },
-      { id: 'noquis',     nombre: 'Ñoquis',                      precio: 275, unidad: 'kg' },
+      { id: 'queso_rallF', nombre: 'Queso Rallado Artesano Fino',     precio: 190, unidad: '150gr' },
+      { id: 'queso_rallG', nombre: 'Queso Rallado Artesano Grueso',     precio: 190, unidad: '150gr' },
+      { id: 'tal_esp',    nombre: 'Tallarines Espinaca ', precio: 275, unidad: '1 kg' },
+      { id: 'tal_yema',   nombre: 'Tallarines Yema ',       precio: 275, unidad: '1 kg' },
+      { id: 'noquis',     nombre: 'Ñoquis',                      precio: 275, unidad: '1 kg' },
       { id: 'rav_verd',   nombre: 'Ravioles Verdura (150 ud.)',   precio: 330, unidad: 'pack' },
       { id: 'rav_jq',     nombre: 'Ravioles J&Q (150 ud.)',      precio: 330, unidad: 'pack' },
       { id: 'rav_ric',    nombre: 'Ravioles Ricotta (150 ud.)',   precio: 330, unidad: 'pack' },
@@ -44,32 +45,33 @@ const productos = [
   {
     id: 'empanadas', nombre: 'Empanadas', emoji: '🥟',
     items: [
-      { id: 'emp_carne_ac',  nombre: 'Carne con Aceitunas', precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_carne_sin', nombre: 'Carne sin Aceituna',  precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_pollo',     nombre: 'Pollo',               precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_qyc',       nombre: 'Queso y Cebolla',     precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_4q',        nombre: 'Cuatro Quesos',       precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_cap',       nombre: 'Capresse',            precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_esp',       nombre: 'Espinaca',            precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_qya',       nombre: 'Queso y Aceituna',    precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_jyq',       nombre: 'Jamón y Queso',       precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_pyc',       nombre: 'Panceta y Cebolla',   precio: 430, unidad: 'x5 ud.' },
-      { id: 'emp_polloch',   nombre: 'Pollo con Champi',    precio: 360, unidad: 'x5 ud.' },
-      { id: 'emp_int',       nombre: 'Integral',            precio: 360, unidad: 'x5 ud.' },
-      { id: 'emp_chil',      nombre: 'Chilena',             precio: 390, unidad: 'x5 ud.' },
+      { id: 'emp_carne_ac',  nombre: 'Carne con Aceitunas', precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_carne_sin', nombre: 'Carne sin Aceitunas',  precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_pollo',     nombre: 'Pollo',               precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_qyc',       nombre: 'Queso y Cebolla',     precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_4q',        nombre: 'Cuatro Quesos',       precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_cap',       nombre: 'Capresse',            precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_esp',       nombre: 'Espinaca',            precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_qya',       nombre: 'Queso y Aceitunas',    precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_jyq',       nombre: 'Jamón y Queso',       precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_pyc',       nombre: 'Panceta y Cebolla',   precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_polloch',   nombre: 'Pollo con Champi',    precio: 360, unidad: 'x5 unid.' },
+      { id: 'emp_int',       nombre: 'Integral',            precio: 360, unidad: 'x5 unid.' },
+      { id: 'emp_chil',      nombre: 'Chilena',             precio: 390, unidad: 'x5 unid.' },
     ]
   },
   {
     id: 'pizzas', nombre: 'Pizzas', emoji: '🍕',
     items: [
-      { id: 'pizza', nombre: 'Pizza (x2 ud.)', precio: 550, unidad: 'caja' },
+      { id: 'pizza', nombre: 'Pizza con Muzzarella (x2 unid.)', precio: 550, unidad: '' },
     ]
   },
   {
     id: 'alfajores', nombre: 'Alfajores', emoji: '🍫',
     items: [
-      { id: 'alf_neg',   nombre: 'Chocolate Negro (x10)',  precio: 550, unidad: 'pack' },
-      { id: 'alf_blanc', nombre: 'Chocolate Blanco (x10)', precio: 550, unidad: 'pack' },
+      { id: 'alf_neg',   nombre: 'Chocolate Negro (x10)',  precio: 550, unidad: 'caja' },
+      { id: 'alf_blanc', nombre: 'Chocolate Blanco (x10)', precio: 550, unidad: 'caja' },
+      { id: 'alf_mixto', nombre: 'Caja Mixta (x10)', precio: 550, unidad: 'caja' },
     ]
   },
   {
@@ -81,13 +83,13 @@ const productos = [
   {
     id: 'pollo', nombre: 'Pollo al Spiedo', emoji: '🍗',
     items: [
-      { id: 'pollo_sp', nombre: 'Pollo al Spiedo', precio: 690, unidad: 'ud.' },
+      { id: 'pollo_sp', nombre: 'Pollo al Spiedo', precio: 690, unidad: 'unid.' },
     ]
   },
   {
     id: 'milanesa', nombre: 'Milanesa de Pollo', emoji: '🍖',
     items: [
-      { id: 'mila_pollo', nombre: 'Milanesa de Pollo', precio: 550, unidad: 'kg.' },
+      { id: 'mila_pollo', nombre: 'Milanesa de Pollo', precio: 550, unidad: '1 kg.' },
     ]
   },
   {
@@ -247,8 +249,8 @@ export default function Pedidos() {
       fecha,
       categoria: categoriaSeleccionada,
       jugadora: `${jugadoraSeleccionada.nombre} ${jugadoraSeleccionada.apellido}`,
-      'Tallarines Espinaca Gruesos': cantidades['tal_esp'] || 0,
-      'Tallarines Yema Finos': cantidades['tal_yema'] || 0,
+      'Tallarines Espinaca': cantidades['tal_esp'] || 0,
+      'Tallarines Yema ': cantidades['tal_yema'] || 0,
       'Ñoquis': cantidades['noquis'] || 0,
       'Ravioles Verdura': cantidades['rav_verd'] || 0,
       'Ravioles J&Q': cantidades['rav_jq'] || 0,
@@ -272,9 +274,11 @@ export default function Pedidos() {
       'Pack Vinos': cantidades['vino'] || 0,
       'Pollo al Spiedo': cantidades['pollo_sp'] || 0,
       'Milanesa de Pollo': cantidades['mila_pollo'] || 0,
-      'Queso Rallado Artesano': cantidades['queso_rall'] || 0,
       'Barritas': cantidades['barritas_caja'] || 0,
       'Box Cafetería': cantidades['box_cafe'] || 0,
+      'Queso Rallado Artesano Fino': cantidades['queso_rallF'] || 0,
+      'Queso Rallado Artesano Grueso': cantidades['queso_rallG'] || 0,
+      'Alf Mixto': cantidades['alf_mixto'] || 0,
       total,
     }
     try {
@@ -602,7 +606,7 @@ export default function Pedidos() {
               <h2>¡Pedido confirmado!</h2>
               <p>El total es <strong>${total.toLocaleString()}</strong></p>
               <p>Enviá el comprobante a:</p>
-              <p className="pedidos__telefono">📱 +598 99 027 944 — Leo Parilla</p>
+              <p className="pedidos__telefono">📱 +598 99 027 944 — Leo Parrilla</p>
               <div className="pedidos__transferencia">
                 <p><strong>Datos para transferir:</strong></p>
                 <p>Banco: B.R.O.U.</p>
