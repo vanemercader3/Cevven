@@ -24,7 +24,7 @@ const vitrina = [
   { id: 'vinos',      nombre: 'Vinos',              imagen: '/pedidos/vino.jpg',             descripcion: 'Pack x2 unidades' },
   { id: 'pollo',      nombre: 'Pollo al Spiedo',    imagen: '/pedidos/pollo-spiedo.jpg',     descripcion: 'Pollo al Spiedo' },
   { id: 'milanesa',   nombre: 'Milanesa de Pollo',  imagen: '/pedidos/mila-pollo.jpg',       descripcion: 'Milanesa de Pollo' },
-  { id: 'barritas',     nombre: 'Barritas',       imagen: '/pedidos/barritas.jpg',      descripcion: 'Caja surtida x12 unidades' },
+  { id: 'barritas',     nombre: 'Barritas',       imagen: '/pedidos/barritas.jpg',      descripcion: 'Caja surtida o mismo gusto x12 unidades' },
   { id: 'boxcafeteria', nombre: 'Box Cafetería',   imagen: '/pedidos/box-cafeteria.jpg', descripcion: 'Medialunas, Rolls de Canela y Cookies' },
 ]
 
@@ -95,7 +95,13 @@ const productos = [
   {
     id: 'barritas', nombre: 'Barritas', emoji: '🍫',
     items: [
-      { id: 'barritas_caja', nombre: 'Caja Surtida x12 (4 choco naranja, 2 frutos rojos, 2 brownie, 2 arándano, 2 coco)', precio: 550, unidad: 'caja' },
+      { id: 'barr_mixta',    nombre: 'Barritas Mixtas (4 Choco y Naranja, 2 Frutos Rojos, 2 Brownie, 2 Arándanos, 2 Coco)',             precio: 550, unidad: 'caja' },
+      { id: 'barr_narchoco', nombre: 'Barritas Naranja y Chocolate x12 unid.', precio: 550, unidad: 'caja' },
+      { id: 'barr_frutos',   nombre: 'Barritas Frutos Rojos x12 unid.',       precio: 550, unidad: 'caja' },
+      { id: 'barr_brownie',  nombre: 'Barritas Brownie x12 unid.',            precio: 550, unidad: 'caja' },
+      { id: 'barr_arandano', nombre: 'Barritas Arándanos x12 unid.',          precio: 550, unidad: 'caja' },
+      { id: 'barr_coco',     nombre: 'Barritas Coco x12 unid.',               precio: 550, unidad: 'caja' },
+      { id: 'barr_menta',    nombre: 'Barritas Menta x12 unid.',              precio: 550, unidad: 'caja' },
     ]
   },
   {
@@ -275,7 +281,13 @@ export default function Pedidos() {
       'Pack Vinos': cantidades['vino'] || 0,
       'Pollo al Spiedo': cantidades['pollo_sp'] || 0,
       'Milanesa de Pollo': cantidades['mila_pollo'] || 0,
-      'Barritas': cantidades['barritas_caja'] || 0,
+      'Barritas Mixtas': cantidades['barr_mixta'] || 0,
+      'Barritas Naranja y Chocolate': cantidades['barr_narchoco'] || 0,
+      'Barritas Frutos Rojos': cantidades['barr_frutos'] || 0,
+      'Barritas Brownie': cantidades['barr_brownie'] || 0,
+      'Barritas Arándanos': cantidades['barr_arandano'] || 0,
+      'Barritas Coco': cantidades['barr_coco'] || 0,
+      'Barritas Menta': cantidades['barr_menta'] || 0,
       'Box Cafeteria': cantidades['box_cafe'] || 0,
       'Queso Rayado Artesano Grueso': cantidades['queso_rallG'] || 0,
       'Queso Rayado Artesano Fino': cantidades['queso_rallF'] || 0,
