@@ -7,7 +7,7 @@ import emailjs from '@emailjs/browser'
 // import { loginConGoogle } from '../../firebase'       // ← desactivado: antes se usaba para login con Google
 
 const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwMnJDsV7_q8rSN_FXHeoBZj1qGL3XQe7GPl6-vDPeyQInZFbnCkHDpT9FQwF4PZiq7/exec'
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby2BpEHyX1h2gag7agvZVC4EGDK9zq7hTZSwojGGPCXyRODzfKM6zMxy-akYIK0mdF_/exec'
 const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1223710762&single=true&output=csv'
 const EMAILJS_SERVICE = 'service_eus8zan'
 const EMAILJS_TEMPLATE_PEDIDO = 'template_9mz3d68'
