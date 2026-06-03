@@ -283,8 +283,7 @@ export default function Pedidos() {
     try {
       await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(fila)
       })
     } catch (err) {
