@@ -23,7 +23,7 @@ const vitrina = [
   { id: 'alfajores2', nombre: 'Alfajores Blan.',    imagen: '/pedidos/alfa-choco-blanco.jpg',descripcion: 'Caja x10 chocolate blanco' },
   { id: 'vinos',      nombre: 'Vinos',              imagen: '/pedidos/vino.jpg',             descripcion: 'Pack x2 unidades' },
   { id: 'pollo',      nombre: 'Pollo al Spiedo',    imagen: '/pedidos/pollo-spiedo.jpg',     descripcion: 'Pollo al Spiedo' },
-  { id: 'milanesa',   nombre: 'Milanesa de Pollo',  imagen: '/pedidos/mila-pollo.jpg',       descripcion: 'Milanesa de pollo' },
+  { id: 'milanesa',   nombre: 'Milanesa de Pollo',  imagen: '/pedidos/mila-pollo.jpg',       descripcion: 'Milanesa de Pollo' },
   { id: 'barritas',     nombre: 'Barritas',       imagen: '/pedidos/barritas.jpg',      descripcion: 'Caja surtida x12 unidades' },
   { id: 'boxcafeteria', nombre: 'Box Cafetería',   imagen: '/pedidos/box-cafeteria.jpg', descripcion: 'Medialunas, Rolls de Canela y Cookies' },
 ]
@@ -37,27 +37,27 @@ const productos = [
       { id: 'tal_esp',    nombre: 'Tallarines Espinaca ', precio: 275, unidad: '1 kg' },
       { id: 'tal_yema',   nombre: 'Tallarines Yema ',       precio: 275, unidad: '1 kg' },
       { id: 'noquis',     nombre: 'Ñoquis',                      precio: 275, unidad: '1 kg' },
-      { id: 'rav_verd',   nombre: 'Ravioles Verdura (150 ud.)',   precio: 330, unidad: 'pack' },
-      { id: 'rav_jq',     nombre: 'Ravioles J&Q (150 ud.)',      precio: 330, unidad: 'pack' },
-      { id: 'rav_ric',    nombre: 'Ravioles Ricotta (150 ud.)',   precio: 330, unidad: 'pack' },
+      { id: 'rav_verd',   nombre: 'Ravioles Verdura (150 unid.)',   precio: 330, unidad: 'pack' },
+      { id: 'rav_jq',     nombre: 'Ravioles J&Q (150 unid.)',      precio: 330, unidad: 'pack' },
+      { id: 'rav_ric',    nombre: 'Ravioles Ricotta (150 unid.)',   precio: 330, unidad: 'pack' },
     ]
   },
   {
     id: 'empanadas', nombre: 'Empanadas', emoji: '🥟',
     items: [
-      { id: 'emp_carne_ac',  nombre: 'Carne con Aceitunas', precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_carne_sin', nombre: 'Carne sin Aceitunas',  precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_pollo',     nombre: 'Pollo',               precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_qyc',       nombre: 'Queso y Cebolla',     precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_4q',        nombre: 'Cuatro Quesos',       precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_cap',       nombre: 'Capresse',            precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_esp',       nombre: 'Espinaca',            precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_qya',       nombre: 'Queso y Aceitunas',    precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_jyq',       nombre: 'Jamón y Queso',       precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_pyc',       nombre: 'Panceta y Cebolla',   precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_polloch',   nombre: 'Pollo con Champi',    precio: 360, unidad: 'x5 unid.' },
-      { id: 'emp_int',       nombre: 'Integral',            precio: 360, unidad: 'x5 unid.' },
-      { id: 'emp_chil',      nombre: 'Chilena',             precio: 390, unidad: 'x5 unid.' },
+      { id: 'emp_carne_ac',  nombre: 'Emp. Carne con Aceitunas', precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_carne_sin', nombre: 'Emp. Carne sin Aceitunas',  precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_pollo',     nombre: 'Emp. Pollo',               precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_qyc',       nombre: 'Emp. Queso y Cebolla',     precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_4q',        nombre: 'Emp. Cuatro Quesos',       precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_cap',       nombre: 'Emp. Capresse',            precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_esp',       nombre: 'Emp. Espinaca',            precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_qya',       nombre: 'Emp. Queso y Aceitunas',    precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_jyq',       nombre: 'Emp. Jamón y Queso',       precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_pyc',       nombre: 'Emp. Panceta y Cebolla',   precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_polloch',   nombre: 'Emp. Pollo con Champi',    precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_int',       nombre: 'Emp. Integral',            precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_chil',      nombre: 'Emp. Chilena',             precio: 430, unidad: 'x5 unid.' },
     ]
   },
   {
@@ -361,7 +361,7 @@ export default function Pedidos() {
             )}
             <div className="pedidos__vitrina">
               {vitrina.map(item => (
-                <div key={item.id} className="pedidos__vitrina-card">
+                <div key={item.id} className="pedidos__vitrina-card" style={{ cursor: pedidosActivos ? 'pointer' : 'default' }} onClick={() => { if (pedidosActivos) handlePedir() }}>
                   <div className="pedidos__vitrina-img-wrap">
                     <img src={item.imagen} alt={item.nombre} className="pedidos__vitrina-img" />
                   </div>
