@@ -1,8 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { noticias } from './noticias'
 import './noticiaDetalle.css'
-import PageFooter from '../../components/pageFooter/pageFooter'
-import BackButton from '../../components/backButton/backButton'
+import PageFooter from '../../../../components/pageFooter/pageFooter'
+import BackButton from '../../../../components/backButton/backButton'
 
 export default function NoticiaDetalle() {
   const { id } = useParams()

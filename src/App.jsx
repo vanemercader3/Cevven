@@ -1,18 +1,17 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navbar from './components/navbar/navbar'
-import Home from './pages/home/home'
-import Nosotros from './pages/nosotros/nosotros'
-import Noticias from './pages/noticias/noticias'
-import Indumentaria from './pages/indumentaria/indumentaria'
-import Contacto from './pages/contacto/contacto'
-import Partidos from './pages/partidos/partidos'
-import Pedidos from './pages/pedidos/pedidos'
-import Categoria from './pages/categoria/categoria'
+import Home from './pages/deportes/indoor/home/home'
+import Nosotros from './pages/deportes/indoor/nosotros/nosotros'
+import Noticias from './pages/deportes/indoor/noticias/noticias'
+import Indumentaria from './pages/deportes/indoor/indumentaria/indumentaria'
+import Contacto from './pages/deportes/indoor/contacto/contacto'
+import Partidos from './pages/deportes/indoor/partidos/partidos'
+import Pedidos from './pages/deportes/indoor/pedidos/pedidos'
+import Categoria from './pages/deportes/indoor/categoria/categoria'
 import Landing from './pages/landing/landing'
-import Documentos from './pages/documentos/documentos'
+import Documentos from './pages/deportes/indoor/documentos/documentos'
 import Construccion from './pages/construccion/construccion'
-import NoticiaDetalle from './pages/noticias/noticiaDetalle'
-
+import NoticiaDetalle from './pages/deportes/indoor/noticias/noticiaDetalle'
 
 function Layout({ children }) {
   return (
@@ -39,7 +38,6 @@ function App() {
         <Route path="/documentos/:cat/:nombre" element={<Layout><Documentos /></Layout>} />
         <Route path="/construccion" element={<Construccion />} />
         <Route path="/noticias/:id" element={<Layout><NoticiaDetalle /></Layout>} />
-
       </Routes>
     </BrowserRouter>
   )

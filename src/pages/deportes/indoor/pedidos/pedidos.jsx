@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './pedidos.css'
-import PageFooter from '../../components/pageFooter/pageFooter'
-import BackButton from '../../components/backButton/backButton'
+import PageFooter from '../../../../components/pageFooter/pageFooter'
+import BackButton from '../../../../components/backButton/backButton'
 import emailjs from '@emailjs/browser'
 // import { useAuth } from '../../context/AuthContext'   // ← desactivado: antes se usaba para login con Google
 // import { loginConGoogle } from '../../firebase'       // ← desactivado: antes se usaba para login con Google

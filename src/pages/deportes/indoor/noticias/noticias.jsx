@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import './noticias.css'
-import PageFooter from '../../components/pageFooter/pageFooter'
-import BackButton from '../../components/backButton/backButton'
+import PageFooter from '../../../../components/pageFooter/pageFooter'
+import BackButton from '../../../../components/backButton/backButton'
 
 export const noticias = [
   {

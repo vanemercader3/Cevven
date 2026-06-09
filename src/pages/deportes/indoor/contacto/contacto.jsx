@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import emailjs from '@emailjs/browser'
 import './contacto.css'
-import PageFooter from '../../components/pageFooter/pageFooter'
-import BackButton from '../../components/backButton/backButton'
+import PageFooter from '../../../../components/pageFooter/pageFooter'
+import BackButton from '../../../../components/backButton/backButton'
 import { Mail, Phone, MapPin } from 'lucide-react'
 
 const SERVICE_ID = 'service_eus8zan'

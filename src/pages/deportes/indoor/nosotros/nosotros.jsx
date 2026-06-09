@@ -1,5 +1,5 @@
 import './nosotros.css'
-import PageFooter from '../../components/pageFooter/pageFooter'
+import PageFooter from '../../../../components/pageFooter/pageFooter'
 
 export default function Nosotros() {
   return (
