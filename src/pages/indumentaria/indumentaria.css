@@ -43,6 +43,16 @@
   border-color: var(--blue);
 }
 
+/* Tarjeta próximamente: apagada */
+.producto__card--proximamente {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.producto__img--proximamente {
+  filter: grayscale(80%);
+}
+
 .producto__imagen {
   background: hsl(0, 0%, 100%);
   height: 260px;
@@ -51,12 +61,69 @@
   justify-content: center;
   overflow: hidden;
   border-radius: 12px 12px 0 0;
+  position: relative;
 }
 
 .producto__img {
   width: 90%;
   height: 90%;
   object-fit: contain;
+  transition: opacity 0.2s ease;
+}
+
+/* ── Carrusel ── */
+.producto__carrusel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.75);
+  border: none;
+  color: var(--blue);
+  font-size: 1.3rem;
+  font-weight: 900;
+  line-height: 1;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+  transition: background 0.15s, color 0.15s;
+  padding: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+.producto__carrusel-btn:hover {
+  background: white;
+  color: var(--blue);
+}
+
+.producto__carrusel-btn--prev { left: 8px; }
+.producto__carrusel-btn--next { right: 8px; }
+
+.producto__carrusel-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+  z-index: 4;
+}
+
+.producto__carrusel-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ccc;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.producto__carrusel-dot--activo {
+  background: var(--blue);
 }
 
 .producto__placeholder { font-size: 4rem; }
@@ -83,6 +150,24 @@
   font-weight: 900;
   color: var(--purple);
   margin: 0;
+}
+
+.producto__precio--proximamente {
+  font-size: 1.1rem;
+  color: #999;
+}
+
+.producto__proximamente-badge {
+  display: inline-block;
+  background: #e0e0e0;
+  color: #666;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  padding: 0.35rem 0.8rem;
+  border-radius: 6px;
+  width: fit-content;
 }
 
 .producto__talles {
@@ -154,6 +239,88 @@
 
 .producto__btn:hover { opacity: 0.85; }
 .producto__btn--agregado { background: var(--green) !important; }
+
+/* ── Personalización de número ── */
+.producto__personalizacion {
+  border-top: 1px solid #eee;
+  padding-top: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.producto__personalizacion-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--blue);
+  margin: 0;
+}
+
+.producto__personalizacion-opciones {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.producto__personalizacion-btns {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+}
+
+.producto__pers-cancelar {
+  flex: 1;
+  background: white;
+  border: 2px solid #ccc;
+  color: #888;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.producto__pers-cancelar:hover { border-color: #999; color: #555; }
+
+.producto__btn--pers-confirmar {
+  flex: 2;
+  margin-top: 0 !important;
+}
+
+.producto__pers-btn {
+  padding: 0.35rem 1.1rem;
+  border: 2px solid var(--blue);
+  border-radius: 6px;
+  background: white;
+  color: var(--blue);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.producto__pers-btn:hover { background: var(--blue); color: white; }
+.producto__pers-btn--activo { background: var(--blue); color: white; }
+
+.producto__numero-input {
+  padding: 0.5rem 0.8rem;
+  border: 2px solid var(--blue);
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  width: 80px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.producto__numero-input:focus {
+  outline: none;
+  border-color: var(--purple);
+}
 
 /* barra carrito */
 .indumentaria__carrito-bar {

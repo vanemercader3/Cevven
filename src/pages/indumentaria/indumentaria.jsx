@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react'
 import './indumentaria.css'
 import PageFooter from '../../components/pageFooter/pageFooter'
 import BackButton from '../../components/backButton/backButton'
-// import { useAuth } from '../../context/AuthContext'   // ← desactivado: antes se usaba para login con Google
-// import { loginConGoogle } from '../../firebase'       // ← desactivado: antes se usaba para login con Google
+// import { useAuth } from '../../context/AuthContext'
+// import { loginConGoogle } from '../../firebase'
 import emailjs from '@emailjs/browser'
 
 const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzadHnefQOSp5CcFqIJq1WAUVYCBEuxghq6QVcXipvlLnb4WBTIyNNbrskPaXDW6z6X/exec'
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbze2DdjXC_7DSnTJpaudD_zV6QJO9Z3bEKacpWJQmo_3vD_uT1slQp0LY4g8l8IQO47/exec'
 
 const talles = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
 const categorias = ['Infantiles', 'U13', 'U14', 'U15', 'U16', 'U18', 'U21', 'Senior', 'Inter Masc', 'Plus 35', 'Entrenadores']
@@ -17,12 +17,15 @@ const EMAILJS_TEMPLATE_PEDIDO = 'template_9mz3d68'
 const EMAILJS_KEY = '6mltD84C_kgv-YML0'
 
 const productos = [
-  { id: 1, nombre: 'Pantalón Largo',          precio: 1000, imagen: '/indumentaria/pantalon.png',  talleUnico: false },
-  { id: 2, nombre: 'Canguro',                  precio: 1100, imagen: '/indumentaria/canguro.png',   talleUnico: false },
-  { id: 3, nombre: 'Medio Cierre Polar',        precio: 1000, imagen: '/indumentaria/polar.png',     talleUnico: false },
-  { id: 4, nombre: 'Camperón de Invierno',      precio: 1800, imagen: '/indumentaria/camperon.png',  talleUnico: false },
-  { id: 5, nombre: 'Remera de Entrenamiento',   precio: 500,  imagen: '/indumentaria/remera.png',    talleUnico: false },
-  { id: 6, nombre: 'Cuellito Polar',            precio: 200,  imagen: '/indumentaria/cuellito.png',  talleUnico: true  },
+  { id: 1, nombre: 'Pantalón Largo',            precio: 1000, imagen: '/indumentaria/pantalon.png',       talleUnico: false },
+  { id: 2, nombre: 'Canguro',                   precio: 1100, imagen: '/indumentaria/canguro.png',        talleUnico: false},
+  { id: 3, nombre: 'Medio Cierre Polar',        precio: 1000, imagen: '/indumentaria/polar.png',          talleUnico: false, personalizacion: true  },
+  { id: 4, nombre: 'Camperón de Invierno',      precio: 1800, imagen: '/indumentaria/camperon.png',       talleUnico: false },
+  { id: 5, nombre: 'Remera de Entrenamiento',   precio: 500,  imagen: '/indumentaria/remera.png',
+    imagenes: ['/indumentaria/remera.png', '/indumentaria/remera-atras.png'],                             talleUnico: false },
+  { id: 7, nombre: 'Campera con Cierre',        precio: 1100, imagen: '/indumentaria/campera-cierre.png', talleUnico: false, personalizacion: true },
+  { id: 6, nombre: 'Cuellito Polar',            precio: 200,  imagen: '/indumentaria/cuellito.png',       talleUnico: true  },
+  { id: 8, nombre: 'Medias',                    precio: 160,  imagen: '/indumentaria/medias.png',         talleUnico: true  },
 ]
 
 function parsearCSV(texto) {
@@ -39,13 +42,56 @@ function parsearCSV(texto) {
 function ProductoCard({ producto, onAgregar }) {
   const [talleSeleccionado, setTalleSeleccionado] = useState(null)
   const [agregado, setAgregado] = useState(false)
+  const [numero, setNumero] = useState('')
+  const [personalizar, setPersonalizar] = useState(null)
+  const [imgIndex, setImgIndex] = useState(0)
+  const [pidiendo, setPidiendo] = useState(false) // muestra el panel de personalización
+
+  const imagenes = producto.imagenes || (producto.imagen ? [producto.imagen] : [])
+  const tieneCarrusel = imagenes.length > 1
+
+  if (producto.proximamente) {
+    return (
+      <div className="producto__card producto__card--proximamente">
+        <div className="producto__imagen">
+          {producto.imagen ? (
+            <img src={producto.imagen} alt={producto.nombre} className="producto__img producto__img--proximamente" />
+          ) : (
+            <span className="producto__placeholder">📦</span>
+          )}
+        </div>
+        <div className="producto__info">
+          <h2 className="producto__nombre">{producto.nombre}</h2>
+          <p className="producto__precio producto__precio--proximamente">Precio a confirmar</p>
+          <span className="producto__proximamente-badge">PRÓXIMAMENTE</span>
+        </div>
+      </div>
+    )
+  }
 
   const handlePedir = () => {
     if (!producto.talleUnico && !talleSeleccionado) {
       alert('Por favor seleccioná un talle')
       return
     }
-    onAgregar(producto, talleSeleccionado)
+    if (producto.personalizacion) {
+      setPidiendo(true) // mostrar panel de personalización
+      return
+    }
+    onAgregar(producto, talleSeleccionado, null)
+    setAgregado(true)
+    setTimeout(() => setAgregado(false), 2000)
+  }
+
+  const handleConfirmarPersonalizacion = () => {
+    if (personalizar === null) {
+      alert('Por favor indicá si querés personalizar con tu número')
+      return
+    }
+    onAgregar(producto, talleSeleccionado, personalizar === true ? numero.trim() : null)
+    setPidiendo(false)
+    setPersonalizar(null)
+    setNumero('')
     setAgregado(true)
     setTimeout(() => setAgregado(false), 2000)
   }
@@ -55,13 +101,39 @@ function ProductoCard({ producto, onAgregar }) {
       {producto.id === 6 && (
         <div className="producto__badge">¡Con 2 prendas o más te lo llevás de regalo!</div>
       )}
+
+      {/* Imagen con carrusel opcional */}
       <div className="producto__imagen">
-        {producto.imagen ? (
-          <img src={producto.imagen} alt={producto.nombre} className="producto__img" />
+        {imagenes.length > 0 ? (
+          <img src={imagenes[imgIndex]} alt={producto.nombre} className="producto__img" />
         ) : (
           <span className="producto__placeholder">📦</span>
         )}
+        {tieneCarrusel && (
+          <>
+            <button
+              className="producto__carrusel-btn producto__carrusel-btn--prev"
+              onClick={() => setImgIndex(i => (i - 1 + imagenes.length) % imagenes.length)}
+              aria-label="Imagen anterior"
+            >‹</button>
+            <button
+              className="producto__carrusel-btn producto__carrusel-btn--next"
+              onClick={() => setImgIndex(i => (i + 1) % imagenes.length)}
+              aria-label="Imagen siguiente"
+            >›</button>
+            <div className="producto__carrusel-dots">
+              {imagenes.map((_, i) => (
+                <span
+                  key={i}
+                  className={`producto__carrusel-dot ${i === imgIndex ? 'producto__carrusel-dot--activo' : ''}`}
+                  onClick={() => setImgIndex(i)}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
+
       <div className="producto__info">
         <h2 className="producto__nombre">{producto.nombre}</h2>
         <p className="producto__precio">${producto.precio.toLocaleString()}</p>
@@ -78,28 +150,66 @@ function ProductoCard({ producto, onAgregar }) {
             ))
           )}
         </div>
-        <button className={`producto__btn ${agregado ? 'producto__btn--agregado' : ''}`} onClick={handlePedir}>
-          {agregado ? '✓ AGREGADO' : 'AGREGAR AL PEDIDO'}
-        </button>
+
+        {/* Personalización de número — aparece al tocar "Agregar al pedido" */}
+        {producto.personalizacion && pidiendo && (
+          <div className="producto__personalizacion">
+            <p className="producto__personalizacion-label">¿Querés personalizarla con tu número?</p>
+            <div className="producto__personalizacion-opciones">
+              <button
+                className={`producto__pers-btn ${personalizar === false ? 'producto__pers-btn--activo' : ''}`}
+                onClick={() => { setPersonalizar(false); setNumero('') }}>
+                No
+              </button>
+              <button
+                className={`producto__pers-btn ${personalizar === true ? 'producto__pers-btn--activo' : ''}`}
+                onClick={() => setPersonalizar(true)}>
+                Sí
+              </button>
+            </div>
+            {personalizar === true && (
+              <input
+                type="text"
+                className="producto__numero-input"
+                placeholder="Ej: 7"
+                value={numero}
+                onChange={(e) => setNumero(e.target.value)}
+                maxLength={3}
+                autoFocus
+              />
+            )}
+            <div className="producto__personalizacion-btns">
+              <button className="producto__pers-cancelar" onClick={() => { setPidiendo(false); setPersonalizar(null); setNumero('') }}>
+                Cancelar
+              </button>
+              <button className="producto__btn producto__btn--pers-confirmar" onClick={handleConfirmarPersonalizacion}>
+                ✓ AGREGAR
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!pidiendo && (
+          <button className={`producto__btn ${agregado ? 'producto__btn--agregado' : ''}`} onClick={handlePedir}>
+            {agregado ? '✓ AGREGADO' : 'AGREGAR AL PEDIDO'}
+          </button>
+        )}
       </div>
     </div>
   )
 }
 
 export default function Indumentaria() {
-  // const { usuario } = useAuth()   // ← desactivado: antes se usaba para verificar si había usuario logueado
   const [carrito, setCarrito] = useState([])
   const [paso, setPaso] = useState('tienda')
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null)
   const [jugadoraSeleccionada, setJugadoraSeleccionada] = useState(null)
   const [jugadoras, setJugadoras] = useState([])
-  // const [jugadorasDelUsuario, setJugadorasDelUsuario] = useState([])   // ← desactivado: se usaba para jugadoras asociadas al mail del usuario logueado
   const [guardando, setGuardando] = useState(false)
   const [mostrarResumen, setMostrarResumen] = useState(false)
   const [cedulaIngresada, setCedulaIngresada] = useState('')
   const [cedulaError, setCedulaError] = useState(false)
   const [verificando, setVerificando] = useState(false)
-  // const [mailLogueado, setMailLogueado] = useState(null)   // ← desactivado: se usaba para guardar el mail del usuario logueado
   const [nombreSolicitante, setNombreSolicitante] = useState('')
   const [nombreError, setNombreError] = useState(false)
 
@@ -109,69 +219,31 @@ export default function Indumentaria() {
       .then(texto => setJugadoras(parsearCSV(texto)))
   }, [])
 
-  // ← desactivado: este useEffect buscaba las jugadoras asociadas al mail del usuario logueado
-  // useEffect(() => {
-  //   if (!usuario || jugadoras.length === 0) return
-  //   const mail = usuario.email?.toLowerCase().trim()
-  //   setMailLogueado(mail)
-  //   const coinciden = jugadoras.filter(j =>
-  //     (j.mail?.toLowerCase().trim() === mail ||
-  //     j.mail2?.toLowerCase().trim() === mail) &&
-  //     j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
-  //   )
-  //   setJugadorasDelUsuario(coinciden)
-  // }, [usuario, jugadoras])
-
   const jugadorasFiltradas = jugadoras.filter(j =>
     j.categoria?.trim().toLowerCase() === categoriaSeleccionada?.trim().toLowerCase() &&
     j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
   )
 
-  const agregarAlCarrito = (producto, talle) => {
+  const agregarAlCarrito = (producto, talle, numeroPersonalizacion) => {
     setCarrito(prev => {
-      const key = `${producto.id}-${talle}`
+      const key = `${producto.id}-${talle}-${numeroPersonalizacion ?? ''}`
       const existe = prev.find(i => i.key === key)
       if (existe) return prev.map(i => i.key === key ? { ...i, cantidad: i.cantidad + 1 } : i)
-      return [...prev, { key, id: producto.id, nombre: producto.nombre, precio: producto.precio, talle: talle || 'Único', cantidad: 1 }]
+      return [...prev, {
+        key,
+        id: producto.id,
+        nombre: producto.nombre,
+        precio: producto.precio,
+        talle: talle || 'Único',
+        cantidad: 1,
+        numero: numeroPersonalizacion ?? null,
+      }]
     })
   }
 
   const total = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0)
   const totalPrendas = carrito.reduce((a, i) => a + i.cantidad, 0)
 
-  // ← handleConfirmarResumen reemplazado: antes verificaba si había usuario logueado y hacía login con Google si no había
-  // const handleConfirmarResumen = async () => {
-  //   setMostrarResumen(false)
-  //   let mailUsuario = usuario?.email?.toLowerCase().trim() || mailLogueado
-  //   if (!usuario) {
-  //     alert('Para confirmar el pedido necesitás iniciar sesión con tu cuenta de Google del club.')
-  //     try {
-  //       const resultado = await loginConGoogle()
-  //       mailUsuario = resultado.user.email.toLowerCase().trim()
-  //       setMailLogueado(mailUsuario)
-  //     } catch (err) {
-  //       if (err.message === 'no_autorizado') {
-  //         alert('Tu cuenta de Google no está asociada a ninguna jugadora de CEVVEN. Usá el mail registrado en el club.')
-  //       }
-  //       return
-  //     }
-  //   }
-  //   const coinciden = jugadoras.filter(j =>
-  //     (j.mail?.toLowerCase().trim() === mailUsuario ||
-  //     j.mail2?.toLowerCase().trim() === mailUsuario) &&
-  //     j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
-  //   )
-  //   if (coinciden.length === 1) {
-  //     setJugadoraSeleccionada(coinciden[0])
-  //     setCategoriaSeleccionada(coinciden[0].categoria?.trim())
-  //     setPaso('cedula')
-  //   } else if (coinciden.length > 1) {
-  //     setJugadorasDelUsuario(coinciden)
-  //     setPaso('jugadora-hermanas')
-  //   } else {
-  //     setPaso('categoria')
-  //   }
-  // }
   const handleConfirmarResumen = () => {
     setMostrarResumen(false)
     setPaso('identificacion')
@@ -181,32 +253,54 @@ export default function Indumentaria() {
     setGuardando(true)
     const fecha = new Date().toLocaleDateString('es-UY')
 
+    const productosNombres = productos
+      .filter(p => !p.proximamente)
+      .map(p => p.nombre)
+
+    const agrupado = {}
+    productosNombres.forEach(nombre => { agrupado[nombre] = [] })
+
+    carrito.forEach(item => {
+      if (agrupado[item.nombre] !== undefined) {
+        agrupado[item.nombre].push(item)
+      }
+    })
+
+    if (totalPrendas >= 2) {
+      const cuellitosEnCarrito = agrupado['Cuellito Polar'] || []
+      if (cuellitosEnCarrito.length === 0) {
+        agrupado['Cuellito Polar'] = [{ cantidad: 1, talle: 'Único', numero: null, regalo: true }]
+      } else {
+        agrupado['Cuellito Polar'][0] = {
+          ...agrupado['Cuellito Polar'][0],
+          cantidad: agrupado['Cuellito Polar'][0].cantidad + 1,
+        }
+      }
+    }
+
+    const formatearGrupo = (items) => {
+      if (!items || items.length === 0) return ''
+      return items.map(item => {
+        const base = item.talle === 'Único'
+          ? `${item.cantidad}`
+          : `${item.cantidad}-${item.talle}`
+        const extra = item.numero ? `(#${item.numero})` : ''
+        return base + extra
+      }).join(' | ')
+    }
+
     const fila = {
       fecha,
       categoria: categoriaSeleccionada,
       jugadora: `${jugadora.nombre} ${jugadora.apellido}`,
-      'Pantalón Largo XS': 0, 'Pantalón Largo S': 0, 'Pantalón Largo M': 0,
-      'Pantalón Largo L': 0, 'Pantalón Largo XL': 0, 'Pantalón Largo XXL': 0,
-      'Canguro XS': 0, 'Canguro S': 0, 'Canguro M': 0,
-      'Canguro L': 0, 'Canguro XL': 0, 'Canguro XXL': 0,
-      'Medio Cierre Polar XS': 0, 'Medio Cierre Polar S': 0, 'Medio Cierre Polar M': 0,
-      'Medio Cierre Polar L': 0, 'Medio Cierre Polar XL': 0, 'Medio Cierre Polar XXL': 0,
-      'Camperón de Invierno XS': 0, 'Camperón de Invierno S': 0, 'Camperón de Invierno M': 0,
-      'Camperón de Invierno L': 0, 'Camperón de Invierno XL': 0, 'Camperón de Invierno XXL': 0,
-      'Remera de Entrenamiento XS': 0, 'Remera de Entrenamiento S': 0, 'Remera de Entrenamiento M': 0,
-      'Remera de Entrenamiento L': 0, 'Remera de Entrenamiento XL': 0, 'Remera de Entrenamiento XXL': 0,
-      'Cuellito Polar': 0,
-      total,
+      solicitante: nombreSolicitante,
     }
 
-    carrito.forEach(item => {
-      const col = item.talle === 'Único' ? item.nombre : `${item.nombre} ${item.talle}`
-      if (fila[col] !== undefined) fila[col] = item.cantidad
+    productosNombres.forEach(nombre => {
+      fila[nombre] = formatearGrupo(agrupado[nombre])
     })
 
-    if (totalPrendas >= 2) {
-      fila['Cuellito Polar'] = (fila['Cuellito Polar'] || 0) + 1
-    }
+    fila['total'] = total
 
     try {
       await fetch(APPS_SCRIPT_URL, {
@@ -219,12 +313,11 @@ export default function Indumentaria() {
       console.error('Error guardando pedido:', err)
     }
 
-    const resumenLineas = carrito.map(item =>
-      `- ${item.nombre}${item.talle !== 'Único' ? ` (${item.talle})` : ''}: ${item.cantidad} x $${item.precio} = $${(item.cantidad * item.precio).toLocaleString()}`
-    ).join('\n')
+    const resumenLineas = carrito.map(item => {
+      const personaliz = item.numero ? ` — Número: #${item.numero}` : ''
+      return `- ${item.nombre}${item.talle !== 'Único' ? ` (${item.talle})` : ''}${personaliz}: ${item.cantidad} x $${item.precio} = $${(item.cantidad * item.precio).toLocaleString()}`
+    }).join('\n')
 
-    // ← mailJugadora reemplazado: antes usaba mailLogueado o usuario?.email como primera opción
-    // const mailJugadora = mailLogueado || usuario?.email?.trim() || jugadora.mail?.trim() || jugadora.mail2?.trim()
     const mails = [
       jugadora.mail?.trim(),
       jugadora.mail2?.trim()
@@ -252,28 +345,11 @@ export default function Indumentaria() {
     setPaso('confirmado')
   }
 
-  // ← verificarYConfirmar desactivado: antes verificaba la cédula en el paso 'cedula' (después de identificar la jugadora por mail)
-  // Ahora la cédula se verifica en el paso 'identificacion' directamente
-  // const verificarYConfirmar = async () => {
-  //   setVerificando(true)
-  //   setCedulaError(false)
-  //   const cedulaLimpia = cedulaIngresada.replace(/[.\-\s]/g, '').trim()
-  //   const cedulaJugadora = jugadoraSeleccionada.cedula?.replace(/[.\-\s]/g, '').trim()
-  //   if (cedulaLimpia !== cedulaJugadora) {
-  //     setCedulaError(true)
-  //     setVerificando(false)
-  //     return
-  //   }
-  //   setVerificando(false)
-  //   await confirmarPedidoConJugadora(jugadoraSeleccionada)
-  // }
-
   const resetear = () => {
     setPaso('tienda')
     setCarrito([])
     setCategoriaSeleccionada(null)
     setJugadoraSeleccionada(null)
-    // setJugadorasDelUsuario([])   // ← desactivado: se usaba para limpiar jugadoras del usuario logueado
     setCedulaIngresada('')
     setCedulaError(false)
     setNombreSolicitante('')
@@ -317,7 +393,11 @@ export default function Indumentaria() {
               <div className="indumentaria__resumen">
                 {carrito.map(item => (
                   <div key={item.key} className="indumentaria__resumen-fila">
-                    <span>{item.nombre} {item.talle !== 'Único' ? `— ${item.talle}` : ''}</span>
+                    <span>
+                      {item.nombre}
+                      {item.talle !== 'Único' ? ` — ${item.talle}` : ''}
+                      {item.numero ? ` — #${item.numero}` : ''}
+                    </span>
                     <span>{item.cantidad} x ${item.precio}</span>
                     <span>${(item.cantidad * item.precio).toLocaleString()}</span>
                     <button className="indumentaria__resumen-borrar"
@@ -345,7 +425,7 @@ export default function Indumentaria() {
           </div>
         )}
 
-        {/* PASO IDENTIFICACIÓN — nuevo: reemplaza el login con Google */}
+        {/* PASO IDENTIFICACIÓN */}
         {paso === 'identificacion' && (
           <div className="indumentaria__paso">
             <button className="indumentaria__volver" onClick={() => { setPaso('tienda'); setMostrarResumen(true) }}>← Volver</button>
@@ -404,25 +484,7 @@ export default function Indumentaria() {
           </div>
         )}
 
-        {/* PASO HERMANAS — desactivado: se usaba cuando había más de una jugadora asociada al mail del usuario
-        {paso === 'jugadora-hermanas' && (
-          <div className="indumentaria__paso">
-            <button className="indumentaria__volver" onClick={() => setPaso('tienda')}>← Volver</button>
-            <h2 className="indumentaria__titulo">¿Para quién es el pedido?</h2>
-            <p className="indumentaria__subtitulo">Encontramos más de una jugadora asociada a tu cuenta</p>
-            <div className="indumentaria__categorias">
-              {jugadorasDelUsuario.map((j, i) => (
-                <button key={i} className="indumentaria__cat-btn"
-                  onClick={() => { setJugadoraSeleccionada(j); setCategoriaSeleccionada(j.categoria?.trim()); setPaso('cedula') }}>
-                  {j.nombre} {j.apellido}
-                  <span style={{ fontSize: '0.85rem', opacity: 0.7, marginLeft: '6px' }}>— {j.categoria}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )} */}
-
-        {/* PASO CATEGORIA — se mantiene para uso futuro o categorías */}
+        {/* PASO CATEGORIA — se mantiene para uso futuro */}
         {paso === 'categoria' && (
           <div className="indumentaria__paso">
             <button className="indumentaria__volver" onClick={() => setPaso('tienda')}>← Volver</button>
@@ -438,7 +500,7 @@ export default function Indumentaria() {
           </div>
         )}
 
-        {/* PASO JUGADORA — se mantiene para uso futuro o categorías */}
+        {/* PASO JUGADORA — se mantiene para uso futuro */}
         {paso === 'jugadora' && (
           <div className="indumentaria__paso">
             <button className="indumentaria__volver" onClick={() => setPaso('categoria')}>← Volver</button>
@@ -462,37 +524,6 @@ export default function Indumentaria() {
             )}
           </div>
         )}
-
-        {/* PASO CEDULA — desactivado en el flujo normal, se mantiene para uso futuro
-        {paso === 'cedula' && jugadoraSeleccionada && (
-          <div className="indumentaria__paso">
-            <button className="indumentaria__volver" onClick={() => {
-              if (jugadorasDelUsuario.length > 1) setPaso('jugadora-hermanas')
-              else if (jugadorasDelUsuario.length === 1) setPaso('tienda')
-              else setPaso('jugadora')
-            }}>← Volver</button>
-            <h2 className="indumentaria__titulo">Verificación</h2>
-            <p className="indumentaria__subtitulo">
-              Ingresá la cédula de <strong>{jugadoraSeleccionada.nombre} {jugadoraSeleccionada.apellido}</strong> para confirmar
-            </p>
-            <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '1rem' }}>
-              Sin puntos ni guiones. Ej: 1.234.567-8 → 12345678
-            </p>
-            <input type="text"
-              className={`indumentaria__cedula-input ${cedulaError ? 'indumentaria__cedula-input--error' : ''}`}
-              placeholder="12345678"
-              value={cedulaIngresada}
-              onChange={(e) => { setCedulaIngresada(e.target.value); setCedulaError(false) }}
-            />
-            {cedulaError && <p className="indumentaria__cedula-error">❌ Cédula incorrecta. Intentá de nuevo.</p>}
-            <div style={{ marginTop: '1.5rem' }}>
-              <button className="indumentaria__btn-pedir" onClick={verificarYConfirmar}
-                disabled={guardando || verificando || !cedulaIngresada}>
-                {guardando ? 'GUARDANDO...' : verificando ? 'VERIFICANDO...' : 'CONFIRMAR PEDIDO ✓'}
-              </button>
-            </div>
-          </div>
-        )} */}
 
         {/* CONFIRMADO */}
         {paso === 'confirmado' && (
