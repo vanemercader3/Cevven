@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './home.css'
 
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=0&single=true&output=csv'
@@ -29,8 +29,8 @@ const fotos = [
   { img: '/pedidos/vino.jpg',             nombre: 'Vinos',            contain: true },
   { img: '/pedidos/mila-pollo.jpg',       nombre: 'Milanesa de Pollo',contain: true },
   { img: '/pedidos/alfa-choco-negro.jpg', nombre: 'Alfajores Negro',  contain: true },
-  { img: '/pedidos/barritas.jpg',         nombre: 'Barritas',         contain: true },  // ← nueva
-  { img: '/pedidos/box-cafeteria.jpg',    nombre: 'Box Cafetería',    contain: true },  // ← nueva
+  { img: '/pedidos/barritas.jpg',         nombre: 'Barritas',         contain: true },
+  { img: '/pedidos/box-cafeteria.jpg',    nombre: 'Box Cafetería',    contain: true },
 ]
 
 function parsearCSV(texto) {
@@ -55,10 +55,36 @@ function nombreALogo(nombre) {
     + '.jpg'
 }
 
+function useAnimarAlVerlo() {
+  const ref = useRef(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add('visible')
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.15 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+  return ref
+}
+
 export default function Home() {
   const [actual, setActual] = useState(0)
   const [fixtures, setFixtures] = useState([])
   const [fotosOffset, setFotosOffset] = useState(0)
+
+  const refFixture = useAnimarAlVerlo()
+  const refNoticias = useAnimarAlVerlo()
+  const refIndumentaria = useAnimarAlVerlo()
+  const refPedidos = useAnimarAlVerlo()
+  const refSponsors = useAnimarAlVerlo()
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -79,9 +105,7 @@ export default function Home() {
       .then(res => res.text())
       .then(texto => {
         const partidos = parsearCSV(texto)
-        const fixture = partidos.filter(p =>
-          p.mostrarEnHome === 'TRUE'
-        ).slice(0, 2)
+        const fixture = partidos.filter(p => p.mostrarEnHome === 'TRUE').slice(0, 2)
         setFixtures(fixture)
       })
       .catch(err => console.error('Error cargando fixture:', err))
@@ -91,6 +115,7 @@ export default function Home() {
   const noticiasSecundarias = noticias.filter(n => !n.destacada)
   const isMobile = window.innerWidth <= 768
   const fotosVisibles = [...fotos.slice(fotosOffset), ...fotos.slice(0, fotosOffset)].slice(0, isMobile ? 4 : 5)
+
   return (
     <>
       <main>
@@ -102,10 +127,7 @@ export default function Home() {
               src={img.src}
               alt={`Slide ${i + 1}`}
               className={`hero__img ${i === actual ? 'hero__img--active' : ''}`}
-              style={{ 
-                objectPosition: img.position,
-                objectFit: img.contain ? 'contain' : 'cover'
-              }}
+              style={{ objectPosition: img.position, objectFit: img.contain ? 'contain' : 'cover' }}
             />
           ))}
           <div className="hero__dots">
@@ -120,7 +142,7 @@ export default function Home() {
         </section>
 
         {/* FIXTURE */}
-        <section className="fixture">
+        <section className="fixture animar" ref={refFixture}>
           <div className="fixture__title">
             <h2>FIXTURE<br />FIN DE SEMANA</h2>
             <a href="/partidos">MÁS PARTIDOS ❯</a>
@@ -140,11 +162,7 @@ export default function Home() {
                     </div>
                     <span className="fixture__vs">VS</span>
                     <div className="fixture__logo-wrap">
-                      <img
-                        src={nombreALogo(f.rival)}
-                        alt={f.rival}
-                        onError={(e) => { e.target.src = '/logo.png' }}
-                      />
+                      <img src={nombreALogo(f.rival)} alt={f.rival} onError={(e) => { e.target.src = '/logo.png' }} />
                       <span className="fixture__logo-nombre">{f.rival}</span>
                     </div>
                   </div>
@@ -156,7 +174,7 @@ export default function Home() {
         </section>
 
         {/* NOTICIAS */}
-        <section className="home-noticias">
+        <section className="home-noticias animar" ref={refNoticias}>
           <h2 className="home-noticias__titulo">NOTICIAS</h2>
           <div className="home-noticias__grid">
             <a href="/noticias" className="home-noticias__destacada">
@@ -183,7 +201,7 @@ export default function Home() {
         </section>
 
         {/* BANNER INDUMENTARIA */}
-        <section className="home-indumentaria">
+        <section className="home-indumentaria animar" ref={refIndumentaria}>
           <div className="home-indumentaria__content">
             <h2 className="home-indumentaria__titulo">INDUMENTARIA</h2>
             <p className="home-indumentaria__sub">Entrená, competí, representá.</p>
@@ -200,7 +218,7 @@ export default function Home() {
         </section>
 
         {/* PEDIDOS */}
-        <section className="home-pedidos">
+        <section className="home-pedidos animar" ref={refPedidos}>
           <div className="home-pedidos__content">
             <h2 className="home-pedidos__titulo">PEDIDOS</h2>
             <p className="home-pedidos__sub">Apoyá a las chicas comprando nuestros productos</p>
@@ -209,9 +227,9 @@ export default function Home() {
           <div className="home-pedidos__fotos">
             {fotosVisibles.map((p, i) => (
               <a key={`${fotosOffset}-${i}`} href="/pedidos" className="home-pedidos__foto-wrap">
-                <img 
-                  src={p.img} 
-                  alt={p.nombre} 
+                <img
+                  src={p.img}
+                  alt={p.nombre}
                   className={`home-pedidos__foto ${p.contain ? 'home-pedidos__foto--contain' : ''}`}
                 />
                 <span className="home-pedidos__foto-nombre">{p.nombre}</span>
@@ -221,7 +239,7 @@ export default function Home() {
         </section>
 
         {/* SPONSORS */}
-        <section className="home-sponsors">
+        <section className="home-sponsors animar" ref={refSponsors}>
           <p className="home-sponsors__label">NUESTROS SPONSORS</p>
           <div className="home-sponsors__logos">
             <img src="/sponsors/neu-millan.png" alt="Neu Millán" className="home-sponsors__logo" />
