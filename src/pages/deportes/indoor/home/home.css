@@ -591,7 +591,8 @@
   /* INDUMENTARIA */
   .home-indumentaria { padding: 2rem 1.5rem; margin-top: 1.5rem; min-height: 220px; }
   .home-indumentaria__titulo { font-size: 2.5rem; }
-  .home-indumentaria__img { height: 160px; right: 0; opacity: 0.35; }
+  .home-indumentaria__img { height: 160px; right: 0; opacity: 0.35; bottom: 50%;
+  transform: translateY(50%);}
   .home-indumentaria__deco1,
   .home-indumentaria__deco2,
   .home-indumentaria__deco3,

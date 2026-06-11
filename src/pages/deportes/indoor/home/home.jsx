@@ -67,7 +67,7 @@ function useAnimarAlVerlo() {
           observer.disconnect()
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.05 }
     )
     observer.observe(el)
     return () => observer.disconnect()
