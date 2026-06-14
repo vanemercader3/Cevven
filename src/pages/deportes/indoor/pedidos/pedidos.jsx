@@ -270,7 +270,7 @@ export default function Pedidos() {
       'Emp Espinaca (cod 127)': cantidades['emp_esp'] || 0,
       'Emp Queso y Aceituna (cod 116)': cantidades['emp_qya'] || 0,
       'Emp Jamon y Queso (cod 113)': cantidades['emp_jyq'] || 0,
-      'Emp Panceta y Cebolla (cod 120)': cantidades['emp_pyc'] || 0,
+      'Emp Panceta Puerro y Queso (cod 120)': cantidades['emp_pyc'] || 0,
       'Emp Pollo con Champi (cod 111)': cantidades['emp_polloch'] || 0,
       'Emp Integral (cod 117)': cantidades['emp_int'] || 0,
       'Emp Chilena': cantidades['emp_chil'] || 0,
