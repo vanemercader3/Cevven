@@ -7,7 +7,7 @@ import BackButton from '../../../../components/backButton/backButton'
 import emailjs from '@emailjs/browser'
 
 const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbze2DdjXC_7DSnTJpaudD_zV6QJO9Z3bEKacpWJQmo_3vD_uT1slQp0LY4g8l8IQO47/exec'
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0fMCKVhwObqTGS_T2Ju3HX6ACrRR-y4ObgScg-mHCKvZ4OgGYfe1nlTKhB8oqsHU7/exec'
 
 const talles = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
 const categorias = ['Infantiles', 'U13', 'U14', 'U15', 'U16', 'U18', 'U21', 'Senior', 'Inter Masc', 'Plus 35', 'Entrenadores']
