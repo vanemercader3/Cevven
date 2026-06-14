@@ -54,7 +54,7 @@ const productos = [
       { id: 'emp_esp',       nombre: 'Emp. Espinaca (Cod. 127)',            precio: 430, unidad: 'x5 unid.' },
       { id: 'emp_qya',       nombre: 'Emp. Queso y Aceitunas (Cod. 116)',    precio: 430, unidad: 'x5 unid.' },
       { id: 'emp_jyq',       nombre: 'Emp. Jamón y Queso (Cod. 113)',       precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_pyc',       nombre: 'Emp. Panceta y Cebolla (Cod. 120)',   precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_pyc',       nombre: 'Emp. Panceta Puerro y Queso (cod 120)',   precio: 430, unidad: 'x5 unid.' },
       { id: 'emp_polloch',   nombre: 'Emp. Pollo con Champi (Cod. 111)',    precio: 430, unidad: 'x5 unid.' },
       { id: 'emp_int',       nombre: 'Emp. Integral (Cod. 117)',            precio: 430, unidad: 'x5 unid.' },
       { id: 'emp_chil',      nombre: 'Emp. Chilena',             precio: 430, unidad: 'x5 unid.' },
