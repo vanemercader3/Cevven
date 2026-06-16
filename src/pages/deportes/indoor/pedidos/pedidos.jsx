@@ -57,7 +57,7 @@ const productos = [
       { id: 'emp_pyc',       nombre: 'Emp. Panceta, Puerro y Queso (cod 120)',   precio: 430, unidad: 'x5 unid.' },
       { id: 'emp_polloch',   nombre: 'Emp. Pollo con Champi (Cod. 111)',    precio: 430, unidad: 'x5 unid.' },
       { id: 'emp_int',       nombre: 'Emp. Integral (Cod. 117)',            precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_chil',      nombre: 'Emp. Chilena',             precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_chil',      nombre: 'Emp. Chilena (Cod. 106)',             precio: 430, unidad: 'x5 unid.' },
     ]
   },
   {
