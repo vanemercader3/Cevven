@@ -34,30 +34,30 @@ const productos = [
     items: [
       { id: 'queso_rallF', nombre: 'Queso Rallado Artesano Fino',     precio: 190, unidad: '150gr' },
       { id: 'queso_rallG', nombre: 'Queso Rallado Artesano Grueso',     precio: 190, unidad: '150gr' },
-      { id: 'tal_esp',    nombre: 'Tallarines Espinaca ', precio: 275, unidad: '1 kg' },
-      { id: 'tal_yema',   nombre: 'Tallarines Yema ',       precio: 275, unidad: '1 kg' },
-      { id: 'noquis',     nombre: 'Ñoquis',                      precio: 275, unidad: '1 kg' },
-      { id: 'rav_verd',   nombre: 'Ravioles Verdura (150 unid.)',   precio: 330, unidad: 'pack' },
-      { id: 'rav_jq',     nombre: 'Ravioles J&Q (150 unid.)',      precio: 330, unidad: 'pack' },
-      { id: 'rav_ric',    nombre: 'Ravioles Ricotta (150 unid.)',   precio: 330, unidad: 'pack' },
+      { id: 'tal_esp',    nombre: 'Tallarines Espinaca ', precio: 295, unidad: '1 kg' },
+      { id: 'tal_yema',   nombre: 'Tallarines Yema ',       precio: 295, unidad: '1 kg' },
+      { id: 'noquis',     nombre: 'Ñoquis',                      precio: 295, unidad: '1 kg' },
+      { id: 'rav_verd',   nombre: 'Ravioles Verdura (150 unid.)',   precio: 350, unidad: 'pack' },
+      { id: 'rav_jq',     nombre: 'Ravioles J&Q (150 unid.)',      precio: 350, unidad: 'pack' },
+      { id: 'rav_ric',    nombre: 'Ravioles Ricotta (150 unid.)',   precio: 350, unidad: 'pack' },
     ]
   },
   {
     id: 'empanadas', nombre: 'Empanadas', emoji: '🥟',
     items: [
-      { id: 'emp_carne_ac',  nombre: 'Emp. Carne con Aceitunas (Cod. 101)', precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_carne_sin', nombre: 'Emp. Carne sin Aceitunas (Cod. 104)',  precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_pollo',     nombre: 'Emp. Pollo (Cod. 110)',               precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_qyc',       nombre: 'Emp. Queso y Cebolla (Cod. 118)',     precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_4q',        nombre: 'Emp. Cuatro Quesos (Cod. 122)',       precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_cap',       nombre: 'Emp. Capresse (Cod. 123)',            precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_esp',       nombre: 'Emp. Espinaca (Cod. 127)',            precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_qya',       nombre: 'Emp. Queso y Aceitunas (Cod. 116)',    precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_jyq',       nombre: 'Emp. Jamón y Queso (Cod. 113)',       precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_pyc',       nombre: 'Emp. Panceta, Puerro y Queso (cod 120)',   precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_polloch',   nombre: 'Emp. Pollo con Champi (Cod. 111)',    precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_int',       nombre: 'Emp. Integral (Cod. 117)',            precio: 430, unidad: 'x5 unid.' },
-      { id: 'emp_chil',      nombre: 'Emp. Chilena (Cod. 106)',             precio: 430, unidad: 'x5 unid.' },
+      { id: 'emp_carne_ac',  nombre: 'Emp. Carne con Aceitunas (Cod. 101)', precio: 450, unidad: 'x5 unid.' },
+      { id: 'emp_carne_sin', nombre: 'Emp. Carne sin Aceitunas (Cod. 104)',  precio: 450, unidad: 'x5 unid.' },
+      { id: 'emp_pollo',     nombre: 'Emp. Pollo (Cod. 110)',               precio: 450, unidad: 'x5 unid.' },
+      { id: 'emp_qyc',       nombre: 'Emp. Queso y Cebolla (Cod. 118)',     precio: 450, unidad: 'x5 unid.' },
+      { id: 'emp_4q',        nombre: 'Emp. Cuatro Quesos (Cod. 122)',       precio: 450, unidad: 'x5 unid.' },
+      { id: 'emp_cap',       nombre: 'Emp. Capresse (Cod. 123)',            precio: 450, unidad: 'x5 unid.' },
+      { id: 'emp_esp',       nombre: 'Emp. Espinaca (Cod. 127)',            precio: 450, unidad: 'x5 unid.' },
+      { id: 'emp_qya',       nombre: 'Emp. Queso y Aceitunas (Cod. 116)',    precio: 450, unidad: 'x5 unid.' },
+      { id: 'emp_jyq',       nombre: 'Emp. Jamón y Queso (Cod. 113)',       precio: 450, unidad: 'x5 unid.' },
+      { id: 'emp_pyc',       nombre: 'Emp. Panceta, Puerro y Queso (cod 120)',   precio: 450, unidad: 'x5 unid.' },
+      { id: 'emp_polloch',   nombre: 'Emp. Pollo con Champi (Cod. 111)',    precio: 450, unidad: 'x5 unid.' },
+      { id: 'emp_int',       nombre: 'Emp. Integral (Cod. 117)',            precio: 450, unidad: 'x5 unid.' },
+      { id: 'emp_chil',      nombre: 'Emp. Chilena (Cod. 106)',             precio: 450, unidad: 'x5 unid.' },
     ]
   },
   {
@@ -77,7 +77,7 @@ const productos = [
   {
     id: 'vinos', nombre: 'Vinos', emoji: '🍷',
     items: [
-      { id: 'vino', nombre: 'Pack Vinos x2', precio: 390, unidad: 'pack' },
+      { id: 'vino', nombre: 'Pack Vino & Grapamiel', precio: 390, unidad: 'pack' },
     ]
   },
   {
@@ -278,7 +278,8 @@ export default function Pedidos() {
       'Alf Chocolate Negro': cantidades['alf_neg'] || 0,
       'Alf Chocolate Blanco': cantidades['alf_blanc'] || 0,
       'Alf Mixtos': cantidades['alf_mixto'] || 0,
-      'Pack Vinos': cantidades['vino'] || 0,
+      //'Pack Vinos': cantidades['vino'] || 0,
+      'Pack Vino & Grapamiel': cantidades['vino'] || 0,
       'Pollo al Spiedo': cantidades['pollo_sp'] || 0,
       'Milanesa de Pollo': cantidades['mila_pollo'] || 0,
       'Barritas Mixtas': cantidades['barr_mixta'] || 0,
