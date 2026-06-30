@@ -531,15 +531,9 @@ export default function Indumentaria() {
             <div className="indumentaria__confirmado-card">
               <span className="indumentaria__confirmado-icon">✅</span>
               <h2>¡Pedido confirmado!</h2>
-              <p>El total es <strong>${total.toLocaleString()}</strong></p>
-              <p>Enviá el comprobante a:</p>
+              <p>Gracias por tu compra</p>
+              <p>No olvides mandar el comprobante a:</p>
               <p className="pedidos__telefono">📱 +598 99 027 944 — Leo Parrilla</p>
-              <div className="pedidos__transferencia">
-                <p><strong>Datos para transferir:</strong></p>
-                <p>Banco: B.R.O.U.</p>
-                <p>Número de cuenta: 000420453-00001</p>
-                <p>Titular: Leonardo Parrilla</p>
-              </div>
               <button className="indumentaria__btn-pedir" onClick={resetear}>HACER OTRO PEDIDO</button>
             </div>
           </div>

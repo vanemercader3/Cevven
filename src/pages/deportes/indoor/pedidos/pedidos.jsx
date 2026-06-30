@@ -77,7 +77,8 @@ const productos = [
   {
     id: 'vinos', nombre: 'Vinos', emoji: '🍷',
     items: [
-      { id: 'vino', nombre: 'Pack Vino & Grapamiel', precio: 390, unidad: 'pack' },
+      { id: 'pack_vinovino', nombre: 'Pack Vino & Vino',       precio: 390, unidad: 'pack' },
+      { id: 'pack_vinograpa', nombre: 'Pack Vino & Grapamiel', precio: 390, unidad: 'pack' },
     ]
   },
   {
@@ -278,8 +279,8 @@ export default function Pedidos() {
       'Alf Chocolate Negro': cantidades['alf_neg'] || 0,
       'Alf Chocolate Blanco': cantidades['alf_blanc'] || 0,
       'Alf Mixtos': cantidades['alf_mixto'] || 0,
-      //'Pack Vinos': cantidades['vino'] || 0,
-      'Pack Vino & Grapamiel': cantidades['vino'] || 0,
+      'Pack Vino & Vino': cantidades['pack_vinovino'] || 0,
+      'Pack Vino & Grapamiel': cantidades['pack_vinograpa'] || 0,
       'Pollo al Spiedo': cantidades['pollo_sp'] || 0,
       'Milanesa de Pollo': cantidades['mila_pollo'] || 0,
       'Barritas Mixtas': cantidades['barr_mixta'] || 0,
@@ -616,15 +617,9 @@ export default function Pedidos() {
             <div className="pedidos__confirmado-card">
               <span className="pedidos__confirmado-icon">✅</span>
               <h2>¡Pedido confirmado!</h2>
-              <p>El total es <strong>${total.toLocaleString()}</strong></p>
-              <p>Enviá el comprobante a:</p>
+              <p>Gracias por tu compra</p>
+              <p>No olvides mandar el comprobante a:</p>
               <p className="pedidos__telefono">📱 +598 99 027 944 — Leo Parrilla</p>
-              <div className="pedidos__transferencia">
-                <p><strong>Datos para transferir:</strong></p>
-                <p>Banco: B.R.O.U.</p>
-                <p>Número de cuenta: 000420453-00001</p>
-                <p>Titular: Leonardo Parrilla</p>
-              </div>
               <button className="pedidos__btn-pedir" onClick={cancelar}>HACER OTRO PEDIDO</button>
             </div>
           </div>
