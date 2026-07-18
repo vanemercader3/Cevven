@@ -132,6 +132,16 @@
 
 .pedidos__vacio { color: #aaa; font-style: italic; }
 
+/* ── LAYOUT 2 COLUMNAS (productos + panel) ── */
+.pedidos__layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.pedidos__layout-main { min-width: 0; }
+
 /* productos */
 .pedidos__productos {
   display: flex;
@@ -234,6 +244,153 @@
   min-width: 24px;
   text-align: center;
   color: var(--blue);
+}
+
+/* ── PANEL LATERAL ── */
+.pedidos__panel {
+  position: sticky;
+  top: 1.5rem;
+  border: 2px solid #e0e6f5;
+  border-radius: 14px;
+  background: #f7f9ff;
+  overflow: hidden;
+}
+
+/* el toggle solo se usa en mobile */
+.pedidos__panel-toggle { display: none; }
+
+.pedidos__panel-body {
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+}
+
+.pedidos__panel-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pedidos__panel-titulo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.3rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 2px solid #e0e6f5;
+}
+
+.pedidos__panel-vacio {
+  font-size: 0.85rem;
+  color: #999;
+  font-style: italic;
+  margin: 0;
+}
+
+.pedidos__panel-error {
+  font-size: 0.85rem;
+  color: var(--red);
+  margin: 0;
+}
+
+.pedidos__panel-fila {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.5rem;
+  align-items: baseline;
+  font-size: 0.85rem;
+  color: #444;
+  padding: 0.15rem 0;
+}
+
+.pedidos__panel-cant {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  color: var(--purple);
+}
+
+.pedidos__panel-nombre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pedidos__panel-precio {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  color: var(--blue);
+  white-space: nowrap;
+}
+
+.pedidos__panel-subtotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed #ccd6ee;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--blue);
+}
+
+.pedidos__panel-previo {
+  border: 1px solid #e0e6f5;
+  border-radius: 8px;
+  background: white;
+  margin-bottom: 0.4rem;
+  overflow: hidden;
+}
+
+.pedidos__panel-previo-head {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--blue);
+}
+
+.pedidos__panel-previo-head:hover { background: #f0f4ff; }
+
+.pedidos__panel-previo-items {
+  padding: 0.4rem 0.7rem 0.6rem;
+  border-top: 1px solid #eef1f9;
+}
+
+.pedidos__panel-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background: var(--blue);
+  color: white;
+  border-radius: 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 1.15rem;
+}
+
+.pedidos__panel-nota {
+  font-size: 0.75rem;
+  color: #999;
+  font-style: italic;
+  margin: 0;
+  line-height: 1.4;
 }
 
 /* barra total fija */
@@ -531,6 +688,11 @@
   margin: 0;
 }
 
+/* ── TABLET ── */
+@media (max-width: 1024px) {
+  .pedidos__layout { grid-template-columns: 1fr 280px; gap: 1.2rem; }
+}
+
 /* ── MOBILE ── */
 @media (max-width: 768px) {
   .pedidos {
@@ -565,6 +727,40 @@
   }
 
   .pedidos__select-wrap { max-width: 100%; }
+
+  /* en mobile el panel va arriba y colapsado */
+  .pedidos__layout {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1.2rem;
+  }
+
+  .pedidos__panel {
+    position: static;
+    margin-bottom: 0.5rem;
+  }
+
+  .pedidos__panel-toggle {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.9rem 1rem;
+    background: var(--blue);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+
+  .pedidos__panel-body { display: none; }
+
+  .pedidos__panel--abierto .pedidos__panel-body {
+    display: flex;
+    max-height: none;
+  }
 
   .pedidos__item {
     flex-direction: column;

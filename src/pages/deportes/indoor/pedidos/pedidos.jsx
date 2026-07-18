@@ -7,6 +7,8 @@ import emailjs from '@emailjs/browser'
 // import { loginConGoogle } from '../../firebase'       // ← desactivado: antes se usaba para login con Google
 
 const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
+// ⚠️ Verificar que el gid sea el de la hoja "pedidos"
+const PEDIDOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=327502795&single=true&output=csv'
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0fMCKVhwObqTGS_T2Ju3HX6ACrRR-y4ObgScg-mHCKvZ4OgGYfe1nlTKhB8oqsHU7/exec'
 const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1223710762&single=true&output=csv'
 const EMAILJS_SERVICE = 'service_eus8zan'
@@ -113,6 +115,59 @@ const productos = [
   },
 ]
 
+/* ─────────────────────────────────────────────────────────────
+   MAPA id del producto ↔ nombre EXACTO de la columna en la hoja
+   "pedidos". Tiene que coincidir letra por letra con los headers
+   que se mandan en confirmarPedido(). Si agregás un producto
+   nuevo, agregalo también acá.
+   ───────────────────────────────────────────────────────────── */
+const MAPA_COLUMNAS = {
+  tal_esp:       'Tallarines Espinaca',
+  tal_yema:      'Tallarines Yema',
+  noquis:        'Ñoquis',
+  rav_verd:      'Ravioles Verdura',
+  rav_jq:        'Ravioles J&Q',
+  rav_ric:       'Ravioles Ricotta',
+  emp_carne_ac:  'Emp Carne con Aceitunas (cod 101)',
+  emp_carne_sin: 'Emp Carne sin Aceituna (cod 104)',
+  emp_pollo:     'Emp Pollo (cod 110)',
+  emp_qyc:       'Emp Queso y Cebolla (cod 118)',
+  emp_4q:        'Emp Cuatro Quesos (cod 122)',
+  emp_cap:       'Emp Capresse (cod 123)',
+  emp_esp:       'Emp Espinaca (cod 127)',
+  emp_qya:       'Emp Queso y Aceituna (cod 116)',
+  emp_jyq:       'Emp Jamon y Queso (cod 113)',
+  emp_pyc:       'Emp Panceta Puerro y Queso (cod 120)',
+  emp_polloch:   'Emp Pollo con Champi (cod 111)',
+  emp_int:       'Emp Integral (cod 117)',
+  emp_chil:      'Emp Chilena',
+  pizza:         'Pizzas',
+  alf_neg:       'Alf Chocolate Negro',
+  alf_blanc:     'Alf Chocolate Blanco',
+  alf_mixto:     'Alf Mixtos',
+  pack_vinovino: 'Pack Vino & Vino',
+  pack_vinograpa:'Pack Vino & Grapamiel',
+  pollo_sp:      'Pollo al Spiedo',
+  mila_pollo:    'Milanesa de Pollo',
+  barr_mixta:    'Barritas Mixtas',
+  barr_narchoco: 'Barritas Naranja y Chocolate',
+  barr_frutos:   'Barritas Frutos Rojos',
+  barr_brownie:  'Barritas Brownie',
+  barr_arandano: 'Barritas Arándanos',
+  barr_coco:     'Barritas Coco',
+  barr_menta:    'Barritas Menta',
+  box_cafe:      'Box Cafeteria',
+  queso_rallG:   'Queso Rayado Artesano Grueso',
+  queso_rallF:   'Queso Rayado Artesano Fino',
+}
+
+// Lista plana: { columna, nombre, precio } — se arma una sola vez
+const TODOS_LOS_ITEMS = productos.flatMap(p => p.items)
+const CATALOGO = Object.entries(MAPA_COLUMNAS).map(([id, columna]) => {
+  const item = TODOS_LOS_ITEMS.find(i => i.id === id)
+  return { id, columna, nombre: item?.nombre?.trim() || columna, precio: item?.precio || 0 }
+})
+
 function parsearCSV(texto) {
   const filas = texto.trim().split('\n')
   const headers = filas[0].split(',').map(h => h.trim())
@@ -124,13 +179,67 @@ function parsearCSV(texto) {
   })
 }
 
+/* Parser más robusto: detecta separador (coma o tab) y respeta comillas.
+   Se usa para la hoja "pedidos", que tiene nombres con comas y símbolos. */
+function parsearCSVSeguro(texto) {
+  const primeraLinea = texto.split('\n')[0] || ''
+  const sep = primeraLinea.includes('\t') ? '\t' : ','
+  const filas = []
+  let campo = ''
+  let fila = []
+  let enComillas = false
+
+  for (let i = 0; i < texto.length; i++) {
+    const c = texto[i]
+    if (enComillas) {
+      if (c === '"') {
+        if (texto[i + 1] === '"') { campo += '"'; i++ }
+        else enComillas = false
+      } else campo += c
+    } else {
+      if (c === '"') enComillas = true
+      else if (c === sep) { fila.push(campo); campo = '' }
+      else if (c === '\n') { fila.push(campo); filas.push(fila); fila = []; campo = '' }
+      else if (c === '\r') { /* ignorar */ }
+      else campo += c
+    }
+  }
+  if (campo !== '' || fila.length > 0) { fila.push(campo); filas.push(fila) }
+  if (filas.length === 0) return []
+
+  const headers = filas[0].map(h => h.trim())
+  return filas.slice(1).map(f => {
+    const obj = {}
+    headers.forEach((h, i) => obj[h] = (f[i] || '').trim())
+    return obj
+  })
+}
+
+// Normaliza texto para comparar nombres (sin tildes, sin dobles espacios, minúsculas)
+function normalizar(txt) {
+  return (txt || '')
+    .toString()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase()
+}
+
+// Convierte "12/3/2026" a Date para poder ordenar
+function fechaADate(str) {
+  const [d, m, a] = (str || '').split('/')
+  if (!d || !m || !a) return new Date(0)
+  return new Date(`${a}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`)
+}
+
 export default function Pedidos() {
   // const { usuario } = useAuth()   // ← desactivado: antes se usaba para verificar si había usuario logueado
   const [paso, setPaso] = useState(0)
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null)
   const [jugadoraSeleccionada, setJugadoraSeleccionada] = useState(null)
   const [jugadoras, setJugadoras] = useState([])
-  // const [jugadorasDelUsuario, setJugadorasDelUsuario] = useState([])   // ← desactivado: se usaba para jugadoras asociadas al mail del usuario logueado
+  // const [jugadorasDelUsuario, setJugadorasDelUsuario] = useState([])   // ← desactivado
   const [productoAbierto, setProductoAbierto] = useState(null)
   const [cantidades, setCantidades] = useState({})
   const [guardando, setGuardando] = useState(false)
@@ -141,9 +250,16 @@ export default function Pedidos() {
   const [cedulaIngresada, setCedulaIngresada] = useState('')
   const [cedulaError, setCedulaError] = useState(false)
   const [verificando, setVerificando] = useState(false)
-  // const [mailLogueado, setMailLogueado] = useState(null)   // ← desactivado: se usaba para guardar el mail del usuario logueado
+  // const [mailLogueado, setMailLogueado] = useState(null)   // ← desactivado
   const [nombreSolicitante, setNombreSolicitante] = useState('')
   const [nombreError, setNombreError] = useState(false)
+
+  /* ── HISTORIAL DE PEDIDOS (solo lectura, panel lateral) ── */
+  const [historial, setHistorial] = useState([])
+  const [cargandoHistorial, setCargandoHistorial] = useState(false)
+  const [historialError, setHistorialError] = useState('')
+  const [panelAbierto, setPanelAbierto] = useState(false)      // toggle en mobile
+  const [previoAbierto, setPrevioAbierto] = useState(null)     // índice del pedido anterior expandido
 
   useEffect(() => {
     fetch(JUGADORAS_URL)
@@ -173,37 +289,26 @@ export default function Pedidos() {
   }, [])
 
   // ← desactivado: este useEffect buscaba las jugadoras asociadas al mail del usuario logueado
-  // useEffect(() => {
-  //   if (!usuario || jugadoras.length === 0) return
-  //   const mail = usuario.email?.toLowerCase().trim()
-  //   setMailLogueado(mail)
-  //   const coinciden = jugadoras.filter(j =>
-  //     (j.mail?.toLowerCase().trim() === mail ||
-  //     j.mail2?.toLowerCase().trim() === mail) &&
-  //     j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
-  //   )
-  //   setJugadorasDelUsuario(coinciden)
-  // }, [usuario, jugadoras])
 
   const cancelar = () => {
     setMostrarConfirmCancel(false)
     setPaso(0)
     setCategoriaSeleccionada(null)
     setJugadoraSeleccionada(null)
-    // setJugadorasDelUsuario([])   // ← desactivado: se usaba para limpiar jugadoras del usuario logueado
+    // setJugadorasDelUsuario([])   // ← desactivado
     setCantidades({})
     setProductoAbierto(null)
     setCedulaIngresada('')
     setCedulaError(false)
     setNombreSolicitante('')
     setNombreError(false)
+    setHistorial([])
+    setHistorialError('')
+    setPanelAbierto(false)
+    setPrevioAbierto(null)
   }
 
-  // ← desactivado: jugadorasFiltradas se usaba en el paso 2 para mostrar jugadoras por categoría cuando no había usuario
-  // const jugadorasFiltradas = jugadoras.filter(j =>
-  //   j.categoria?.trim().toLowerCase() === categoriaSeleccionada?.trim().toLowerCase() &&
-  //   j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
-  // )
+  // ← desactivado: jugadorasFiltradas se usaba en el paso 2
 
   const sumar = (id) => setCantidades(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }))
   const restar = (id) => setCantidades(prev => ({ ...prev, [id]: Math.max(0, (prev[id] || 0) - 1) }))
@@ -211,39 +316,41 @@ export default function Pedidos() {
   const itemsConCantidad = productos.flatMap(p => p.items).filter(i => cantidades[i.id] > 0)
   const total = itemsConCantidad.reduce((acc, i) => acc + i.precio * cantidades[i.id], 0)
 
-  // ← handlePedir reemplazado: antes verificaba si había usuario logueado y hacía login con Google si no había
-  // const handlePedir = async () => {
-  //   if (!pedidosActivos) return
-  //   let mailUsuario = usuario?.email?.toLowerCase().trim() || mailLogueado
-  //   if (!usuario) {
-  //     alert('Tenés que iniciar sesión para hacer un pedido.')
-  //     try {
-  //       const resultado = await loginConGoogle()
-  //       mailUsuario = resultado.user.email.toLowerCase().trim()
-  //       setMailLogueado(mailUsuario)
-  //     } catch (err) {
-  //       if (err.message === 'no_autorizado') {
-  //         alert('Tu cuenta de Google no está asociada a ninguna jugadora de CEVVEN.')
-  //       }
-  //       return
-  //     }
-  //   }
-  //   const coinciden = jugadoras.filter(j =>
-  //     (j.mail?.toLowerCase().trim() === mailUsuario ||
-  //     j.mail2?.toLowerCase().trim() === mailUsuario) &&
-  //     j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
-  //   )
-  //   if (coinciden.length === 1) {
-  //     setJugadoraSeleccionada(coinciden[0])
-  //     setCategoriaSeleccionada(coinciden[0].categoria?.trim())
-  //     setPaso(3)
-  //   } else if (coinciden.length > 1) {
-  //     setJugadorasDelUsuario(coinciden)
-  //     setPaso(2)
-  //   } else {
-  //     setPaso(1)
-  //   }
-  // }
+  /* ── Carga el historial de una jugadora desde la hoja "pedidos" ── */
+  const cargarHistorial = async (jugadora) => {
+    if (!jugadora) return
+    setCargandoHistorial(true)
+    setHistorialError('')
+    setHistorial([])
+    try {
+      const res = await fetch(PEDIDOS_URL)
+      const texto = await res.text()
+      const filas = parsearCSVSeguro(texto)
+
+      const nombreCompleto = normalizar(`${jugadora.nombre} ${jugadora.apellido}`)
+      const propios = filas.filter(f => normalizar(f.jugadora) === nombreCompleto)
+
+      const armados = propios.map(f => {
+        const items = CATALOGO
+          .map(c => ({ ...c, cantidad: parseInt(f[c.columna], 10) || 0 }))
+          .filter(c => c.cantidad > 0)
+        const subtotal = items.reduce((acc, i) => acc + i.cantidad * i.precio, 0)
+        return { fecha: f.fecha || '', categoria: f.categoria || '', items, subtotal }
+      })
+      .filter(p => p.items.length > 0)
+      .sort((a, b) => fechaADate(b.fecha) - fechaADate(a.fecha))
+
+      setHistorial(armados)
+    } catch (err) {
+      console.error('Error cargando historial:', err)
+      setHistorialError('No pudimos cargar tus pedidos anteriores.')
+    }
+    setCargandoHistorial(false)
+  }
+
+  const totalHistorial = historial.reduce((acc, p) => acc + p.subtotal, 0)
+  const totalGeneral = totalHistorial + total
+
   const handlePedir = () => {
     if (!pedidosActivos) return
     setPaso(1)
@@ -309,8 +416,6 @@ export default function Pedidos() {
       `- ${item.nombre}: ${cantidades[item.id]} x $${item.precio} = $${(cantidades[item.id] * item.precio).toLocaleString()}`
     ).join('\n')
 
-    // ← mailJugadora reemplazado: antes usaba mailLogueado o usuario?.email como primera opción
-    // const mailJugadora = mailLogueado || usuario?.email?.trim() || jugadoraSeleccionada.mail?.trim() || jugadoraSeleccionada.mail2?.trim()
     const mails = [
       jugadoraSeleccionada.mail?.trim(),
       jugadoraSeleccionada.mail2?.trim()
@@ -337,21 +442,84 @@ export default function Pedidos() {
     setPaso(5)
   }
 
-  // ← verificarYConfirmar reemplazado: antes verificaba la cédula en el paso 4 (resumen)
-  // ahora la cédula se verifica en el paso 1 (identificación) y acá se confirma directo
-  // const verificarYConfirmar = async () => {
-  //   setVerificando(true)
-  //   setCedulaError(false)
-  //   const cedulaLimpia = cedulaIngresada.replace(/[.\-\s]/g, '').trim()
-  //   const cedulaJugadora = jugadoraSeleccionada.cedula?.replace(/[.\-\s]/g, '').trim()
-  //   if (cedulaLimpia !== cedulaJugadora) {
-  //     setCedulaError(true)
-  //     setVerificando(false)
-  //     return
-  //   }
-  //   setVerificando(false)
-  //   await confirmarPedido()
-  // }
+  /* ── Panel lateral: carrito actual + pedidos anteriores ── */
+  const panelPedidos = (
+    <aside className={`pedidos__panel ${panelAbierto ? 'pedidos__panel--abierto' : ''}`}>
+      <button className="pedidos__panel-toggle" onClick={() => setPanelAbierto(v => !v)}>
+        <span>🧾 Mi pedido — ${totalGeneral.toLocaleString()}</span>
+        <span>{panelAbierto ? '▲' : '▼'}</span>
+      </button>
+
+      <div className="pedidos__panel-body">
+        {/* Carrito actual */}
+        <div className="pedidos__panel-bloque">
+          <h4 className="pedidos__panel-titulo">Estás agregando</h4>
+          {itemsConCantidad.length === 0 ? (
+            <p className="pedidos__panel-vacio">Todavía no agregaste nada</p>
+          ) : (
+            <>
+              {itemsConCantidad.map(item => (
+                <div key={item.id} className="pedidos__panel-fila">
+                  <span className="pedidos__panel-cant">{cantidades[item.id]}×</span>
+                  <span className="pedidos__panel-nombre">{item.nombre}</span>
+                  <span className="pedidos__panel-precio">
+                    ${(cantidades[item.id] * item.precio).toLocaleString()}
+                  </span>
+                </div>
+              ))}
+              <div className="pedidos__panel-subtotal">
+                <span>Subtotal</span>
+                <span>${total.toLocaleString()}</span>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Pedidos anteriores */}
+        <div className="pedidos__panel-bloque">
+          <h4 className="pedidos__panel-titulo">Lo que llevás pedido</h4>
+
+          {cargandoHistorial && <p className="pedidos__panel-vacio">Cargando...</p>}
+          {historialError && <p className="pedidos__panel-error">{historialError}</p>}
+
+          {!cargandoHistorial && !historialError && historial.length === 0 && (
+            <p className="pedidos__panel-vacio">Este es tu primer pedido 🎉</p>
+          )}
+
+          {historial.map((p, idx) => (
+            <div key={idx} className="pedidos__panel-previo">
+              <button
+                className="pedidos__panel-previo-head"
+                onClick={() => setPrevioAbierto(previoAbierto === idx ? null : idx)}
+              >
+                <span>📅 {p.fecha}</span>
+                <span>${p.subtotal.toLocaleString()} {previoAbierto === idx ? '▲' : '▼'}</span>
+              </button>
+              {previoAbierto === idx && (
+                <div className="pedidos__panel-previo-items">
+                  {p.items.map(i => (
+                    <div key={i.id} className="pedidos__panel-fila">
+                      <span className="pedidos__panel-cant">{i.cantidad}×</span>
+                      <span className="pedidos__panel-nombre">{i.nombre}</span>
+                      <span className="pedidos__panel-precio">
+                        ${(i.cantidad * i.precio).toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Total general */}
+        <div className="pedidos__panel-total">
+          <span>TOTAL GENERAL</span>
+          <span>${totalGeneral.toLocaleString()}</span>
+        </div>
+      </div>
+    </aside>
+  )
 
   return (
     <>
@@ -397,7 +565,7 @@ export default function Pedidos() {
           </div>
         )}
 
-        {/* PASO 1 — IDENTIFICACIÓN (antes era selección de categoría) */}
+        {/* PASO 1 — IDENTIFICACIÓN */}
         {paso === 1 && (
           <div className="pedidos__paso">
             <div className="pedidos__nav">
@@ -405,16 +573,6 @@ export default function Pedidos() {
             </div>
             <h2 className="pedidos__titulo">¿Para quién es el pedido?</h2>
             <p className="pedidos__sub">Ingresá los datos para continuar</p>
-
-            {/* ← desactivado: antes este paso mostraba las categorías para elegir
-            <div className="pedidos__categorias">
-              {categorias.map(cat => (
-                <button key={cat} className="pedidos__cat-btn"
-                  onClick={() => { setCategoriaSeleccionada(cat); setPaso(2) }}>
-                  {cat}
-                </button>
-              ))}
-            </div> */}
 
             <div className="pedidos__cedula-wrap">
               <label className="pedidos__cedula-label">Cédula de la jugadora</label>
@@ -461,6 +619,7 @@ export default function Pedidos() {
                   }
                   setJugadoraSeleccionada(jugadora)
                   setCategoriaSeleccionada(jugadora.categoria?.trim())
+                  cargarHistorial(jugadora)   // ← trae los pedidos anteriores para el panel lateral
                   setPaso(3)
                 }}
               >
@@ -470,53 +629,9 @@ export default function Pedidos() {
           </div>
         )}
 
-        {/* PASO 2 — desactivado: antes era selección de jugadora (por categoría o por múltiples asociadas al usuario) */}
-        {/* {paso === 2 && (
-          <div className="pedidos__paso">
-            <div className="pedidos__nav">
-              <button className="pedidos__volver" onClick={() => jugadorasDelUsuario.length > 1 ? setPaso(0) : setPaso(1)}>← Volver</button>
-              <button className="pedidos__cancelar" onClick={() => setMostrarConfirmCancel(true)}>✕ Cancelar</button>
-            </div>
-            {jugadorasDelUsuario.length > 1 ? (
-              <>
-                <h2 className="pedidos__titulo">¿Para quién es el pedido?</h2>
-                <p className="pedidos__sub">Encontramos más de una jugadora asociada a tu cuenta</p>
-                <div className="pedidos__categorias">
-                  {jugadorasDelUsuario.map((j, i) => (
-                    <button key={i} className="pedidos__cat-btn"
-                      onClick={() => { setJugadoraSeleccionada(j); setCategoriaSeleccionada(j.categoria?.trim()); setPaso(3) }}>
-                      {j.nombre} {j.apellido}
-                      <span style={{ fontSize: '0.85rem', opacity: 0.7, marginLeft: '6px' }}>— {j.categoria}</span>
-                    </button>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <>
-                <h2 className="pedidos__titulo">{categoriaSeleccionada}</h2>
-                <p className="pedidos__sub">Seleccionar jugador/a</p>
-                {jugadorasFiltradas.length === 0 ? (
-                  <p className="pedidos__vacio">No hay jugadoras en esta categoría</p>
-                ) : (
-                  <div className="pedidos__select-wrap">
-                    <select className="pedidos__select" defaultValue=""
-                      onChange={(e) => {
-                        const idx = e.target.value
-                        if (idx !== '') { setJugadoraSeleccionada(jugadorasFiltradas[idx]); setPaso(3) }
-                      }}>
-                      <option value="" disabled>Seleccioná una jugadora...</option>
-                      {jugadorasFiltradas.map((j, i) => (
-                        <option key={i} value={i}>{j.nombre} {j.apellido}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        )} */}
+        {/* PASO 2 — desactivado */}
 
-        {/* PASO 3 — PRODUCTOS */}
+        {/* PASO 3 — PRODUCTOS + PANEL LATERAL */}
         {paso === 3 && (
           <div className="pedidos__paso">
             <div className="pedidos__nav">
@@ -525,35 +640,43 @@ export default function Pedidos() {
             </div>
             <h2 className="pedidos__titulo">Pedido para {jugadoraSeleccionada.nombre} {jugadoraSeleccionada.apellido}</h2>
             <p className="pedidos__sub">Seleccioná los productos</p>
-            <div className="pedidos__productos">
-              {productos.map(p => (
-                <div key={p.id} className="pedidos__producto">
-                  <button
-                    className={`pedidos__producto-header ${productoAbierto === p.id ? 'pedidos__producto-header--activo' : ''}`}
-                    onClick={() => setProductoAbierto(productoAbierto === p.id ? null : p.id)}>
-                    <span>{p.emoji} {p.nombre}</span>
-                    <span>{productoAbierto === p.id ? '▲' : '▼'}</span>
-                  </button>
-                  {productoAbierto === p.id && (
-                    <div className="pedidos__items">
-                      {p.items.map(item => (
-                        <div key={item.id} className="pedidos__item">
-                          <div className="pedidos__item-info">
-                            <span className="pedidos__item-nombre">{item.nombre}</span>
-                            {item.precio > 0 && <span className="pedidos__item-precio">${item.precio} / {item.unidad}</span>}
-                          </div>
-                          <div className="pedidos__contador">
-                            <button onClick={() => restar(item.id)}>−</button>
-                            <span>{cantidades[item.id] || 0}</span>
-                            <button onClick={() => sumar(item.id)}>+</button>
-                          </div>
+
+            <div className="pedidos__layout">
+              <div className="pedidos__layout-main">
+                <div className="pedidos__productos">
+                  {productos.map(p => (
+                    <div key={p.id} className="pedidos__producto">
+                      <button
+                        className={`pedidos__producto-header ${productoAbierto === p.id ? 'pedidos__producto-header--activo' : ''}`}
+                        onClick={() => setProductoAbierto(productoAbierto === p.id ? null : p.id)}>
+                        <span>{p.emoji} {p.nombre}</span>
+                        <span>{productoAbierto === p.id ? '▲' : '▼'}</span>
+                      </button>
+                      {productoAbierto === p.id && (
+                        <div className="pedidos__items">
+                          {p.items.map(item => (
+                            <div key={item.id} className="pedidos__item">
+                              <div className="pedidos__item-info">
+                                <span className="pedidos__item-nombre">{item.nombre}</span>
+                                {item.precio > 0 && <span className="pedidos__item-precio">${item.precio} / {item.unidad}</span>}
+                              </div>
+                              <div className="pedidos__contador">
+                                <button onClick={() => restar(item.id)}>−</button>
+                                <span>{cantidades[item.id] || 0}</span>
+                                <button onClick={() => sumar(item.id)}>+</button>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      )}
                     </div>
-                  )}
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {panelPedidos}
             </div>
+
             <div className="pedidos__total-bar">
               <span>Total: <strong>${total.toLocaleString()}</strong></span>
               <button className="pedidos__btn-pedir" disabled={total === 0} onClick={() => setPaso(4)}>
@@ -563,7 +686,7 @@ export default function Pedidos() {
           </div>
         )}
 
-        {/* PASO 4 — RESUMEN */}
+        {/* PASO 4 — RESUMEN + PANEL LATERAL */}
         {paso === 4 && (
           <div className="pedidos__paso">
             <div className="pedidos__nav">
@@ -572,41 +695,32 @@ export default function Pedidos() {
             </div>
             <h2 className="pedidos__titulo">Resumen del pedido</h2>
             <p className="pedidos__sub">Pedido para <strong>{jugadoraSeleccionada.nombre} {jugadoraSeleccionada.apellido}</strong> — {categoriaSeleccionada}</p>
-            <div className="pedidos__resumen">
-              {itemsConCantidad.map(item => (
-                <div key={item.id} className="pedidos__resumen-fila">
-                  <span>{item.nombre}</span>
-                  <span>{cantidades[item.id]} x ${item.precio}</span>
-                  <span>${(cantidades[item.id] * item.precio).toLocaleString()}</span>
+
+            <div className="pedidos__layout">
+              <div className="pedidos__layout-main">
+                <div className="pedidos__resumen">
+                  {itemsConCantidad.map(item => (
+                    <div key={item.id} className="pedidos__resumen-fila">
+                      <span>{item.nombre}</span>
+                      <span>{cantidades[item.id]} x ${item.precio}</span>
+                      <span>${(cantidades[item.id] * item.precio).toLocaleString()}</span>
+                    </div>
+                  ))}
+                  <div className="pedidos__resumen-total">
+                    <span>TOTAL</span><span></span>
+                    <span>${total.toLocaleString()}</span>
+                  </div>
                 </div>
-              ))}
-              <div className="pedidos__resumen-total">
-                <span>TOTAL</span><span></span>
-                <span>${total.toLocaleString()}</span>
+
+                <div className="pedidos__resumen-btns">
+                  <button className="pedidos__btn-secundario" onClick={() => setPaso(3)}>← Seguir comprando</button>
+                  <button className="pedidos__btn-pedir" onClick={confirmarPedido} disabled={guardando}>
+                    {guardando ? 'GUARDANDO...' : 'CONFIRMAR PEDIDO ✓'}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {/* ← desactivado: antes el paso 4 pedía la cédula para verificar antes de confirmar
-            <div className="pedidos__cedula-wrap">
-              <label className="pedidos__cedula-label">
-                Ingresá la cédula de <strong>{jugadoraSeleccionada.nombre}</strong> para confirmar
-              </label>
-              <p className="pedidos__cedula-hint">Sin puntos ni guiones. Ej: 1.234.567-8 → 12345678</p>
-              <input
-                type="text"
-                className={`pedidos__cedula-input ${cedulaError ? 'pedidos__cedula-input--error' : ''}`}
-                placeholder="12345678"
-                value={cedulaIngresada}
-                onChange={(e) => { setCedulaIngresada(e.target.value); setCedulaError(false) }}
-              />
-              {cedulaError && <p className="pedidos__cedula-error">❌ Cédula incorrecta. Intentá de nuevo.</p>}
-            </div> */}
-
-            <div className="pedidos__resumen-btns">
-              <button className="pedidos__btn-secundario" onClick={() => setPaso(3)}>← Seguir comprando</button>
-              <button className="pedidos__btn-pedir" onClick={confirmarPedido} disabled={guardando}>
-                {guardando ? 'GUARDANDO...' : 'CONFIRMAR PEDIDO ✓'}
-              </button>
+              {panelPedidos}
             </div>
           </div>
         )}
