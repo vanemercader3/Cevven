@@ -728,16 +728,20 @@
 
   .pedidos__select-wrap { max-width: 100%; }
 
-  /* en mobile el panel va arriba y colapsado */
+/* en mobile: primero los productos, después el panel */
   .pedidos__layout {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
+    align-items: stretch;
     gap: 1.2rem;
   }
 
+  .pedidos__productos { margin-bottom: 0; }
+
   .pedidos__panel {
     position: static;
-    margin-bottom: 0.5rem;
+    width: 100%;
+    margin-bottom: 5rem;
   }
 
   .pedidos__panel-toggle {
