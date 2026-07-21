@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'   // ← MODO PRUEBA
 import './pedidos.css'
 import PageFooter from '../../../../components/pageFooter/pageFooter'
 import BackButton from '../../../../components/backButton/backButton'
@@ -14,6 +15,14 @@ const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqK
 const EMAILJS_SERVICE = 'service_eus8zan'
 const EMAILJS_TEMPLATE_PEDIDO = 'template_9mz3d68'
 const EMAILJS_KEY = '6mltD84C_kgv-YML0'
+
+/* ─────────────────────────────────────────────────────────────
+   MODO PRUEBA — clave secreta para saltear la fecha límite.
+   Entrando a  /pedidos?modo=vane2026  los pedidos quedan
+   siempre abiertos, sin importar lo que diga la hoja "config".
+   Si algún día se filtra, cambiá este texto y listo.
+   ───────────────────────────────────────────────────────────── */
+const CLAVE_MODO_PRUEBA = 'vane2026'
 
 const categorias = ['Infantiles', 'U13', 'U14', 'U15', 'U16', 'U18', 'U21', 'Senior', 'Inter Masc', 'Plus 35', 'Entrenadores']
 
@@ -235,6 +244,11 @@ function fechaADate(str) {
 
 export default function Pedidos() {
   // const { usuario } = useAuth()   // ← desactivado: antes se usaba para verificar si había usuario logueado
+
+  /* ── MODO PRUEBA: lee ?modo=... de la URL ── */
+  const [searchParams] = useSearchParams()
+  const modoPrueba = searchParams.get('modo') === CLAVE_MODO_PRUEBA
+
   const [paso, setPaso] = useState(0)
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null)
   const [jugadoraSeleccionada, setJugadoraSeleccionada] = useState(null)
@@ -284,9 +298,10 @@ export default function Pedidos() {
         const dateInicio = new Date(`${aI}-${mI}-${dI}`)
         const dateFin = new Date(`${aF}-${mF}-${dF}`)
         dateFin.setHours(23, 59, 59)
-        setPedidosActivos(hoy >= dateInicio && hoy <= dateFin)
+        // ← MODO PRUEBA: si viene la clave en la URL, se ignora el rango de fechas
+        setPedidosActivos(modoPrueba || (hoy >= dateInicio && hoy <= dateFin))
       })
-  }, [])
+  }, [modoPrueba])
 
   // ← desactivado: este useEffect buscaba las jugadoras asociadas al mail del usuario logueado
 
@@ -525,6 +540,22 @@ export default function Pedidos() {
     <>
       <main className="pedidos">
         {paso === 0 && <BackButton />}
+
+        {/* ← MODO PRUEBA: cartel visible solo para vos, para no confundirte */}
+        {modoPrueba && (
+          <div style={{
+            background: '#ff9800',
+            color: '#fff',
+            padding: '0.5rem 1rem',
+            textAlign: 'center',
+            fontWeight: 700,
+            letterSpacing: '0.05em',
+            borderRadius: '6px',
+            margin: '0 0 1rem'
+          }}>
+            ⚠️ MODO PRUEBA ACTIVO — la fecha límite está ignorada
+          </div>
+        )}
 
         {/* PASO 0 — VITRINA */}
         {paso === 0 && (
