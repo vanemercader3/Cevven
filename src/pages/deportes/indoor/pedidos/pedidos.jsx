@@ -76,7 +76,7 @@ const productos = [
     ]
   },
   {
-    id: 'alfajores', nombre: 'Alfajores', emoji: '🍫',
+    id: 'alfajores', nombre: 'Alfajores', emoji: '🍫', img: '/pedidos/alfa-emoji.jpg',
     items: [
       { id: 'alf_neg',   nombre: 'Chocolate Negro (x10)',  precio: 550, unidad: 'caja' },
       { id: 'alf_blanc', nombre: 'Chocolate Blanco (x10)', precio: 550, unidad: 'caja' },
@@ -671,8 +671,12 @@ export default function Pedidos() {
                       <button
                         className={`pedidos__producto-header ${productoAbierto === p.id ? 'pedidos__producto-header--activo' : ''}`}
                         onClick={() => setProductoAbierto(productoAbierto === p.id ? null : p.id)}>
-                        <span>{p.emoji} {p.nombre}</span>
-                        <span>{productoAbierto === p.id ? '▲' : '▼'}</span>
+                        <span>
+                          {p.img
+                            ? <img src={p.img} alt="" style={{ height: '1.2em', verticalAlign: '-0.2em', marginRight: '0.3em' }} />
+                            : `${p.emoji} `}
+                          {p.nombre}
+                        </span>                        <span>{productoAbierto === p.id ? '▲' : '▼'}</span>
                       </button>
                       {productoAbierto === p.id && (
                         <div className="pedidos__items">
