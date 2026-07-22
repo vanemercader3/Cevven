@@ -8,7 +8,6 @@ import emailjs from '@emailjs/browser'
 // import { loginConGoogle } from '../../firebase'       // ← desactivado: antes se usaba para login con Google
 
 const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
-// ⚠️ Verificar que el gid sea el de la hoja "pedidos"
 const PEDIDOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=327502795&single=true&output=csv'
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0fMCKVhwObqTGS_T2Ju3HX6ACrRR-y4ObgScg-mHCKvZ4OgGYfe1nlTKhB8oqsHU7/exec'
 const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1223710762&single=true&output=csv'
@@ -18,11 +17,10 @@ const EMAILJS_KEY = '6mltD84C_kgv-YML0'
 
 /* ─────────────────────────────────────────────────────────────
    MODO PRUEBA — clave secreta para saltear la fecha límite.
-   Entrando a  /pedidos?modo=vane2026  los pedidos quedan
-   siempre abiertos, sin importar lo que diga la hoja "config".
-   Si algún día se filtra, cambiá este texto y listo.
+   Entrando a  /pedidos?modo=stage  los pedidos quedan
+   siempre abiertos.
    ───────────────────────────────────────────────────────────── */
-const CLAVE_MODO_PRUEBA = 'vane2026'
+const CLAVE_MODO_PRUEBA = 'stage'
 
 const categorias = ['Infantiles', 'U13', 'U14', 'U15', 'U16', 'U18', 'U21', 'Senior', 'Inter Masc', 'Plus 35', 'Entrenadores']
 
@@ -124,12 +122,7 @@ const productos = [
   },
 ]
 
-/* ─────────────────────────────────────────────────────────────
-   MAPA id del producto ↔ nombre EXACTO de la columna en la hoja
-   "pedidos". Tiene que coincidir letra por letra con los headers
-   que se mandan en confirmarPedido(). Si agregás un producto
-   nuevo, agregalo también acá.
-   ───────────────────────────────────────────────────────────── */
+
 const MAPA_COLUMNAS = {
   tal_esp:       'Tallarines Espinaca',
   tal_yema:      'Tallarines Yema',
@@ -170,7 +163,7 @@ const MAPA_COLUMNAS = {
   queso_rallF:   'Queso Rayado Artesano Fino',
 }
 
-// Lista plana: { columna, nombre, precio } — se arma una sola vez
+// Lista plana: { columna, nombre, precio }
 const TODOS_LOS_ITEMS = productos.flatMap(p => p.items)
 const CATALOGO = Object.entries(MAPA_COLUMNAS).map(([id, columna]) => {
   const item = TODOS_LOS_ITEMS.find(i => i.id === id)
@@ -188,8 +181,7 @@ function parsearCSV(texto) {
   })
 }
 
-/* Parser más robusto: detecta separador (coma o tab) y respeta comillas.
-   Se usa para la hoja "pedidos", que tiene nombres con comas y símbolos. */
+
 function parsearCSVSeguro(texto) {
   const primeraLinea = texto.split('\n')[0] || ''
   const sep = primeraLinea.includes('\t') ? '\t' : ','
@@ -544,7 +536,7 @@ export default function Pedidos() {
         {/* ← MODO PRUEBA: cartel visible solo para vos, para no confundirte */}
         {modoPrueba && (
           <div style={{
-            background: '#ff9800',
+            background: '#--orange',
             color: '#fff',
             padding: '0.5rem 1rem',
             textAlign: 'center',
@@ -553,7 +545,7 @@ export default function Pedidos() {
             borderRadius: '6px',
             margin: '0 0 1rem'
           }}>
-            ⚠️ MODO PRUEBA ACTIVO — la fecha límite está ignorada
+            ⚠️ MODO PRUEBA ACTIVO ⚠️
           </div>
         )}
 
@@ -660,7 +652,6 @@ export default function Pedidos() {
           </div>
         )}
 
-        {/* PASO 2 — desactivado */}
 
         {/* PASO 3 — PRODUCTOS + PANEL LATERAL */}
         {paso === 3 && (
