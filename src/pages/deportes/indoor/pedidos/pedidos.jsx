@@ -536,7 +536,7 @@ export default function Pedidos() {
         {/* ← MODO PRUEBA: cartel visible solo para vos, para no confundirte */}
         {modoPrueba && (
           <div style={{
-            background: '#--orange',
+            background: 'var(--orange)',
             color: '#fff',
             padding: '0.5rem 1rem',
             textAlign: 'center',
