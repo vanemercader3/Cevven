@@ -9,6 +9,7 @@ import emailjs from '@emailjs/browser'
 
 const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
 const PEDIDOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=327502795&single=true&output=csv'
+const PRECIOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=337517673&single=true&output=csv'
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0fMCKVhwObqTGS_T2Ju3HX6ACrRR-y4ObgScg-mHCKvZ4OgGYfe1nlTKhB8oqsHU7/exec'
 const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1223710762&single=true&output=csv'
 const EMAILJS_SERVICE = 'service_eus8zan'
@@ -22,153 +23,42 @@ const EMAILJS_KEY = '6mltD84C_kgv-YML0'
    ───────────────────────────────────────────────────────────── */
 const CLAVE_MODO_PRUEBA = 'stage'
 
-const categorias = ['Infantiles', 'U13', 'U14', 'U15', 'U16', 'U18', 'U21', 'Senior', 'Inter Masc', 'Plus 35', 'Entrenadores']
-
-const vitrina = [
-  { id: 'pasta',      nombre: 'Pasta',             imagen: '/pedidos/pasta.jpg',            descripcion: 'Tallarines, ñoquis, ravioles y más' },
-  { id: 'empanadas',  nombre: 'Empanadas',          imagen: '/pedidos/empanadas.jpg',        descripcion: 'Distintos rellenos' },
-  { id: 'pizzas',     nombre: 'Pizzas',             imagen: '/pedidos/pizza.jpg',            descripcion: 'Caja de 2 unidades' },
-  { id: 'alfajores',  nombre: 'Alfajores Neg.',     imagen: '/pedidos/alfa-choco-negro.jpg', descripcion: 'Caja x10 chocolate negro' },
-  { id: 'alfajores2', nombre: 'Alfajores Blan.',    imagen: '/pedidos/alfa-choco-blanco.jpg',descripcion: 'Caja x10 chocolate blanco' },
-  { id: 'vinos',      nombre: 'Vinos',              imagen: '/pedidos/vino.jpg',             descripcion: 'Pack x2 unidades' },
-  { id: 'pollo',      nombre: 'Pollo al Spiedo',    imagen: '/pedidos/pollo-spiedo.jpg',     descripcion: 'Pollo al Spiedo' },
-  { id: 'milanesa',   nombre: 'Milanesa de Pollo',  imagen: '/pedidos/mila-pollo.jpg',       descripcion: 'Milanesa de Pollo' },
-  { id: 'barritas',     nombre: 'Barritas',       imagen: '/pedidos/barritas.jpg',      descripcion: 'Caja surtida o mismo gusto x12 unidades' },
-  { id: 'boxcafeteria', nombre: 'Box Cafetería',   imagen: '/pedidos/box-cafeteria.jpg', descripcion: 'Medialunas, Rolls de Canela y Cookies' },
-]
-
-const productos = [
-  {
-    id: 'pasta', nombre: 'Pasta', emoji: '🍝',
-    items: [
-      { id: 'queso_rallF', nombre: 'Queso Rallado Artesano Fino',     precio: 190, unidad: '150gr' },
-      { id: 'queso_rallG', nombre: 'Queso Rallado Artesano Grueso',     precio: 190, unidad: '150gr' },
-      { id: 'tal_esp',    nombre: 'Tallarines Espinaca ', precio: 295, unidad: '1 kg' },
-      { id: 'tal_yema',   nombre: 'Tallarines Yema ',       precio: 295, unidad: '1 kg' },
-      { id: 'noquis',     nombre: 'Ñoquis',                      precio: 295, unidad: '1 kg' },
-      { id: 'rav_verd',   nombre: 'Ravioles Verdura (150 unid.)',   precio: 350, unidad: 'pack' },
-      { id: 'rav_jq',     nombre: 'Ravioles J&Q (150 unid.)',      precio: 350, unidad: 'pack' },
-      { id: 'rav_ric',    nombre: 'Ravioles Ricotta (150 unid.)',   precio: 350, unidad: 'pack' },
-    ]
-  },
-  {
-    id: 'empanadas', nombre: 'Empanadas', emoji: '🥟',
-    items: [
-      { id: 'emp_carne_ac',  nombre: 'Emp. Carne con Aceitunas (Cod. 101)',    precio: 450, unidad: 'x5 unid.' },
-      { id: 'emp_carne_sin', nombre: 'Emp. Carne sin Aceitunas (Cod. 104)',    precio: 450, unidad: 'x5 unid.' },
-      { id: 'emp_chil',      nombre: 'Emp. Chilena (Cod. 106)',                precio: 450, unidad: 'x5 unid.' },
-      { id: 'emp_pollo',     nombre: 'Emp. Pollo (Cod. 110)',                  precio: 450, unidad: 'x5 unid.' },
-      { id: 'emp_polloch',   nombre: 'Emp. Pollo con Champi (Cod. 111)',       precio: 450, unidad: 'x5 unid.' },
-      { id: 'emp_jyq',       nombre: 'Emp. Jamón y Queso (Cod. 113)',          precio: 450, unidad: 'x5 unid.' },
-      { id: 'emp_qya',       nombre: 'Emp. Queso y Aceitunas (Cod. 116)',      precio: 450, unidad: 'x5 unid.' },
-      { id: 'emp_int',       nombre: 'Emp. Integral (Cod. 117)',               precio: 450, unidad: 'x5 unid.' },
-      { id: 'emp_qyc',       nombre: 'Emp. Queso y Cebolla (Cod. 118)',        precio: 450, unidad: 'x5 unid.' },
-      { id: 'emp_pyc',       nombre: 'Emp. Panceta, Puerro y Queso (Cod. 120)',precio: 450, unidad: 'x5 unid.' },
-      { id: 'emp_4q',        nombre: 'Emp. Cuatro Quesos (Cod. 122)',          precio: 450, unidad: 'x5 unid.' },
-      { id: 'emp_cap',       nombre: 'Emp. Capresse (Cod. 123)',               precio: 450, unidad: 'x5 unid.' },
-      { id: 'emp_esp',       nombre: 'Emp. Espinaca (Cod. 127)',               precio: 450, unidad: 'x5 unid.' },
-    ]
-  },
-  {
-    id: 'pizzas', nombre: 'Pizzas', emoji: '🍕',
-    items: [
-      { id: 'pizza', nombre: 'Pizza con Muzzarella (x2 unid.)', precio: 550, unidad: '' },
-    ]
-  },
-  {
-    id: 'alfajores', nombre: 'Alfajores', emoji: '🍫', img: '/pedidos/alfa-emoji.jpg',
-    items: [
-      { id: 'alf_neg',   nombre: 'Alfa. Choco. Negro (x10)',  precio: 550, unidad: 'caja' },
-      { id: 'alf_blanc', nombre: 'Alfa. Choco. Blanco (x10)', precio: 550, unidad: 'caja' },
-      { id: 'alf_mixto', nombre: 'Alfa. Caja Mixta (x10)',    precio: 550, unidad: 'caja' },
-    ]
-  },
-  {
-    id: 'vinos', nombre: 'Vinos', emoji: '🍷',
-    items: [
-      { id: 'pack_vinovino', nombre: 'Pack Vino & Vino',       precio: 390, unidad: 'pack' },
-      { id: 'pack_vinograpa', nombre: 'Pack Vino & Grapamiel', precio: 390, unidad: 'pack' },
-    ]
-  },
-  {
-    id: 'pollo', nombre: 'Pollo al Spiedo', emoji: '🍗',
-    items: [
-      { id: 'pollo_sp', nombre: 'Pollo al Spiedo', precio: 690, unidad: 'unid.' },
-    ]
-  },
-  {
-    id: 'milanesa', nombre: 'Milanesa de Pollo', emoji: '🍖',
-    items: [
-      { id: 'mila_pollo', nombre: 'Milanesa de Pollo', precio: 550, unidad: '1 kg.' },
-    ]
-  },
-  {
-    id: 'barritas', nombre: 'Barritas', emoji: '🍫',
-    items: [
-      { id: 'barr_mixta',    nombre: 'Barritas Mixtas (4 Choco y Naranja, 2 Frutos Rojos, 2 Brownie, 2 Arándanos, 2 Coco)',             precio: 550, unidad: 'caja' },
-      { id: 'barr_narchoco', nombre: 'Barritas Naranja y Chocolate x12 unid.', precio: 550, unidad: 'caja' },
-      { id: 'barr_frutos',   nombre: 'Barritas Frutos Rojos x12 unid.',       precio: 550, unidad: 'caja' },
-      { id: 'barr_brownie',  nombre: 'Barritas Brownie x12 unid.',            precio: 550, unidad: 'caja' },
-      { id: 'barr_arandano', nombre: 'Barritas Arándanos x12 unid.',          precio: 550, unidad: 'caja' },
-      { id: 'barr_coco',     nombre: 'Barritas Coco x12 unid.',               precio: 550, unidad: 'caja' },
-      { id: 'barr_menta',    nombre: 'Barritas Menta x12 unid.',              precio: 550, unidad: 'caja' },
-    ]
-  },
-  {
-    id: 'boxcafeteria', nombre: 'Box Cafetería', emoji: '🍪',
-    items: [
-      { id: 'box_cafe', nombre: 'Box Cafetería (2 medialunas, 2 rolls de canela, 4 cookies)', precio: 550, unidad: 'box' },
-    ]
-  },
-]
-
-
-const MAPA_COLUMNAS = {
-  tal_esp:       'Tallarines Espinaca',
-  tal_yema:      'Tallarines Yema',
-  noquis:        'Ñoquis',
-  rav_verd:      'Ravioles Verdura',
-  rav_jq:        'Ravioles J&Q',
-  rav_ric:       'Ravioles Ricotta',
-  emp_carne_ac:  'Emp Carne con Aceitunas (cod 101)',
-  emp_carne_sin: 'Emp Carne sin Aceituna (cod 104)',
-  emp_pollo:     'Emp Pollo (cod 110)',
-  emp_qyc:       'Emp Queso y Cebolla (cod 118)',
-  emp_4q:        'Emp Cuatro Quesos (cod 122)',
-  emp_cap:       'Emp Capresse (cod 123)',
-  emp_esp:       'Emp Espinaca (cod 127)',
-  emp_qya:       'Emp Queso y Aceituna (cod 116)',
-  emp_jyq:       'Emp Jamon y Queso (cod 113)',
-  emp_pyc:       'Emp Panceta Puerro y Queso (cod 120)',
-  emp_polloch:   'Emp Pollo con Champi (cod 111)',
-  emp_int:       'Emp Integral (cod 117)',
-  emp_chil:      'Emp Chilena',
-  pizza:         'Pizzas',
-  alf_neg:       'Alf Chocolate Negro',
-  alf_blanc:     'Alf Chocolate Blanco',
-  alf_mixto:     'Alf Mixtos',
-  pack_vinovino: 'Pack Vino & Vino',
-  pack_vinograpa:'Pack Vino & Grapamiel',
-  pollo_sp:      'Pollo al Spiedo',
-  mila_pollo:    'Milanesa de Pollo',
-  barr_mixta:    'Barritas Mixtas',
-  barr_narchoco: 'Barritas Naranja y Chocolate',
-  barr_frutos:   'Barritas Frutos Rojos',
-  barr_brownie:  'Barritas Brownie',
-  barr_arandano: 'Barritas Arándanos',
-  barr_coco:     'Barritas Coco',
-  barr_menta:    'Barritas Menta',
-  box_cafe:      'Box Cafeteria',
-  queso_rallG:   'Queso Rayado Artesano Grueso',
-  queso_rallF:   'Queso Rayado Artesano Fino',
+/* ─────────────────────────────────────────────────────────────
+   CATÁLOGO DINÁMICO — desde la hoja "Precios".
+   Cada grupo del acordeón lleva su emoji/imagen y (opcional) una
+   card de vitrina. Si aparece un grupo nuevo en el Sheet que no
+   está acá, igual se muestra con un emoji genérico.
+   ───────────────────────────────────────────────────────────── */
+const GRUPOS_META = {
+  Pasta:     { emoji: '🍝' },
+  Empanadas: { emoji: '🥟' },
+  Pizzas:    { emoji: '🍕' },
+  Alfajores: { emoji: '🍫', img: '/pedidos/alfa-emoji.jpg' },
+  Vinos:     { emoji: '🍷' },
+  Pollo:     { emoji: '🍗' },
+  Milanesa:  { emoji: '🍖' },
+  Barritas:  { emoji: '🍫' },
+  Box:       { emoji: '🍪' },
+  Queso:     { emoji: '🧀' },
 }
+const EMOJI_GENERICO = '🛒'
 
-// Lista plana: { columna, nombre, precio }
-const TODOS_LOS_ITEMS = productos.flatMap(p => p.items)
-const CATALOGO = Object.entries(MAPA_COLUMNAS).map(([id, columna]) => {
-  const item = TODOS_LOS_ITEMS.find(i => i.id === id)
-  return { id, columna, nombre: item?.nombre?.trim() || columna, precio: item?.precio || 0 }
-})
+// Vitrina (paso 0): las cards con foto grande. Se filtran según los
+// grupos que realmente existan en el catálogo.
+const VITRINA = [
+  { grupo: 'Pasta',     nombre: 'Pasta',            imagen: '/pedidos/pasta.jpg',            descripcion: 'Tallarines, ñoquis, ravioles y más' },
+  { grupo: 'Empanadas', nombre: 'Empanadas',        imagen: '/pedidos/empanadas.jpg',        descripcion: 'Distintos rellenos' },
+  { grupo: 'Pizzas',    nombre: 'Pizzas',           imagen: '/pedidos/pizza.jpg',            descripcion: 'Caja de 2 unidades' },
+  { grupo: 'Alfajores', nombre: 'Alfajores Neg.',   imagen: '/pedidos/alfa-choco-negro.jpg',  descripcion: 'Caja x10 chocolate negro' },
+  { grupo: 'Alfajores', nombre: 'Alfajores Blan.',  imagen: '/pedidos/alfa-choco-blanco.jpg', descripcion: 'Caja x10 chocolate blanco' },
+  { grupo: 'Vinos',     nombre: 'Vinos',            imagen: '/pedidos/vino.jpg',             descripcion: 'Pack x2 unidades' },
+  { grupo: 'Pollo',     nombre: 'Pollo al Spiedo',  imagen: '/pedidos/pollo-spiedo.jpg',     descripcion: 'Pollo al Spiedo' },
+  { grupo: 'Milanesa',  nombre: 'Milanesa de Pollo',imagen: '/pedidos/mila-pollo.jpg',       descripcion: 'Milanesa de Pollo' },
+  { grupo: 'Barritas',  nombre: 'Barritas',         imagen: '/pedidos/barritas.jpg',         descripcion: 'Caja surtida o mismo gusto x12 unidades' },
+  { grupo: 'Box',       nombre: 'Box Cafetería',    imagen: '/pedidos/box-cafeteria.jpg',    descripcion: 'Medialunas, Rolls de Canela y Cookies' },
+]
+
+const categorias = ['Infantiles', 'U13', 'U14', 'U15', 'U16', 'U18', 'U21', 'Senior', 'Inter Masc', 'Plus 35', 'Entrenadores']
 
 function parsearCSV(texto) {
   const filas = texto.trim().split('\n')
@@ -181,7 +71,8 @@ function parsearCSV(texto) {
   })
 }
 
-
+// Parser robusto: respeta comillas, comas dentro de comillas y detecta
+// separador (tab o coma). Devuelve array de objetos usando la fila 0 como headers.
 function parsearCSVSeguro(texto) {
   const primeraLinea = texto.split('\n')[0] || ''
   const sep = primeraLinea.includes('\t') ? '\t' : ','
@@ -206,14 +97,15 @@ function parsearCSVSeguro(texto) {
     }
   }
   if (campo !== '' || fila.length > 0) { fila.push(campo); filas.push(fila) }
-  if (filas.length === 0) return []
+  if (filas.length === 0) return { headers: [], filas: [] }
 
   const headers = filas[0].map(h => h.trim())
-  return filas.slice(1).map(f => {
+  const objetos = filas.slice(1).map(f => {
     const obj = {}
     headers.forEach((h, i) => obj[h] = (f[i] || '').trim())
     return obj
   })
+  return { headers, filas: objetos }
 }
 
 // Normaliza texto para comparar nombres (sin tildes, sin dobles espacios, minúsculas)
@@ -245,9 +137,8 @@ export default function Pedidos() {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null)
   const [jugadoraSeleccionada, setJugadoraSeleccionada] = useState(null)
   const [jugadoras, setJugadoras] = useState([])
-  // const [jugadorasDelUsuario, setJugadorasDelUsuario] = useState([])   // ← desactivado
   const [productoAbierto, setProductoAbierto] = useState(null)
-  const [cantidades, setCantidades] = useState({})
+  const [cantidades, setCantidades] = useState({})   // clave = columna técnica
   const [guardando, setGuardando] = useState(false)
   const [mostrarConfirmCancel, setMostrarConfirmCancel] = useState(false)
   const [pedidosActivos, setPedidosActivos] = useState(true)
@@ -255,22 +146,93 @@ export default function Pedidos() {
   const [fechaFin, setFechaFin] = useState('')
   const [cedulaIngresada, setCedulaIngresada] = useState('')
   const [cedulaError, setCedulaError] = useState(false)
-  const [verificando, setVerificando] = useState(false)
-  // const [mailLogueado, setMailLogueado] = useState(null)   // ← desactivado
   const [nombreSolicitante, setNombreSolicitante] = useState('')
   const [nombreError, setNombreError] = useState(false)
+
+  /* ── CATÁLOGO DINÁMICO (desde Precios + validación contra pedidos) ── */
+  const [catalogo, setCatalogo] = useState([])          // items válidos e inválidos, con flag error
+  const [gruposOrden, setGruposOrden] = useState([])    // orden de grupos según el Sheet
+  const [cargandoCatalogo, setCargandoCatalogo] = useState(true)
+  const [catalogoError, setCatalogoError] = useState('')
 
   /* ── HISTORIAL DE PEDIDOS (solo lectura, panel lateral) ── */
   const [historial, setHistorial] = useState([])
   const [cargandoHistorial, setCargandoHistorial] = useState(false)
   const [historialError, setHistorialError] = useState('')
-  const [panelAbierto, setPanelAbierto] = useState(false)      // toggle en mobile
-  const [previoAbierto, setPrevioAbierto] = useState(null)     // índice del pedido anterior expandido
+  const [panelAbierto, setPanelAbierto] = useState(false)
+  const [previoAbierto, setPrevioAbierto] = useState(null)
 
   useEffect(() => {
     fetch(JUGADORAS_URL)
       .then(res => res.text())
       .then(texto => setJugadoras(parsearCSV(texto)))
+  }, [])
+
+  /* ── Carga el catálogo desde Precios y lo valida contra los headers
+        reales de la hoja pedidos. Un producto queda marcado con "error"
+        si su columna no existe en pedidos o si le falta el precio. ── */
+  useEffect(() => {
+    const cargarCatalogo = async () => {
+      setCargandoCatalogo(true)
+      setCatalogoError('')
+      try {
+        // 1. Headers reales de la hoja pedidos (fila 0)
+        const resPed = await fetch(PEDIDOS_URL)
+        const textoPed = await resPed.text()
+        const { headers: headersPedidos } = parsearCSVSeguro(textoPed)
+        const setHeaders = new Set(headersPedidos.map(h => h.trim()))
+
+        // 2. Filas de Precios
+        const resPre = await fetch(PRECIOS_URL)
+        const textoPre = await resPre.text()
+        const { filas: filasPrecios } = parsearCSVSeguro(textoPre)
+
+        const items = []
+        const ordenGrupos = []
+
+        filasPrecios.forEach(f => {
+          const nombre  = (f.producto || '').trim()
+          if (!nombre) return   // fila vacía → se ignora
+
+          const activo  = (f.activo || '').trim().toUpperCase()
+          if (activo === 'FALSE') return   // producto apagado → no se muestra
+
+          const columna   = (f.columna || '').trim()
+          const grupo     = (f.grupo || '').trim() || 'Otros'
+          const unidad    = (f.unidad || '').trim()
+          const precioRaw = (f.precios || '').trim().replace(/[^\d]/g, '')
+          const precio    = precioRaw === '' ? null : parseInt(precioRaw, 10)
+
+          // ── VALIDACIÓN → sistema de ERROR ──
+          let error = null
+          if (!columna || !setHeaders.has(columna)) {
+            error = 'columna'   // la columna no coincide con ningún header de pedidos
+          } else if (precio === null || isNaN(precio)) {
+            error = 'precio'    // falta el precio o no es un número
+          }
+
+          if (!ordenGrupos.includes(grupo)) ordenGrupos.push(grupo)
+
+          items.push({
+            id: columna || `sin-col-${nombre}`,   // clave interna
+            columna,
+            nombre,
+            unidad,
+            precio,
+            grupo,
+            error,
+          })
+        })
+
+        setCatalogo(items)
+        setGruposOrden(ordenGrupos)
+      } catch (err) {
+        console.error('Error cargando catálogo:', err)
+        setCatalogoError('No pudimos cargar el catálogo. Reintentá en un ratito.')
+      }
+      setCargandoCatalogo(false)
+    }
+    cargarCatalogo()
   }, [])
 
   useEffect(() => {
@@ -290,19 +252,34 @@ export default function Pedidos() {
         const dateInicio = new Date(`${aI}-${mI}-${dI}`)
         const dateFin = new Date(`${aF}-${mF}-${dF}`)
         dateFin.setHours(23, 59, 59)
-        // ← MODO PRUEBA: si viene la clave en la URL, se ignora el rango de fechas
         setPedidosActivos(modoPrueba || (hoy >= dateInicio && hoy <= dateFin))
       })
   }, [modoPrueba])
 
-  // ← desactivado: este useEffect buscaba las jugadoras asociadas al mail del usuario logueado
+  /* ── Derivados del catálogo ── */
+  // Items válidos (sin error) agrupados por grupo, respetando el orden del Sheet
+  const gruposCatalogo = gruposOrden.map(g => ({
+    grupo: g,
+    meta: GRUPOS_META[g] || { emoji: EMOJI_GENERICO },
+    items: catalogo.filter(i => i.grupo === g),
+  })).filter(g => g.items.length > 0)
+
+  // ¿Hay errores en el catálogo? (para el cartel de aviso)
+  const itemsConError = catalogo.filter(i => i.error)
+
+  // Solo los grupos que existen en el catálogo aparecen en la vitrina
+  const gruposPresentes = new Set(gruposOrden)
+  const vitrinaVisible = VITRINA.filter(v => gruposPresentes.has(v.grupo))
+
+  // Mapa columna → item, para lecturas rápidas
+  const itemPorColumna = {}
+  catalogo.forEach(i => { if (i.columna) itemPorColumna[i.columna] = i })
 
   const cancelar = () => {
     setMostrarConfirmCancel(false)
     setPaso(0)
     setCategoriaSeleccionada(null)
     setJugadoraSeleccionada(null)
-    // setJugadorasDelUsuario([])   // ← desactivado
     setCantidades({})
     setProductoAbierto(null)
     setCedulaIngresada('')
@@ -315,13 +292,12 @@ export default function Pedidos() {
     setPrevioAbierto(null)
   }
 
-  // ← desactivado: jugadorasFiltradas se usaba en el paso 2
+  const sumar = (col) => setCantidades(prev => ({ ...prev, [col]: (prev[col] || 0) + 1 }))
+  const restar = (col) => setCantidades(prev => ({ ...prev, [col]: Math.max(0, (prev[col] || 0) - 1) }))
 
-  const sumar = (id) => setCantidades(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }))
-  const restar = (id) => setCantidades(prev => ({ ...prev, [id]: Math.max(0, (prev[id] || 0) - 1) }))
-
-  const itemsConCantidad = productos.flatMap(p => p.items).filter(i => cantidades[i.id] > 0)
-  const total = itemsConCantidad.reduce((acc, i) => acc + i.precio * cantidades[i.id], 0)
+  // Items del pedido actual (con cantidad > 0). Se lee del catálogo por columna.
+  const itemsConCantidad = catalogo.filter(i => !i.error && cantidades[i.columna] > 0)
+  const total = itemsConCantidad.reduce((acc, i) => acc + i.precio * cantidades[i.columna], 0)
 
   /* ── Carga el historial de una jugadora desde la hoja "pedidos" ── */
   const cargarHistorial = async (jugadora) => {
@@ -332,13 +308,15 @@ export default function Pedidos() {
     try {
       const res = await fetch(PEDIDOS_URL)
       const texto = await res.text()
-      const filas = parsearCSVSeguro(texto)
+      const { filas } = parsearCSVSeguro(texto)
 
       const nombreCompleto = normalizar(`${jugadora.nombre} ${jugadora.apellido}`)
       const propios = filas.filter(f => normalizar(f.jugadora) === nombreCompleto)
 
       const armados = propios.map(f => {
-        const items = CATALOGO
+        // Recorro el catálogo y busco la cantidad en la columna correspondiente
+        const items = catalogo
+          .filter(c => !c.error && c.columna)
           .map(c => ({ ...c, cantidad: parseInt(f[c.columna], 10) || 0 }))
           .filter(c => c.cantidad > 0)
         const subtotal = items.reduce((acc, i) => acc + i.cantidad * i.precio, 0)
@@ -366,48 +344,19 @@ export default function Pedidos() {
   const confirmarPedido = async () => {
     setGuardando(true)
     const fecha = new Date().toLocaleDateString('es-UY')
+
+    // Armo la fila SOLO con columnas técnicas válidas del catálogo.
+    // 'total' NO se escribe (lo calcula la fórmula del Sheet).
     const fila = {
       fecha,
       categoria: categoriaSeleccionada,
       jugadora: `${jugadoraSeleccionada.nombre} ${jugadoraSeleccionada.apellido}`,
-      'Tallarines Espinaca': cantidades['tal_esp'] || 0,
-      'Tallarines Yema': cantidades['tal_yema'] || 0,
-      'Ñoquis': cantidades['noquis'] || 0,
-      'Ravioles Verdura': cantidades['rav_verd'] || 0,
-      'Ravioles J&Q': cantidades['rav_jq'] || 0,
-      'Ravioles Ricotta': cantidades['rav_ric'] || 0,
-      'Emp Carne con Aceitunas (cod 101)': cantidades['emp_carne_ac'] || 0,
-      'Emp Carne sin Aceituna (cod 104)': cantidades['emp_carne_sin'] || 0,
-      'Emp Pollo (cod 110)': cantidades['emp_pollo'] || 0,
-      'Emp Queso y Cebolla (cod 118)': cantidades['emp_qyc'] || 0,
-      'Emp Cuatro Quesos (cod 122)': cantidades['emp_4q'] || 0,
-      'Emp Capresse (cod 123)': cantidades['emp_cap'] || 0,
-      'Emp Espinaca (cod 127)': cantidades['emp_esp'] || 0,
-      'Emp Queso y Aceituna (cod 116)': cantidades['emp_qya'] || 0,
-      'Emp Jamon y Queso (cod 113)': cantidades['emp_jyq'] || 0,
-      'Emp Panceta Puerro y Queso (cod 120)': cantidades['emp_pyc'] || 0,
-      'Emp Pollo con Champi (cod 111)': cantidades['emp_polloch'] || 0,
-      'Emp Integral (cod 117)': cantidades['emp_int'] || 0,
-      'Emp Chilena': cantidades['emp_chil'] || 0,
-      'Pizzas': cantidades['pizza'] || 0,
-      'Alf Chocolate Negro': cantidades['alf_neg'] || 0,
-      'Alf Chocolate Blanco': cantidades['alf_blanc'] || 0,
-      'Alf Mixtos': cantidades['alf_mixto'] || 0,
-      'Pack Vino & Vino': cantidades['pack_vinovino'] || 0,
-      'Pack Vino & Grapamiel': cantidades['pack_vinograpa'] || 0,
-      'Pollo al Spiedo': cantidades['pollo_sp'] || 0,
-      'Milanesa de Pollo': cantidades['mila_pollo'] || 0,
-      'Barritas Mixtas': cantidades['barr_mixta'] || 0,
-      'Barritas Naranja y Chocolate': cantidades['barr_narchoco'] || 0,
-      'Barritas Frutos Rojos': cantidades['barr_frutos'] || 0,
-      'Barritas Brownie': cantidades['barr_brownie'] || 0,
-      'Barritas Arándanos': cantidades['barr_arandano'] || 0,
-      'Barritas Coco': cantidades['barr_coco'] || 0,
-      'Barritas Menta': cantidades['barr_menta'] || 0,
-      'Box Cafeteria': cantidades['box_cafe'] || 0,
-      'Queso Rayado Artesano Grueso': cantidades['queso_rallG'] || 0,
-      'Queso Rayado Artesano Fino': cantidades['queso_rallF'] || 0,
     }
+    catalogo.forEach(i => {
+      if (i.error || !i.columna) return
+      fila[i.columna] = cantidades[i.columna] || 0
+    })
+
     try {
       await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
@@ -420,7 +369,7 @@ export default function Pedidos() {
     }
 
     const resumenLineas = itemsConCantidad.map(item =>
-      `- ${item.nombre}: ${cantidades[item.id]} x $${item.precio} = $${(cantidades[item.id] * item.precio).toLocaleString()}`
+      `- ${item.nombre}: ${cantidades[item.columna]} x $${item.precio} = $${(cantidades[item.columna] * item.precio).toLocaleString()}`
     ).join('\n')
 
     const mails = [
@@ -467,10 +416,10 @@ export default function Pedidos() {
             <>
               {itemsConCantidad.map(item => (
                 <div key={item.id} className="pedidos__panel-fila">
-                  <span className="pedidos__panel-cant">{cantidades[item.id]}×</span>
+                  <span className="pedidos__panel-cant">{cantidades[item.columna]}×</span>
                   <span className="pedidos__panel-nombre">{item.nombre}</span>
                   <span className="pedidos__panel-precio">
-                    ${(cantidades[item.id] * item.precio).toLocaleString()}
+                    ${(cantidades[item.columna] * item.precio).toLocaleString()}
                   </span>
                 </div>
               ))}
@@ -549,11 +498,46 @@ export default function Pedidos() {
           </div>
         )}
 
+        {/* ← AVISO DE ERRORES DE CATÁLOGO: solo visible en modo prueba,
+             para que no confunda a las jugadoras pero vos lo veas al testear */}
+        {modoPrueba && itemsConError.length > 0 && (
+          <div style={{
+            background: '#fff3f3',
+            border: '2px solid #d33',
+            color: '#a00',
+            padding: '0.8rem 1rem',
+            borderRadius: '6px',
+            margin: '0 0 1rem',
+            fontSize: '0.9rem'
+          }}>
+            <strong>⚠️ {itemsConError.length} producto(s) con ERROR en el Sheet:</strong>
+            <ul style={{ margin: '0.4rem 0 0', paddingLeft: '1.2rem' }}>
+              {itemsConError.map(i => (
+                <li key={i.id}>
+                  <strong>{i.nombre}</strong> — {i.error === 'columna'
+                    ? `la columna "${i.columna || '(vacía)'}" no existe en la hoja pedidos`
+                    : 'le falta el precio'}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {/* PASO 0 — VITRINA */}
         {paso === 0 && (
           <div className="pedidos__paso">
             <h1 className="pedidos__titulo">PEDIDOS</h1>
             <p className="pedidos__sub">Apoyá a las chicas comprando nuestros productos</p>
+
+            {cargandoCatalogo && (
+              <p className="pedidos__sub" style={{ textAlign: 'center' }}>Cargando productos...</p>
+            )}
+            {catalogoError && (
+              <div className="pedidos__cerrado">
+                <p className="pedidos__cerrado-texto">{catalogoError}</p>
+              </div>
+            )}
+
             {!pedidosActivos && (
               <div className="pedidos__cerrado">
                 <span className="pedidos__cerrado-icon">🔒</span>
@@ -564,8 +548,8 @@ export default function Pedidos() {
               </div>
             )}
             <div className="pedidos__vitrina">
-              {vitrina.map(item => (
-                <div key={item.id} className="pedidos__vitrina-card" style={{ cursor: pedidosActivos ? 'pointer' : 'default' }} onClick={() => { if (pedidosActivos) handlePedir() }}>
+              {vitrinaVisible.map(item => (
+                <div key={item.grupo} className="pedidos__vitrina-card" style={{ cursor: pedidosActivos ? 'pointer' : 'default' }} onClick={() => { if (pedidosActivos) handlePedir() }}>
                   <div className="pedidos__vitrina-img-wrap">
                     <img src={item.imagen} alt={item.nombre} className="pedidos__vitrina-img" />
                   </div>
@@ -652,7 +636,6 @@ export default function Pedidos() {
           </div>
         )}
 
-
         {/* PASO 3 — PRODUCTOS + PANEL LATERAL */}
         {paso === 3 && (
           <div className="pedidos__paso">
@@ -666,30 +649,35 @@ export default function Pedidos() {
             <div className="pedidos__layout">
               <div className="pedidos__layout-main">
                 <div className="pedidos__productos">
-                  {productos.map(p => (
-                    <div key={p.id} className="pedidos__producto">
+                  {gruposCatalogo.map(g => (
+                    <div key={g.grupo} className="pedidos__producto">
                       <button
-                        className={`pedidos__producto-header ${productoAbierto === p.id ? 'pedidos__producto-header--activo' : ''}`}
-                        onClick={() => setProductoAbierto(productoAbierto === p.id ? null : p.id)}>
+                        className={`pedidos__producto-header ${productoAbierto === g.grupo ? 'pedidos__producto-header--activo' : ''}`}
+                        onClick={() => setProductoAbierto(productoAbierto === g.grupo ? null : g.grupo)}>
                         <span>
-                          {p.img
-                            ? <img src={p.img} alt="" style={{ height: '1.2em', verticalAlign: '-0.2em', marginRight: '0.3em' }} />
-                            : `${p.emoji} `}
-                          {p.nombre}
-                        </span>                        <span>{productoAbierto === p.id ? '▲' : '▼'}</span>
+                          {g.meta.img
+                            ? <img src={g.meta.img} alt="" style={{ height: '1.2em', verticalAlign: '-0.2em', marginRight: '0.3em' }} />
+                            : `${g.meta.emoji} `}
+                          {g.grupo}
+                        </span>
+                        <span>{productoAbierto === g.grupo ? '▲' : '▼'}</span>
                       </button>
-                      {productoAbierto === p.id && (
+                      {productoAbierto === g.grupo && (
                         <div className="pedidos__items">
-                          {p.items.map(item => (
+                          {g.items.map(item => (
                             <div key={item.id} className="pedidos__item">
                               <div className="pedidos__item-info">
                                 <span className="pedidos__item-nombre">{item.nombre}</span>
-                                {item.precio > 0 && <span className="pedidos__item-precio">${item.precio} / {item.unidad}</span>}
+                                {item.precio > 0 && (
+                                  <span className="pedidos__item-precio">
+                                    ${item.precio}{item.unidad ? ` / ${item.unidad}` : ''}
+                                  </span>
+                                )}
                               </div>
                               <div className="pedidos__contador">
-                                <button onClick={() => restar(item.id)}>−</button>
-                                <span>{cantidades[item.id] || 0}</span>
-                                <button onClick={() => sumar(item.id)}>+</button>
+                                <button onClick={() => restar(item.columna)}>−</button>
+                                <span>{cantidades[item.columna] || 0}</span>
+                                <button onClick={() => sumar(item.columna)}>+</button>
                               </div>
                             </div>
                           ))}
@@ -728,8 +716,8 @@ export default function Pedidos() {
                   {itemsConCantidad.map(item => (
                     <div key={item.id} className="pedidos__resumen-fila">
                       <span>{item.nombre}</span>
-                      <span>{cantidades[item.id]} x ${item.precio}</span>
-                      <span>${(cantidades[item.id] * item.precio).toLocaleString()}</span>
+                      <span>{cantidades[item.columna]} x ${item.precio}</span>
+                      <span>${(cantidades[item.columna] * item.precio).toLocaleString()}</span>
                     </div>
                   ))}
                   <div className="pedidos__resumen-total">
