@@ -124,6 +124,32 @@
   margin-bottom: 2rem;
 }
 
+/* Fila del título con el botón de editar a la derecha */
+.documentos__titulo-fila {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.documentos__editar-btn {
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+  margin-top: 0.6rem;
+}
+
+.documentos__editar-btn:hover { opacity: 0.85; }
+
 .documentos__grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -206,6 +232,161 @@
   margin-top: 3rem;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   MODAL DE EDICIÓN (lápiz → formulario)
+   ═══════════════════════════════════════════════════════════ */
+
+.documentos__modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.documentos__modal {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.documentos__modal-titulo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--blue);
+  margin: 0;
+}
+
+.documentos__modal-sub {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Datos fijos (nombre / cédula), no editables */
+.documentos__form-fijos {
+  background: #f4f4f4;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.documentos__form-fijos > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.95rem;
+}
+
+.documentos__form-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.documentos__form-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  color: var(--purple);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.documentos__form-input,
+.documentos__form-file {
+  padding: 0.7rem 0.9rem;
+  border: 2px solid var(--blue);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: 'Barlow', sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.documentos__form-input:focus {
+  outline: none;
+  border-color: var(--purple);
+}
+
+.documentos__form-file {
+  background: white;
+  cursor: pointer;
+}
+
+.documentos__form-progreso {
+  color: var(--blue);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+}
+
+.documentos__modal-btns {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.documentos__btn-sec {
+  flex: 1;
+  background: #eee;
+  color: #555;
+  border: none;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.documentos__btn-sec:hover:not(:disabled) { background: #e0e0e0; }
+.documentos__btn-sec:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* El botón CONFIRMAR reusa .documentos__cedula-btn pero dentro del modal va en fila */
+.documentos__modal-btns .documentos__cedula-btn { flex: 1; width: auto; }
+
+/* Cartel de confirmado dentro del modal */
+.documentos__confirmado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.6rem;
+  padding: 1rem 0;
+}
+
+.documentos__confirmado-icon { font-size: 3.5rem; }
+
+.documentos__confirmado h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--green);
+  margin: 0;
+}
+
+.documentos__confirmado p { margin: 0; color: #444; }
+
+/* ═══════════════════════════════════════════════════════════
+   MÓVIL
+   ═══════════════════════════════════════════════════════════ */
+
 @media (max-width: 768px) {
   .documentos {
     padding: 0 1rem;
@@ -227,5 +408,54 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.3rem;
+  }
+
+  /* El título y el botón editar en columna, botón a lo ancho */
+  .documentos__titulo-fila {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .documentos__editar-btn {
+    width: 100%;
+    margin-top: 0;
+    padding: 0.8rem 1rem;
+    font-size: 1.05rem;
+  }
+
+  /* Modal casi a pantalla completa, cómodo para el pulgar */
+  .documentos__modal {
+    padding: 1.3rem;
+    border-radius: 14px;
+    max-height: 92vh;
+    gap: 0.9rem;
+  }
+
+  .documentos__modal-titulo { font-size: 1.5rem; }
+
+  .documentos__form-fijos > div {
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  /* Botones del modal apilados para que sean grandes y fáciles de tocar */
+  .documentos__modal-btns {
+    flex-direction: column-reverse;
+    gap: 0.6rem;
+  }
+
+  .documentos__modal-btns .documentos__cedula-btn,
+  .documentos__btn-sec {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    font-size: 1.1rem;
+  }
+
+  /* Inputs y file un poco más altos para el toque */
+  .documentos__form-input,
+  .documentos__form-file {
+    padding: 0.85rem 0.9rem;
+    font-size: 1.05rem;
   }
 }

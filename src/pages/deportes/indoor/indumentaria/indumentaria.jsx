@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import './indumentaria.css'
 import PageFooter from '../../../../components/pageFooter/pageFooter'
 import BackButton from '../../../../components/backButton/backButton'
@@ -6,7 +6,8 @@ import BackButton from '../../../../components/backButton/backButton'
 // import { loginConGoogle } from '../../firebase'
 import emailjs from '@emailjs/browser'
 
-const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
+// La cédula ya NO se valida contra un CSV público. Se valida contra el Apps Script,
+// que lee la hoja Jugadoras (privada) y devuelve solo los datos de esa jugadora.
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0fMCKVhwObqTGS_T2Ju3HX6ACrRR-y4ObgScg-mHCKvZ4OgGYfe1nlTKhB8oqsHU7/exec'
 
 const talles = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
@@ -27,17 +28,6 @@ const productos = [
   { id: 6, nombre: 'Cuellito Polar',            precio: 200,  imagen: '/indumentaria/cuellito.png',       talleUnico: true  },
   { id: 8, nombre: 'Medias',                    precio: 160,  imagen: '/indumentaria/medias.png',         talleUnico: true  },
 ]
-
-function parsearCSV(texto) {
-  const filas = texto.trim().split('\n')
-  const headers = filas[0].split(',').map(h => h.trim())
-  return filas.slice(1).map(fila => {
-    const valores = fila.split(',').map(v => v.trim())
-    const obj = {}
-    headers.forEach((h, i) => obj[h] = valores[i] || '')
-    return obj
-  })
-}
 
 function ProductoCard({ producto, onAgregar }) {
   const [talleSeleccionado, setTalleSeleccionado] = useState(null)
@@ -204,25 +194,12 @@ export default function Indumentaria() {
   const [paso, setPaso] = useState('tienda')
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null)
   const [jugadoraSeleccionada, setJugadoraSeleccionada] = useState(null)
-  const [jugadoras, setJugadoras] = useState([])
   const [guardando, setGuardando] = useState(false)
   const [mostrarResumen, setMostrarResumen] = useState(false)
   const [cedulaIngresada, setCedulaIngresada] = useState('')
-  const [cedulaError, setCedulaError] = useState(false)
-  const [verificando, setVerificando] = useState(false)
+  const [cedulaError, setCedulaError] = useState('')       // guarda el mensaje exacto
   const [nombreSolicitante, setNombreSolicitante] = useState('')
   const [nombreError, setNombreError] = useState(false)
-
-  useEffect(() => {
-    fetch(JUGADORAS_URL)
-      .then(res => res.text())
-      .then(texto => setJugadoras(parsearCSV(texto)))
-  }, [])
-
-  const jugadorasFiltradas = jugadoras.filter(j =>
-    j.categoria?.trim().toLowerCase() === categoriaSeleccionada?.trim().toLowerCase() &&
-    j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
-  )
 
   const agregarAlCarrito = (producto, talle, numeroPersonalizacion) => {
     setCarrito(prev => {
@@ -249,6 +226,7 @@ export default function Indumentaria() {
     setPaso('identificacion')
   }
 
+  // Guarda el pedido (recibe la jugadora ya validada por el Apps Script)
   const confirmarPedidoConJugadora = async (jugadora) => {
     setGuardando(true)
     const fecha = new Date().toLocaleDateString('es-UY')
@@ -345,13 +323,50 @@ export default function Indumentaria() {
     setPaso('confirmado')
   }
 
+  /* ── Valida la cédula contra el Apps Script y, si es correcta, guarda el pedido.
+        Los entrenadores no pueden hacer pedidos. ── */
+  const validarCedulaYGuardar = async () => {
+    const cedulaLimpia = cedulaIngresada.replace(/[.\-\s]/g, '').trim()
+    if (!cedulaLimpia) { setCedulaError('❌ Ingresá la cédula.'); return }
+    if (!nombreSolicitante.trim()) { setNombreError(true); return }
+
+    setGuardando(true)
+    setCedulaError('')
+    try {
+      const url = `${APPS_SCRIPT_URL}?_accion=validarCedula&cedula=${encodeURIComponent(cedulaLimpia)}`
+      const res = await fetch(url)
+      const data = await res.json()
+
+      if (!data.ok || (data.posicion || '').toUpperCase().trim() === 'ENTRENADOR') {
+        setCedulaError('❌ No encontramos una jugadora con esa cédula.')
+        setGuardando(false)
+        return
+      }
+
+      const jugadora = {
+        nombre: data.nombre,
+        apellido: data.apellido,
+        categoria: data.categoria,
+        mail: data.mail,
+        mail2: data.mail2,
+      }
+      setJugadoraSeleccionada(jugadora)
+      setCategoriaSeleccionada((data.categoria || '').trim())
+      await confirmarPedidoConJugadora(jugadora)   // guarda y pasa a "confirmado"
+    } catch (err) {
+      console.error('Error validando cédula:', err)
+      setCedulaError('❌ No pudimos verificar la cédula. Reintentá en un ratito.')
+      setGuardando(false)
+    }
+  }
+
   const resetear = () => {
     setPaso('tienda')
     setCarrito([])
     setCategoriaSeleccionada(null)
     setJugadoraSeleccionada(null)
     setCedulaIngresada('')
-    setCedulaError(false)
+    setCedulaError('')
     setNombreSolicitante('')
     setNombreError(false)
   }
@@ -444,9 +459,9 @@ export default function Indumentaria() {
                 className={`indumentaria__cedula-input ${cedulaError ? 'indumentaria__cedula-input--error' : ''}`}
                 placeholder="12345678"
                 value={cedulaIngresada}
-                onChange={(e) => { setCedulaIngresada(e.target.value); setCedulaError(false) }}
+                onChange={(e) => { setCedulaIngresada(e.target.value); setCedulaError('') }}
               />
-              {cedulaError && <p className="indumentaria__cedula-error">❌ No encontramos una jugadora con esa cédula.</p>}
+              {cedulaError && <p className="indumentaria__cedula-error">{cedulaError}</p>}
             </div>
 
             <div style={{ marginBottom: '1.5rem' }}>
@@ -466,62 +481,10 @@ export default function Indumentaria() {
             <button
               className="indumentaria__btn-pedir"
               disabled={!cedulaIngresada || !nombreSolicitante || guardando}
-              onClick={async () => {
-                const cedulaLimpia = cedulaIngresada.replace(/[.\-\s]/g, '').trim()
-                const jugadora = jugadoras.find(j =>
-                  j.cedula?.replace(/[.\-\s]/g, '').trim() === cedulaLimpia &&
-                  j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
-                )
-                if (!jugadora) { setCedulaError(true); return }
-                if (!nombreSolicitante.trim()) { setNombreError(true); return }
-                setJugadoraSeleccionada(jugadora)
-                setCategoriaSeleccionada(jugadora.categoria?.trim())
-                await confirmarPedidoConJugadora(jugadora)
-              }}
+              onClick={validarCedulaYGuardar}
             >
               {guardando ? 'GUARDANDO...' : 'CONFIRMAR PEDIDO ✓'}
             </button>
-          </div>
-        )}
-
-        {/* PASO CATEGORIA — se mantiene para uso futuro */}
-        {paso === 'categoria' && (
-          <div className="indumentaria__paso">
-            <button className="indumentaria__volver" onClick={() => setPaso('tienda')}>← Volver</button>
-            <h2 className="indumentaria__titulo">Seleccioná la categoría</h2>
-            <div className="indumentaria__categorias">
-              {categorias.map(cat => (
-                <button key={cat} className="indumentaria__cat-btn"
-                  onClick={() => { setCategoriaSeleccionada(cat); setPaso('jugadora') }}>
-                  {cat}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* PASO JUGADORA — se mantiene para uso futuro */}
-        {paso === 'jugadora' && (
-          <div className="indumentaria__paso">
-            <button className="indumentaria__volver" onClick={() => setPaso('categoria')}>← Volver</button>
-            <h2 className="indumentaria__titulo">{categoriaSeleccionada}</h2>
-            <p className="indumentaria__subtitulo">Seleccionar jugador/a</p>
-            {jugadorasFiltradas.length === 0 ? (
-              <p>No hay jugadoras en esta categoría</p>
-            ) : (
-              <div className="indumentaria__select-wrap">
-                <select className="indumentaria__select" defaultValue=""
-                  onChange={(e) => {
-                    const idx = e.target.value
-                    if (idx !== '') { setJugadoraSeleccionada(jugadorasFiltradas[idx]); setPaso('cedula') }
-                  }}>
-                  <option value="" disabled>Seleccionar jugador/a...</option>
-                  {jugadorasFiltradas.map((j, i) => (
-                    <option key={i} value={i}>{j.nombre} {j.apellido}</option>
-                  ))}
-                </select>
-              </div>
-            )}
           </div>
         )}
 

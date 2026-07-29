@@ -5,7 +5,9 @@ import PageFooter from '../../../../components/pageFooter/pageFooter'
 import BackButton from '../../../../components/backButton/backButton'
 import { useAuth } from '../../../../context/AuthContext'
 
-const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
+// Hoja "Publico": solo datos públicos (nombre, apellido, categoria, cumple,
+// numero, posicion, foto jugadora). NO trae cédula ni documentos.
+const PUBLICO_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=474355060&single=true&output=csv'
 
 const categoriaInfo = {
   'U13':        { nombre: 'Sub 13',               url: 'https://fuhandball.com/tablas-u13-femenino-26/' },
@@ -44,7 +46,7 @@ export default function Categoria() {
   const { usuario } = useAuth()
 
   useEffect(() => {
-    fetch(JUGADORAS_URL)
+    fetch(PUBLICO_URL)
       .then(res => res.text())
       .then(texto => {
         const todas = parsearCSV(texto)

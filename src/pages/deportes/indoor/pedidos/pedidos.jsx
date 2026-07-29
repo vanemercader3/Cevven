@@ -7,7 +7,8 @@ import emailjs from '@emailjs/browser'
 // import { useAuth } from '../../context/AuthContext'   // ← desactivado: antes se usaba para login con Google
 // import { loginConGoogle } from '../../firebase'       // ← desactivado: antes se usaba para login con Google
 
-const JUGADORAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=1550165418&single=true&output=csv'
+// La cédula ya NO se valida contra un CSV público. Se valida contra el Apps Script,
+// que lee la hoja Jugadoras (privada) y devuelve solo los datos de esa jugadora.
 const PEDIDOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=327502795&single=true&output=csv'
 const PRECIOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=337517673&single=true&output=csv'
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0fMCKVhwObqTGS_T2Ju3HX6ACrRR-y4ObgScg-mHCKvZ4OgGYfe1nlTKhB8oqsHU7/exec'
@@ -59,17 +60,6 @@ const VITRINA = [
 ]
 
 const categorias = ['Infantiles', 'U13', 'U14', 'U15', 'U16', 'U18', 'U21', 'Senior', 'Inter Masc', 'Plus 35', 'Entrenadores']
-
-function parsearCSV(texto) {
-  const filas = texto.trim().split('\n')
-  const headers = filas[0].split(',').map(h => h.trim())
-  return filas.slice(1).map(fila => {
-    const valores = fila.split(',').map(v => v.trim())
-    const obj = {}
-    headers.forEach((h, i) => obj[h] = valores[i] || '')
-    return obj
-  })
-}
 
 // Parser robusto: respeta comillas, comas dentro de comillas y detecta
 // separador (tab o coma). Devuelve array de objetos usando la fila 0 como headers.
@@ -136,7 +126,6 @@ export default function Pedidos() {
   const [paso, setPaso] = useState(0)
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null)
   const [jugadoraSeleccionada, setJugadoraSeleccionada] = useState(null)
-  const [jugadoras, setJugadoras] = useState([])
   const [productoAbierto, setProductoAbierto] = useState(null)
   const [cantidades, setCantidades] = useState({})   // clave = columna técnica
   const [guardando, setGuardando] = useState(false)
@@ -145,7 +134,8 @@ export default function Pedidos() {
   const [fechaInicio, setFechaInicio] = useState('')
   const [fechaFin, setFechaFin] = useState('')
   const [cedulaIngresada, setCedulaIngresada] = useState('')
-  const [cedulaError, setCedulaError] = useState(false)
+  const [cedulaError, setCedulaError] = useState('')       // guarda el mensaje exacto
+  const [verificando, setVerificando] = useState(false)    // spinner al validar cédula
   const [nombreSolicitante, setNombreSolicitante] = useState('')
   const [nombreError, setNombreError] = useState(false)
 
@@ -161,12 +151,6 @@ export default function Pedidos() {
   const [historialError, setHistorialError] = useState('')
   const [panelAbierto, setPanelAbierto] = useState(false)
   const [previoAbierto, setPrevioAbierto] = useState(null)
-
-  useEffect(() => {
-    fetch(JUGADORAS_URL)
-      .then(res => res.text())
-      .then(texto => setJugadoras(parsearCSV(texto)))
-  }, [])
 
   /* ── Carga el catálogo desde Precios y lo valida contra los headers
         reales de la hoja pedidos. Un producto queda marcado con "error"
@@ -271,10 +255,6 @@ export default function Pedidos() {
   const gruposPresentes = new Set(gruposOrden)
   const vitrinaVisible = VITRINA.filter(v => gruposPresentes.has(v.grupo))
 
-  // Mapa columna → item, para lecturas rápidas
-  const itemPorColumna = {}
-  catalogo.forEach(i => { if (i.columna) itemPorColumna[i.columna] = i })
-
   const cancelar = () => {
     setMostrarConfirmCancel(false)
     setPaso(0)
@@ -283,7 +263,7 @@ export default function Pedidos() {
     setCantidades({})
     setProductoAbierto(null)
     setCedulaIngresada('')
-    setCedulaError(false)
+    setCedulaError('')
     setNombreSolicitante('')
     setNombreError(false)
     setHistorial([])
@@ -339,6 +319,51 @@ export default function Pedidos() {
   const handlePedir = () => {
     if (!pedidosActivos) return
     setPaso(1)
+  }
+
+  /* ── Valida la cédula contra el Apps Script (hoja Jugadoras privada).
+        Si es correcta, devuelve nombre, apellido, categoría y mails.
+        Los entrenadores no pueden hacer pedidos. ── */
+  const validarCedulaYContinuar = async () => {
+    const cedulaLimpia = cedulaIngresada.replace(/[.\-\s]/g, '').trim()
+    if (!cedulaLimpia) { setCedulaError('❌ Ingresá la cédula.'); return }
+    if (!nombreSolicitante.trim()) { setNombreError(true); return }
+
+    setVerificando(true)
+    setCedulaError('')
+    try {
+      const url = `${APPS_SCRIPT_URL}?_accion=validarCedula&cedula=${encodeURIComponent(cedulaLimpia)}`
+      const res = await fetch(url)
+      const data = await res.json()
+
+      if (!data.ok) {
+        setCedulaError('❌ No encontramos una jugadora con esa cédula.')
+        setVerificando(false)
+        return
+      }
+      if ((data.posicion || '').toUpperCase().trim() === 'ENTRENADOR') {
+        setCedulaError('❌ No encontramos una jugadora con esa cédula.')
+        setVerificando(false)
+        return
+      }
+
+      // Guardo la jugadora con la misma forma que usaba el resto del código
+      const jugadora = {
+        nombre: data.nombre,
+        apellido: data.apellido,
+        categoria: data.categoria,
+        mail: data.mail,
+        mail2: data.mail2,
+      }
+      setJugadoraSeleccionada(jugadora)
+      setCategoriaSeleccionada((data.categoria || '').trim())
+      cargarHistorial(jugadora)   // ← trae los pedidos anteriores para el panel lateral
+      setPaso(3)
+    } catch (err) {
+      console.error('Error validando cédula:', err)
+      setCedulaError('❌ No pudimos verificar la cédula. Reintentá en un ratito.')
+    }
+    setVerificando(false)
   }
 
   const confirmarPedido = async () => {
@@ -549,7 +574,7 @@ export default function Pedidos() {
             )}
             <div className="pedidos__vitrina">
               {vitrinaVisible.map(item => (
-                <div key={item.grupo} className="pedidos__vitrina-card" style={{ cursor: pedidosActivos ? 'pointer' : 'default' }} onClick={() => { if (pedidosActivos) handlePedir() }}>
+                <div key={item.nombre} className="pedidos__vitrina-card" style={{ cursor: pedidosActivos ? 'pointer' : 'default' }} onClick={() => { if (pedidosActivos) handlePedir() }}>
                   <div className="pedidos__vitrina-img-wrap">
                     <img src={item.imagen} alt={item.nombre} className="pedidos__vitrina-img" />
                   </div>
@@ -589,9 +614,10 @@ export default function Pedidos() {
                 className={`pedidos__cedula-input ${cedulaError ? 'pedidos__cedula-input--error' : ''}`}
                 placeholder="12345678"
                 value={cedulaIngresada}
-                onChange={(e) => { setCedulaIngresada(e.target.value); setCedulaError(false) }}
+                onChange={(e) => { setCedulaIngresada(e.target.value); setCedulaError('') }}
+                onKeyDown={(e) => e.key === 'Enter' && !verificando && validarCedulaYContinuar()}
               />
-              {cedulaError && <p className="pedidos__cedula-error">❌ No encontramos una jugadora con esa cédula.</p>}
+              {cedulaError && <p className="pedidos__cedula-error">{cedulaError}</p>}
             </div>
 
             <div className="pedidos__cedula-wrap" style={{ marginTop: '1.2rem' }}>
@@ -609,28 +635,10 @@ export default function Pedidos() {
             <div style={{ marginTop: '1.5rem' }}>
               <button
                 className="pedidos__btn-pedir"
-                disabled={!cedulaIngresada || !nombreSolicitante}
-                onClick={() => {
-                  const cedulaLimpia = cedulaIngresada.replace(/[.\-\s]/g, '').trim()
-                  const jugadora = jugadoras.find(j =>
-                    j.cedula?.replace(/[.\-\s]/g, '').trim() === cedulaLimpia &&
-                    j.posicion?.toUpperCase().trim() !== 'ENTRENADOR'
-                  )
-                  if (!jugadora) {
-                    setCedulaError(true)
-                    return
-                  }
-                  if (!nombreSolicitante.trim()) {
-                    setNombreError(true)
-                    return
-                  }
-                  setJugadoraSeleccionada(jugadora)
-                  setCategoriaSeleccionada(jugadora.categoria?.trim())
-                  cargarHistorial(jugadora)   // ← trae los pedidos anteriores para el panel lateral
-                  setPaso(3)
-                }}
+                disabled={!cedulaIngresada || !nombreSolicitante || verificando}
+                onClick={validarCedulaYContinuar}
               >
-                CONTINUAR →
+                {verificando ? 'VERIFICANDO...' : 'CONTINUAR →'}
               </button>
             </div>
           </div>
