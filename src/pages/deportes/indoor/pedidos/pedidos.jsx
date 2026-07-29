@@ -78,9 +78,9 @@ const productos = [
   {
     id: 'alfajores', nombre: 'Alfajores', emoji: '🍫', img: '/pedidos/alfa-emoji.jpg',
     items: [
-      { id: 'alf_neg',   nombre: 'Chocolate Negro (x10)',  precio: 550, unidad: 'caja' },
-      { id: 'alf_blanc', nombre: 'Chocolate Blanco (x10)', precio: 550, unidad: 'caja' },
-      { id: 'alf_mixto', nombre: 'Caja Mixta (x10)', precio: 550, unidad: 'caja' },
+      { id: 'alf_neg',   nombre: 'Alfa. Choco. Negro (x10)',  precio: 550, unidad: 'caja' },
+      { id: 'alf_blanc', nombre: 'Alfa. Choco. Blanco (x10)', precio: 550, unidad: 'caja' },
+      { id: 'alf_mixto', nombre: 'Alfa. Caja Mixta (x10)',    precio: 550, unidad: 'caja' },
     ]
   },
   {
