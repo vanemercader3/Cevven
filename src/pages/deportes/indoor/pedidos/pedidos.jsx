@@ -24,12 +24,7 @@ const EMAILJS_KEY = '6mltD84C_kgv-YML0'
    ───────────────────────────────────────────────────────────── */
 const CLAVE_MODO_PRUEBA = 'stage'
 
-/* ─────────────────────────────────────────────────────────────
-   CATÁLOGO DINÁMICO — desde la hoja "Precios".
-   Cada grupo del acordeón lleva su emoji/imagen y (opcional) una
-   card de vitrina. Si aparece un grupo nuevo en el Sheet que no
-   está acá, igual se muestra con un emoji genérico.
-   ───────────────────────────────────────────────────────────── */
+
 const GRUPOS_META = {
   Pasta:     { emoji: '🍝' },
   Empanadas: { emoji: '🥟' },
@@ -39,13 +34,11 @@ const GRUPOS_META = {
   Pollo:     { emoji: '🍗' },
   Milanesa:  { emoji: '🍖' },
   Barritas:  { emoji: '🍫' },
-  Box:       { emoji: '🍪' },
-  Queso:     { emoji: '🧀' },
+  Box:       { emoji: '🍪', titulo: 'Box Cafetería' },
 }
 const EMOJI_GENERICO = '🛒'
 
-// Vitrina (paso 0): las cards con foto grande. Se filtran según los
-// grupos que realmente existan en el catálogo.
+
 const VITRINA = [
   { grupo: 'Pasta',     nombre: 'Pasta',            imagen: '/pedidos/pasta.jpg',            descripcion: 'Tallarines, ñoquis, ravioles y más' },
   { grupo: 'Empanadas', nombre: 'Empanadas',        imagen: '/pedidos/empanadas.jpg',        descripcion: 'Distintos rellenos' },
@@ -666,7 +659,7 @@ export default function Pedidos() {
                           {g.meta.img
                             ? <img src={g.meta.img} alt="" style={{ height: '1.2em', verticalAlign: '-0.2em', marginRight: '0.3em' }} />
                             : `${g.meta.emoji} `}
-                          {g.grupo}
+                          {g.meta.titulo || g.grupo}
                         </span>
                         <span>{productoAbierto === g.grupo ? '▲' : '▼'}</span>
                       </button>
