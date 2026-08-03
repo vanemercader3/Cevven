@@ -23,6 +23,7 @@ const noticias = [
 const fotos = [
   { img: '/pedidos/empanadas.jpg',        nombre: 'Empanadas',        contain: true },
   { img: '/pedidos/pollo-spiedo.jpg',     nombre: 'Pollo al Spiedo',  contain: true },
+  { img: '/pedidos/arrollado-pollo.jpg',  nombre: 'Arrollado de Pollo', contain: true },
   { img: '/pedidos/pasta.jpg',            nombre: 'Pasta',            contain: true },
   { img: '/pedidos/pizza.jpg',            nombre: 'Pizza',            contain: true },
   { img: '/pedidos/alfa-choco-blanco.jpg',nombre: 'Alfajores Blanco', contain: true },

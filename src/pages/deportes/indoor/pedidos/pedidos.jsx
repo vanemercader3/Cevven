@@ -47,6 +47,7 @@ const VITRINA = [
   { grupo: 'Alfajores', nombre: 'Alfajores Blan.',  imagen: '/pedidos/alfa-choco-blanco.jpg', descripcion: 'Caja x10 chocolate blanco' },
   { grupo: 'Vinos',     nombre: 'Vinos',            imagen: '/pedidos/vino.jpg',             descripcion: 'Pack x2 unidades' },
   { grupo: 'Pollo',     nombre: 'Pollo al Spiedo',  imagen: '/pedidos/pollo-spiedo.jpg',     descripcion: 'Pollo al Spiedo' },
+  { grupo: 'Pollo',     nombre: 'Arrollado de Pollo', imagen: '/pedidos/arrollado-pollo.jpg', descripcion: 'Arrollado de Pollo' },
   { grupo: 'Milanesa',  nombre: 'Milanesa de Pollo',imagen: '/pedidos/mila-pollo.jpg',       descripcion: 'Milanesa de Pollo' },
   { grupo: 'Barritas',  nombre: 'Barritas',         imagen: '/pedidos/barritas.jpg',         descripcion: 'Caja surtida o mismo gusto x12 unidades' },
   { grupo: 'Box',       nombre: 'Box Cafetería',    imagen: '/pedidos/box-cafeteria.jpg',    descripcion: 'Medialunas, Rolls de Canela y Cookies' },
