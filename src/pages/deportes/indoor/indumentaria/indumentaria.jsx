@@ -22,7 +22,7 @@ const productos = [
   { id: 2, nombre: 'Canguro',                   precio: 1100, imagen: '/indumentaria/canguro.png',        talleUnico: false},
   { id: 3, nombre: 'Medio Cierre Polar',        precio: 1000, imagen: '/indumentaria/polar.png',          talleUnico: false, personalizacion: true  },
   { id: 4, nombre: 'Camperón de Invierno',      precio: 1800, imagen: '/indumentaria/camperon.png',       talleUnico: false },
-  { id: 5, nombre: 'Remera de Entrenamiento',   precio: 500,  imagen: '/indumentaria/remera.png',
+  { id: 5, nombre: 'Remera de Entrenamiento',   precio: 590,  imagen: '/indumentaria/remera.png',
     imagenes: ['/indumentaria/remera.png', '/indumentaria/remera-atras.png'],                             talleUnico: false },
   { id: 7, nombre: 'Campera con Cierre',        precio: 1100, imagen: '/indumentaria/campera-cierre.png', talleUnico: false, personalizacion: true },
   { id: 6, nombre: 'Cuellito Polar',            precio: 200,  imagen: '/indumentaria/cuellito.png',       talleUnico: true  },
@@ -220,6 +220,8 @@ export default function Indumentaria() {
 
   const total = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0)
   const totalPrendas = carrito.reduce((a, i) => a + i.cantidad, 0)
+  // Prendas que cuentan para el regalo del Cuellito Polar: las medias (id 8) NO cuentan
+  const prendasParaRegalo = carrito.reduce((a, i) => i.id === 8 ? a : a + i.cantidad, 0)
 
   const handleConfirmarResumen = () => {
     setMostrarResumen(false)
@@ -244,7 +246,7 @@ export default function Indumentaria() {
       }
     })
 
-    if (totalPrendas >= 2) {
+    if (prendasParaRegalo >= 2) {
       const cuellitosEnCarrito = agrupado['Cuellito Polar'] || []
       if (cuellitosEnCarrito.length === 0) {
         agrupado['Cuellito Polar'] = [{ cantidad: 1, talle: 'Único', numero: null, regalo: true }]
@@ -419,7 +421,7 @@ export default function Indumentaria() {
                       onClick={() => setCarrito(prev => prev.filter(i => i.key !== item.key))}>✕</button>
                   </div>
                 ))}
-                {totalPrendas >= 2 && (
+                {prendasParaRegalo >= 2 && (
                   <div className="indumentaria__resumen-fila indumentaria__resumen-regalo">
                     <span>🎁 Cuellito Polar — REGALO</span>
                     <span>1 x $0</span><span>$0</span><span></span>
