@@ -4,7 +4,7 @@
   justify-content: space-between;
   height: 100px;
   padding: 0 3rem;
-  background: linear-gradient(to left, var(--red), var(--pink), var(--orange), var(--yellow), var(--green), var(--blue), var(--purple));
+  background: linear-gradient(135deg, var(--blue), var(--purple));
   position: sticky;
   top: 0;
   z-index: 9998;
