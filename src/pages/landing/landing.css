@@ -54,12 +54,13 @@
   z-index: 3;
   display: flex;
   gap: 1.5rem;
-  width: min(1000px, 100%);
-  height: clamp(360px, 58vh, 560px);
+  /* más angosto que antes; el 93vh evita que se pasen de alto en pantallas bajas */
+  width: min(760px, 100%, 93vh);
 }
 .inicio__panel {
   position: relative;
   flex: 1;
+  aspect-ratio: 3 / 4; /* más alto que ancho */
   border-radius: 24px;
   overflow: hidden;
   text-decoration: none;
@@ -140,14 +141,13 @@
     padding: 2rem 1rem;
   }
   .inicio__panels {
-    flex-direction: row;     
-    height: auto;
+    flex-direction: row;
     gap: 0.7rem;
     width: 100%;
   }
   .inicio__panel {
-    flex: 1;                 
-    aspect-ratio: 3 / 4;      
+    flex: 1;
+    aspect-ratio: 3 / 4;
     min-height: 0;
     border-radius: 16px;
   }
@@ -155,7 +155,7 @@
     padding: 1rem 0.5rem;
   }
   .inicio__panel-label {
-    font-size: 1rem;        
+    font-size: 1rem;
     line-height: 1.1;
   }
   .inicio__panel-cta {
