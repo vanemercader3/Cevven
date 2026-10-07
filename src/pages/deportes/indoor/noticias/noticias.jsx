@@ -1,124 +1,346 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Pencil, Trash2, Plus, Check, X, Star } from 'lucide-react'
 import './noticias.css'
 import PageFooter from '../../../../components/pageFooter/pageFooter'
 import BackButton from '../../../../components/backButton/backButton'
+import { useAuth } from '../../../../context/AuthContext'
+import {
+  obtenerNoticias,
+  soyAdmin,
+  agregarNoticia,
+  editarNoticia,
+  borrarNoticia,
+  destacarNoticia,
+  esDestacada,
+  urlImagen,
+} from './noticiasApi'
 
-export const noticias = [
-  {
-    id: 1,
-    titulo: 'CEVVEN en la preselección U15 femenina',
-    mini: 'Seis jugadoras de CEVVEN fueron convocadas a la preselección uruguaya U15 rumbo al Torneo Sur-Centro 2026 en Paraguay.',
-    foto: '/noticias/preseleccion-u15.jpg',
-    texto: `El trabajo formativo de CEVVEN Handball volvió a tener reconocimiento nacional con varias jugadoras convocadas a la preselección uruguaya U15 femenina de handball. La celeste comenzó su preparación rumbo al Torneo Sur-Centro 2026 que se disputará en Paraguay.
-
-Las jugadoras de CEVVEN convocadas en esta primera lista son:
-
-- Agostina Cayafa
-- Agustina Cardarello
-- Camila Rosenzweig
-- Isabel De Armas
-- Josefina Esmériz
-- Laura De Carolis
-
-La preselección es dirigida por Victoria Pérez Paz y tendrá sus entrenamientos en Montevideo como parte del proceso de preparación para la competencia internacional.
-
-Estas convocatorias reflejan una vez más el gran momento que atraviesa el handball formativo de CEVVEN y el crecimiento sostenido de sus categorías juveniles. El club continúa aportando jugadoras a los procesos de selección nacional, consolidándose como una de las instituciones con mayor presencia en el desarrollo del handball femenino uruguayo.`
-  },
-  {
-    id: 2,
-    titulo: 'La escuelita de CEVVEN crece junto al Liceo 26',
-    mini: 'La escuelita de handball sigue creciendo en el Liceo Nº 26 Líber Falco, formando a los jugadores del futuro.',
-    foto: '/noticias/escuelita.jpg',
-    texto: `La escuelita de handball de CEVVEN continúa desarrollándose en las instalaciones del Liceo Nº 26 Líber Falco, un espacio que se ha transformado en punto de encuentro para niños, niñas y jóvenes que dan sus primeros pasos en este deporte.
-
-Con entrenamientos semanales y actividades recreativas, la propuesta busca fomentar el compañerismo, la integración y el aprendizaje deportivo desde edades tempranas. Además de enseñar fundamentos técnicos del handball, el proyecto apunta a generar hábitos saludables y fortalecer valores como el respeto y el trabajo en equipo.
-
-Las canchas polideportivas del liceo han sido parte importante del crecimiento de la actividad deportiva en la zona, permitiendo el desarrollo de distintas disciplinas y encuentros juveniles.
-
-CEVVEN viene consolidando un fuerte trabajo en formativas y muchas de las jugadoras que hoy integran categorías competitivas comenzaron justamente en la escuelita del club. El crecimiento del handball femenino y juvenil en Uruguay también impulsa este tipo de espacios comunitarios y educativos.`
-  },
-  {
-    id: 3,
-    titulo: 'CEVVEN apuesta al crecimiento integral del deporte',
-    mini: 'Con presencia en seis categorías, el club fortalece su estructura deportiva y humana en los torneos oficiales de la FUH.',
-    foto: '/noticias/crecimiento.jpg',
-    texto: `Con presencia en categorías U14, U16, U18, U21, intermedia y senior, CEVVEN continúa fortaleciendo su estructura deportiva y su participación en los torneos oficiales de la Federación Uruguaya de Handball.
-
-El club viene trabajando no solo en la competencia, sino también en la formación humana y deportiva de sus jugadores y jugadoras, generando espacios de entrenamiento, convivencia y desarrollo.
-
-La actividad constante en redes sociales refleja el crecimiento de la comunidad handbolera del club y el acompañamiento de familias, entrenadores y seguidores.
-
-CEVVEN sigue consolidándose como una referencia del handball en Uruguay, apostando a un modelo de club que combina la exigencia deportiva con los valores del deporte formativo.`
-  },
-  {
-    id: 4,
-    titulo: 'El handball uruguayo crece y CEVVEN es parte',
-    mini: 'Más clubes, más categorías y mayor participación juvenil. CEVVEN consolida su presencia en los campeonatos nacionales.',
-    foto: '/noticias/handball-uruguay.jpg',
-    texto: `El crecimiento del handball en Uruguay continúa siendo una realidad, con más clubes, más categorías y mayor participación juvenil en todo el país.
-
-Dentro de ese escenario, CEVVEN ha logrado consolidar una fuerte presencia en los campeonatos nacionales, aportando jugadoras y jugadores a distintas competencias federadas.
-
-El desarrollo de las divisiones formativas y la continuidad de los procesos deportivos son parte fundamental del crecimiento del club, que continúa apostando al trabajo serio y sostenido.
-
-La pasión por el handball sigue creciendo fecha a fecha, y CEVVEN es uno de los protagonistas de ese proceso en el handball uruguayo.`
-  },
-  {
-    id: 5,
-    titulo: 'El gran presente del handball uruguayo impulsa a CEVVEN',
-    mini: 'Uruguay crece en el handball internacional y ese impulso llega directamente a los clubes formadores como CEVVEN.',
-    foto: '/noticias/presente-handball.jpg',
-    texto: `El handball uruguayo atraviesa un momento de crecimiento tanto a nivel local como internacional. Uruguay logró importantes resultados recientes en competencias internacionales y continúa consolidando su presencia en torneos mundiales y regionales.
-
-Ese crecimiento también impacta directamente en clubes formadores como CEVVEN, que trabajan diariamente en el desarrollo de nuevas generaciones de deportistas.
-
-La mejora de las competencias nacionales y el aumento de la actividad juvenil generan un contexto muy positivo para el futuro del handball en Uruguay.
-
-CEVVEN forma parte activa de ese proceso, aportando jugadoras a selecciones nacionales y consolidando un modelo de trabajo que ya da sus frutos en las canchas.`
-  },
-  {
-    id: 6,
-    titulo: 'Gira internacional en Argentina para 2026',
-    mini: 'CEVVEN confirmó una gira en Buenos Aires para fines de setiembre, con partidos amistosos para las categorías Menores, Cadetas y Juveniles.',
-    foto: '/noticias/gira-argentina.jpg',
-    texto: `CEVVEN Handball continúa apostando al crecimiento deportivo y humano de sus categorías formativas y ya confirmó gestiones para realizar una gira internacional en Buenos Aires durante 2026.
-
-La actividad está prevista para fines de setiembre y estará destinada a las categorías Menores, Cadetas y Juveniles, quienes disputarán partidos amistosos frente a equipos argentinos de gran nivel competitivo. Gran parte de la estadía y de los encuentros deportivos se desarrollarán en el complejo de Vicente López (VILO), uno de los escenarios tradicionales del handball argentino.
-
-"Intentamos que esta experiencia sea lo más completa posible, tanto en lo deportivo, social y de esparcimiento", expresa la comunicación enviada a las familias del club.
-
-El itinerario tentativo prevé la salida el miércoles 30 de setiembre y el regreso durante la madrugada del lunes 5 de octubre. Durante la gira, cada categoría disputará entre tres y cuatro encuentros amistosos frente a instituciones argentinas.
-
-Desde CEVVEN también destacan la importancia de este tipo de experiencias para fortalecer vínculos, generar compañerismo y continuar impulsando el desarrollo integral de las jugadoras. La institución viene trabajando en distintas iniciativas para facilitar la participación, incluyendo rifas y mecanismos de apoyo económico para las familias.`
-  },
-]
+const MENSAJES_ERROR = {
+  sin_sesion: 'Tu sesión se cerró. Volvé a ingresar con Google.',
+  no_autorizado: 'Tu usuario no tiene permiso para editar noticias.',
+  faltan_datos: 'Completá el título y el resumen.',
+  no_existe: 'Esa noticia ya no existe (puede que otra persona la haya borrado).',
+}
+const avisarError = (err) => alert(MENSAJES_ERROR[err.message] || 'Algo salió mal. Probá de nuevo en un ratito.')
 
 export default function Noticias() {
   const navigate = useNavigate()
+  const { usuario } = useAuth()
+
+  const [noticias, setNoticias] = useState([])
+  const [cargando, setCargando] = useState(true)
+  const [errorCarga, setErrorCarga] = useState(false)
+
+  const [esAdmin, setEsAdmin] = useState(false)
+  const [modoEdicion, setModoEdicion] = useState(false)
+  const [guardando, setGuardando] = useState(false)
+
+  // edición individual
+  const [editandoId, setEditandoId] = useState(null)
+  const [borradorTitulo, setBorradorTitulo] = useState('')
+  const [borradorMini, setBorradorMini] = useState('')
+
+  // borrar
+  const [aBorrar, setABorrar] = useState(null)
+
+  // agregar
+  const [agregando, setAgregando] = useState(false)
+  const [nuevoTitulo, setNuevoTitulo] = useState('')
+  const [nuevoMini, setNuevoMini] = useState('')
+
+  // ── Cargar noticias ──
+  useEffect(() => {
+    obtenerNoticias()
+      .then(setNoticias)
+      .catch(() => setErrorCarga(true))
+      .finally(() => setCargando(false))
+  }, [])
+
+  // ── ¿La logueada es superadmin? ──
+  useEffect(() => {
+    if (!usuario) {
+      setEsAdmin(false)
+      setModoEdicion(false)
+      return
+    }
+    soyAdmin()
+      .then(admin => {
+        console.log('[noticias] ¿superadmin?', admin, '—', usuario.email)
+        setEsAdmin(admin)
+      })
+      .catch(err => {
+        console.error('[noticias] No se pudo verificar superadmin:', err)
+        setEsAdmin(false)
+      })
+  }, [usuario])
+
+  // ── Editar ──
+  const empezarEdicion = (n) => {
+    setEditandoId(n.id)
+    setBorradorTitulo(n.titulo)
+    setBorradorMini(n.mini)
+  }
+
+  const cancelarEdicion = () => {
+    setEditandoId(null)
+    setBorradorTitulo('')
+    setBorradorMini('')
+  }
+
+  const guardarEdicion = async () => {
+    const titulo = borradorTitulo.trim()
+    const mini = borradorMini.trim()
+    if (!titulo || !mini) return alert(MENSAJES_ERROR.faltan_datos)
+
+    setGuardando(true)
+    try {
+      await editarNoticia(editandoId, titulo, mini)
+      setNoticias(prev => prev.map(n => (n.id === editandoId ? { ...n, titulo, mini } : n)))
+      cancelarEdicion()
+    } catch (err) {
+      avisarError(err)
+    } finally {
+      setGuardando(false)
+    }
+  }
+
+  // ── Destacar (solo una a la vez; tocar la destacada la desmarca) ──
+  const toggleDestacada = async (n) => {
+    const valor = !esDestacada(n)
+    setGuardando(true)
+    try {
+      await destacarNoticia(n.id, valor)
+      setNoticias(prev => prev.map(x => ({ ...x, destacada: valor && x.id === n.id ? 'TRUE' : '' })))
+    } catch (err) {
+      avisarError(err)
+    } finally {
+      setGuardando(false)
+    }
+  }
+
+  // ── Borrar ──
+  const confirmarBorrar = async () => {
+    setGuardando(true)
+    try {
+      await borrarNoticia(aBorrar.id)
+      setNoticias(prev => prev.filter(n => n.id !== aBorrar.id))
+      setABorrar(null)
+    } catch (err) {
+      avisarError(err)
+    } finally {
+      setGuardando(false)
+    }
+  }
+
+  // ── Agregar ──
+  const cancelarAgregar = () => {
+    setAgregando(false)
+    setNuevoTitulo('')
+    setNuevoMini('')
+  }
+
+  const guardarNueva = async () => {
+    const titulo = nuevoTitulo.trim()
+    const mini = nuevoMini.trim()
+    if (!titulo || !mini) return alert(MENSAJES_ERROR.faltan_datos)
+
+    setGuardando(true)
+    try {
+      const { noticia } = await agregarNoticia(titulo, mini)
+      setNoticias(prev => [...prev, noticia])
+      cancelarAgregar()
+    } catch (err) {
+      avisarError(err)
+    } finally {
+      setGuardando(false)
+    }
+  }
+
+  const salirDeEdicion = () => {
+    setModoEdicion(false)
+    cancelarEdicion()
+    cancelarAgregar()
+  }
 
   return (
     <>
       <main className="noticias">
         <BackButton />
         <h1 className="noticias__titulo">NOTICIAS</h1>
-        <div className="noticias__grid">
-          {noticias.map((n) => (
-            <div key={n.id} className="noticias__card" onClick={() => navigate(`/noticias/${n.id}`)}>
-              {n.foto && (
-                <img
-                  src={n.foto}
-                  alt={n.titulo}
-                  className="noticias__card-foto"
-                  onError={(e) => { e.target.style.display = 'none' }}
-                />
-              )}
-              <h2 className="noticias__card-titulo">{n.titulo}</h2>
-              <p className="noticias__card-resumen">{n.mini}</p>
-              <span className="noticias__card-link">MÁS ›</span>
-            </div>
-          ))}
-        </div>
+
+        {esAdmin && (
+          <div className="noticias__barra-admin">
+            <button
+              className={`noticias__btn-editar ${modoEdicion ? 'noticias__btn-editar--activo' : ''}`}
+              onClick={() => (modoEdicion ? salirDeEdicion() : setModoEdicion(true))}
+            >
+              {modoEdicion ? <><Check size={18} /> Terminar edición</> : <><Pencil size={18} /> Editar</>}
+            </button>
+          </div>
+        )}
+
+        {cargando && <p className="noticias__estado">Cargando noticias...</p>}
+        {errorCarga && <p className="noticias__estado">No se pudieron cargar las noticias. Probá recargar la página.</p>}
+
+        {!cargando && !errorCarga && noticias.length === 0 && !modoEdicion && (
+          <p className="noticias__estado">Todavía no hay noticias.</p>
+        )}
+
+        {!cargando && !errorCarga && (
+          <div className="noticias__grid">
+            {noticias.map((n) => {
+              const editandoEsta = editandoId === n.id
+              const destacada = esDestacada(n)
+
+              return (
+                <div
+                  key={n.id}
+                  className={`noticias__card ${modoEdicion ? 'noticias__card--edicion' : ''} ${modoEdicion && destacada ? 'noticias__card--destacada' : ''}`}
+                  onClick={() => !modoEdicion && navigate(`/noticias/${n.id}`)}
+                >
+                  {modoEdicion && !editandoEsta && (
+                    <div className="noticias__card-acciones">
+                      <button
+                        className={`noticias__icono noticias__icono--destacar ${destacada ? 'noticias__icono--destacar-on' : ''}`}
+                        title={destacada ? 'Quitar de destacada' : 'Destacar en el home'}
+                        onClick={() => toggleDestacada(n)}
+                        disabled={guardando}
+                      >
+                        <Star size={16} fill={destacada ? 'currentColor' : 'none'} />
+                      </button>
+                      <button
+                        className="noticias__icono"
+                        title="Editar noticia"
+                        onClick={() => empezarEdicion(n)}
+                        disabled={guardando}
+                      >
+                        <Pencil size={16} />
+                      </button>
+                      <button
+                        className="noticias__icono noticias__icono--borrar"
+                        title="Borrar noticia"
+                        onClick={() => setABorrar(n)}
+                        disabled={guardando}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  )}
+
+                  {modoEdicion && destacada && (
+                    <span className="noticias__badge-destacada">
+                      <Star size={13} fill="currentColor" /> Destacada en el home
+                    </span>
+                  )}
+
+                  {n.foto && (
+                    <img
+                      src={urlImagen(n.foto)}
+                      alt={n.titulo}
+                      className="noticias__card-foto"
+                      onError={(e) => { e.target.style.display = 'none' }}
+                    />
+                  )}
+
+                  {editandoEsta ? (
+                    <div className="noticias__form">
+                      <label className="noticias__label">Título</label>
+                      <input
+                        className="noticias__input"
+                        value={borradorTitulo}
+                        onChange={(e) => setBorradorTitulo(e.target.value)}
+                        maxLength={150}
+                      />
+                      <label className="noticias__label">Resumen</label>
+                      <textarea
+                        className="noticias__textarea"
+                        value={borradorMini}
+                        onChange={(e) => setBorradorMini(e.target.value)}
+                        rows={4}
+                        maxLength={400}
+                      />
+                      <div className="noticias__form-botones">
+                        <button className="noticias__btn noticias__btn--secundario" onClick={cancelarEdicion} disabled={guardando}>
+                          <X size={16} /> Cancelar
+                        </button>
+                        <button className="noticias__btn noticias__btn--primario" onClick={guardarEdicion} disabled={guardando}>
+                          <Check size={16} /> {guardando ? 'Guardando...' : 'Guardar'}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <h2 className="noticias__card-titulo">{n.titulo}</h2>
+                      <p className="noticias__card-resumen">{n.mini}</p>
+                      {!modoEdicion && <span className="noticias__card-link">MÁS ›</span>}
+                    </>
+                  )}
+                </div>
+              )
+            })}
+
+            {/* ── Agregar nueva ── */}
+            {modoEdicion && (
+              agregando ? (
+                <div className="noticias__card noticias__card--nueva-form">
+                  <div className="noticias__form">
+                    <label className="noticias__label">Título</label>
+                    <input
+                      className="noticias__input"
+                      value={nuevoTitulo}
+                      onChange={(e) => setNuevoTitulo(e.target.value)}
+                      maxLength={150}
+                      autoFocus
+                    />
+                    <label className="noticias__label">Resumen</label>
+                    <textarea
+                      className="noticias__textarea"
+                      value={nuevoMini}
+                      onChange={(e) => setNuevoMini(e.target.value)}
+                      rows={4}
+                      maxLength={400}
+                    />
+                    <div className="noticias__form-botones">
+                      <button className="noticias__btn noticias__btn--secundario" onClick={cancelarAgregar} disabled={guardando}>
+                        <X size={16} /> Cancelar
+                      </button>
+                      <button className="noticias__btn noticias__btn--primario" onClick={guardarNueva} disabled={guardando}>
+                        <Check size={16} /> {guardando ? 'Guardando...' : 'Agregar'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <button className="noticias__card noticias__card--nueva" onClick={() => setAgregando(true)}>
+                  <Plus size={32} />
+                  <span>Agregar nueva noticia</span>
+                </button>
+              )
+            )}
+          </div>
+        )}
       </main>
+
+      {/* ── Confirmación de borrado ── */}
+      {aBorrar && (
+        <div className="noticias__modal-fondo" onClick={() => !guardando && setABorrar(null)}>
+          <div className="noticias__modal" onClick={(e) => e.stopPropagation()}>
+            <Trash2 size={32} className="noticias__modal-icono" />
+            <p className="noticias__modal-texto">¿Seguro que querés borrar esta noticia?</p>
+            <p className="noticias__modal-titulo">«{aBorrar.titulo}»</p>
+            <div className="noticias__form-botones noticias__form-botones--centro">
+              <button className="noticias__btn noticias__btn--secundario" onClick={() => setABorrar(null)} disabled={guardando}>
+                No
+              </button>
+              <button className="noticias__btn noticias__btn--peligro" onClick={confirmarBorrar} disabled={guardando}>
+                {guardando ? 'Borrando...' : 'Sí, borrar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <PageFooter />
     </>
   )

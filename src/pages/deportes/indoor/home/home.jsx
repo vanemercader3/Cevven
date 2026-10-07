@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
+import { obtenerNoticias, esDestacada, urlImagen } from '../noticias/noticiasApi'
 import './home.css'
 
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=0&single=true&output=csv'
@@ -12,13 +14,28 @@ const imagenes = [
   { src: '/home/hero7.png', position: 'center center' },
 ]
 
-const noticias = [
-  { tag: 'NOTICIAS', titulo: '¡Arrancó la Escuelita de Handball!', img: '/noticias/noticia1.jpg', destacada: true },
-  { tag: 'NOTICIAS', titulo: 'Convocadas al Mundial Sub 18', img: '/noticias/noticia2.jpg' },
-  { tag: 'NOTICIAS', titulo: 'CEVVEN campeón del Súper 4', img: '/noticias/noticia3.jpg' },
-  { tag: 'NOTICIAS', titulo: 'Nueva indumentaria temporada 2026', img: '/noticias/noticia4.jpg' },
-  { tag: 'NOTICIAS', titulo: 'Termino la temporada de Beach Handball', img: '/noticias/noticia5.jpg' },
-]
+// Foto de una noticia; si no tiene (o falla), muestra el degradé del club
+function FotoNoticia({ noticia, className }) {
+  const [fallo, setFallo] = useState(false)
+  const src = urlImagen(noticia.foto)
+
+  if (!src || fallo) {
+    return (
+      <div
+        className={className}
+        style={{ background: 'linear-gradient(135deg, var(--blue), var(--purple))' }}
+      />
+    )
+  }
+  return (
+    <img
+      src={src}
+      alt={noticia.titulo}
+      className={className}
+      onError={() => setFallo(true)}
+    />
+  )
+}
 
 const fotos = [
   { img: '/pedidos/empanadas.jpg',        nombre: 'Empanadas',        contain: true },
@@ -80,6 +97,8 @@ export default function Home() {
   const [actual, setActual] = useState(0)
   const [fixtures, setFixtures] = useState([])
   const [fotosOffset, setFotosOffset] = useState(0)
+  const [noticias, setNoticias] = useState([])
+  const [cargandoNoticias, setCargandoNoticias] = useState(true)
 
   const refFixture = useAnimarAlVerlo()
   const refNoticias = useAnimarAlVerlo()
@@ -112,8 +131,20 @@ export default function Home() {
       .catch(err => console.error('Error cargando fixture:', err))
   }, [])
 
-  const noticiaDestacada = noticias.find(n => n.destacada)
-  const noticiasSecundarias = noticias.filter(n => !n.destacada)
+  // Noticias desde la hoja (las mismas que se editan en /noticias)
+  useEffect(() => {
+    obtenerNoticias()
+      .then(setNoticias)
+      .catch(err => console.error('Error cargando noticias:', err))
+      .finally(() => setCargandoNoticias(false))
+  }, [])
+
+  // La marcada con ⭐ va grande; si no hay ninguna, la primera.
+  // Al lado, las 4 siguientes en el orden de la página de noticias.
+  const noticiaDestacada = noticias.find(esDestacada) || noticias[0]
+  const noticiasSecundarias = noticiaDestacada
+    ? noticias.filter(n => n.id !== noticiaDestacada.id).slice(0, 4)
+    : []
   const isMobile = window.innerWidth <= 768
   const fotosVisibles = [...fotos.slice(fotosOffset), ...fotos.slice(0, fotosOffset)].slice(0, isMobile ? 4 : 5)
 
@@ -177,28 +208,39 @@ export default function Home() {
         {/* NOTICIAS */}
         <section className="home-noticias animar" ref={refNoticias}>
           <h2 className="home-noticias__titulo">NOTICIAS</h2>
-          <div className="home-noticias__grid">
-            <a href="/noticias" className="home-noticias__destacada">
-              <img src={noticiaDestacada.img} alt={noticiaDestacada.titulo} className="home-noticias__img" />
-              <div className="home-noticias__destacada-info">
-                <span className="home-noticias__tag">{noticiaDestacada.tag}</span>
-                <h3>{noticiaDestacada.titulo}</h3>
-                <span className="home-noticias__link">→ MÁS</span>
+
+          {cargandoNoticias ? (
+            <p style={{ textAlign: 'center', fontFamily: 'Barlow Condensed', fontWeight: 700, color: '#888' }}>
+              Cargando noticias...
+            </p>
+          ) : !noticiaDestacada ? (
+            <p style={{ textAlign: 'center', fontFamily: 'Barlow Condensed', fontWeight: 700, color: '#888' }}>
+              Próximamente vas a ver acá las novedades del club.
+            </p>
+          ) : (
+            <div className="home-noticias__grid">
+              <Link to={`/noticias/${noticiaDestacada.id}`} className="home-noticias__destacada">
+                <FotoNoticia noticia={noticiaDestacada} className="home-noticias__img" />
+                <div className="home-noticias__destacada-info">
+                  <span className="home-noticias__tag">NOTICIAS</span>
+                  <h3>{noticiaDestacada.titulo}</h3>
+                  <span className="home-noticias__link">→ MÁS</span>
+                </div>
+              </Link>
+              <div className="home-noticias__lista">
+                {noticiasSecundarias.map(n => (
+                  <Link key={n.id} to={`/noticias/${n.id}`} className="home-noticias__item">
+                    <FotoNoticia noticia={n} className="home-noticias__item-img" />
+                    <div>
+                      <span className="home-noticias__tag">NOTICIAS</span>
+                      <h4>{n.titulo}</h4>
+                      <span className="home-noticias__link">→ MÁS</span>
+                    </div>
+                  </Link>
+                ))}
               </div>
-            </a>
-            <div className="home-noticias__lista">
-              {noticiasSecundarias.map((n, i) => (
-                <a key={i} href="/noticias" className="home-noticias__item">
-                  <img src={n.img} alt={n.titulo} className="home-noticias__item-img" />
-                  <div>
-                    <span className="home-noticias__tag">{n.tag}</span>
-                    <h4>{n.titulo}</h4>
-                    <span className="home-noticias__link">→ MÁS</span>
-                  </div>
-                </a>
-              ))}
             </div>
-          </div>
+          )}
         </section>
 
         {/* BANNER INDUMENTARIA */}
