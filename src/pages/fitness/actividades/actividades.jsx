@@ -161,11 +161,18 @@ function TarjetaClase({ clase, i, sesiones }) {
 export default function Actividades() {
   const [clases, setClases] = useState([])
   const [horarios, setHorarios] = useState([])
+  const [cargando, setCargando] = useState(true)
 
   useEffect(() => {
-    traer(URL_CLASES).then(setClases)
+    traer(URL_CLASES)
+      .then(setClases)
+      .finally(() => setCargando(false))
     traer(URL_HORARIOS).then(setHorarios)
   }, [])
+
+  // Solo se ocultan las clases con "no" en la columna activo
+  // (vacío o "si" = se muestra). La hoja de horarios NO se filtra.
+  const clasesActivas = clases.filter(c => norm(c.activo) !== 'no')
 
   // Cruza cada actividad con sus sesiones en la hoja horarios (por nombre o alias)
   const sesionesDe = (nombre) => {
@@ -193,11 +200,13 @@ export default function Actividades() {
 
       {/* CATÁLOGO */}
       <section className="fit-sec">
-        {clases.length === 0 ? (
-          <p className="fit-vacio">Cargando Actividades.</p>
+        {cargando ? (
+          <p className="fit-vacio">Cargando actividades...</p>
+        ) : clasesActivas.length === 0 ? (
+          <p className="fit-vacio">No hay actividades para mostrar.</p>
         ) : (
           <div className="acti-grid">
-            {clases.map((c, i) => (
+            {clasesActivas.map((c, i) => (
               <TarjetaClase key={i} clase={c} i={i} sesiones={sesionesDe(c.nombre)} />
             ))}
           </div>
