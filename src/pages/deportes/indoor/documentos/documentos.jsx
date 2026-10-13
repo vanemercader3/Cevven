@@ -3,8 +3,30 @@ import { useParams, useNavigate } from 'react-router-dom'
 import './documentos.css'
 import PageFooter from '../../../../components/pageFooter/pageFooter'
 
-// Apps Script — valida cédula, devuelve datos, guarda fechas y sube fotos.
+// Apps Script — valida cédula, devuelve datos, guarda fechas, número/posición y sube fotos.
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0fMCKVhwObqTGS_T2Ju3HX6ACrRR-y4ObgScg-mHCKvZ4OgGYfe1nlTKhB8oqsHU7/exec'
+
+// Opciones fijas de posición: así quedan todas escritas igual en la hoja.
+// Tienen que coincidir EXACTO con la lista POSICIONES del Apps Script.
+const POSICIONES = [
+  'ARQUERA/O',
+  'PIVOT',
+  'ARMADO DERECHO',
+  'ARMADO IZQUIERDO',
+  'ARMADO CENTRAL',
+  'EXTREMO DERECHO',
+  'EXTREMO IZQUIERDO',
+]
+
+// Lleva lo que hay hoy en la hoja (que puede estar escrito a mano, en
+// minúsculas, con espacios de más, "Arquera", etc.) a una de las opciones.
+// Si no coincide con ninguna devuelve '' y el select aparece sin elegir.
+function normalizarPosicion(txt) {
+  const s = (txt || '').toString().toUpperCase().replace(/\s+/g, ' ').trim()
+  if (!s) return ''
+  if (s.startsWith('ARQUER')) return 'ARQUERA/O'
+  return POSICIONES.find(p => p === s) || ''
+}
 
 function driveUrl(id) {
   if (!id) return null
@@ -70,6 +92,8 @@ export default function Documentos() {
 
   // ── Estado del formulario de edición (modal) ──
   const [modalAbierto, setModalAbierto] = useState(false)
+  const [numero, setNumero] = useState('')              // número de camiseta
+  const [posicion, setPosicion] = useState('')          // una de POSICIONES
   const [fechaCI, setFechaCI] = useState('')            // aaaa-mm-dd
   const [fechaCarnet, setFechaCarnet] = useState('')    // aaaa-mm-dd
   const [fotoPerfil, setFotoPerfil] = useState(null)    // File
@@ -113,8 +137,10 @@ export default function Documentos() {
     setVerificando(false)
   }
 
-  // Abre el modal con las fechas actuales prellenadas
+  // Abre el modal con los datos actuales prellenados
   const abrirModal = () => {
+    setNumero((datos?.numero || '').toString().trim())
+    setPosicion(normalizarPosicion(datos?.posicion))
     setFechaCI(datos?.vencimientoCIInput || '')
     setFechaCarnet(datos?.vencimientoCarnetInput || '')
     setFotoPerfil(null)
@@ -129,11 +155,27 @@ export default function Documentos() {
     setModalAbierto(false)
   }
 
-  // Guarda todo lo que la jugadora tocó (fechas + fotos). Nada es obligatorio.
+  // Guarda todo lo que la jugadora tocó (número, posición, fechas, fotos). Nada es obligatorio.
   const confirmarCambios = async () => {
     setGuardando(true)
     try {
-      // 1) Fechas (por GET) — solo si cambió respecto a lo que había
+      // 1) Número y posición (por GET, leyendo la respuesta) — solo lo que cambió
+      const numeroActual = (datos?.numero || '').toString().trim()
+      const posicionActual = normalizarPosicion(datos?.posicion)
+      const cambioNumero = numero !== '' && numero !== numeroActual
+      const cambioPosicion = posicion !== '' && posicion !== posicionActual
+
+      if (cambioNumero || cambioPosicion) {
+        setProgreso('Guardando número y posición...')
+        let url = `${APPS_SCRIPT_URL}?_accion=guardarDatos&cedula=${encodeURIComponent(cedulaValida)}`
+        if (cambioNumero) url += `&numero=${encodeURIComponent(numero)}`
+        if (cambioPosicion) url += `&posicion=${encodeURIComponent(posicion)}`
+        const res = await fetch(url)
+        const resp = await res.json()
+        if (!resp.ok) throw new Error(resp.error || 'No se pudo guardar número/posición')
+      }
+
+      // 2) Fechas (por GET) — solo si cambió respecto a lo que había
       if (fechaCI && fechaCI !== (datos?.vencimientoCIInput || '')) {
         setProgreso('Guardando vencimiento de cédula...')
         await fetch(`${APPS_SCRIPT_URL}?_accion=guardarFecha&cedula=${encodeURIComponent(cedulaValida)}&tipo=ci&valor=${encodeURIComponent(fechaCI)}`)
@@ -143,7 +185,7 @@ export default function Documentos() {
         await fetch(`${APPS_SCRIPT_URL}?_accion=guardarFecha&cedula=${encodeURIComponent(cedulaValida)}&tipo=carnet&valor=${encodeURIComponent(fechaCarnet)}`)
       }
 
-      // 2) Fotos (por POST no-cors) — solo las que eligió
+      // 3) Fotos (por POST no-cors) — solo las que eligió
       const subirUna = async (file, tipo, etiqueta) => {
         if (!file) return
         setProgreso(`Subiendo ${etiqueta}...`)
@@ -286,6 +328,33 @@ export default function Documentos() {
                   <div className="documentos__form-fijos">
                     <div><span className="documentos__form-label">Nombre</span><span>{datos?.nombre} {datos?.apellido}</span></div>
                     <div><span className="documentos__form-label">Cédula</span><span>{cedulaValida}</span></div>
+                  </div>
+
+                  {/* Número y posición */}
+                  <div className="documentos__form-campo">
+                    <label className="documentos__form-label">Número de camiseta</label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={2}
+                      placeholder="Ej: 7"
+                      className="documentos__form-input"
+                      value={numero}
+                      onChange={(e) => setNumero(e.target.value.replace(/\D/g, '').slice(0, 2))}
+                    />
+                  </div>
+                  <div className="documentos__form-campo">
+                    <label className="documentos__form-label">Posición</label>
+                    <select
+                      className="documentos__form-input"
+                      value={posicion}
+                      onChange={(e) => setPosicion(e.target.value)}
+                    >
+                      <option value="">— Elegir posición —</option>
+                      {POSICIONES.map(p => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </select>
                   </div>
 
                   {/* Fechas */}
