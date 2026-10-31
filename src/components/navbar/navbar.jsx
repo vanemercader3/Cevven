@@ -5,6 +5,7 @@ import { loginConGoogle, logout } from '../../firebase'
 import './navbar.css'
 
 const categorias = [
+  { nombre: 'Infantiles',       url: '/categoria/Infantiles' },
   { nombre: 'Sub 13',               url: '/categoria/U13' },
   { nombre: 'Sub 14',               url: '/categoria/U14' },
   { nombre: 'Sub 15',               url: '/categoria/U15' },

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import './documentos.css'
 import PageFooter from '../../../../components/pageFooter/pageFooter'
 
-// Apps Script — valida cédula, devuelve datos, guarda fechas, número/posición y sube fotos.
+// Apps Script — valida cédula, devuelve datos, guarda fechas, número/posición/mutualista y sube fotos.
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0fMCKVhwObqTGS_T2Ju3HX6ACrRR-y4ObgScg-mHCKvZ4OgGYfe1nlTKhB8oqsHU7/exec'
 
 // Opciones fijas de posición: así quedan todas escritas igual en la hoja.
@@ -16,6 +16,24 @@ const POSICIONES = [
   'ARMADO CENTRAL',
   'EXTREMO DERECHO',
   'EXTREMO IZQUIERDO',
+]
+
+// Sugerencias de mutualista (aparecen al escribir). Se puede escribir otra igual.
+const MUTUALISTAS = [
+  'ASSE',
+  'CASMU',
+  'Asociación Española',
+  'Médica Uruguaya',
+  'Hospital Evangélico',
+  'Círculo Católico',
+  'COSEM',
+  'CUDAM',
+  'SMI',
+  'Universal',
+  'Hospital Británico',
+  'MP',
+  'SUMMUM',
+  'Blue Cross & Blue Shield',
 ]
 
 // Lleva lo que hay hoy en la hoja (que puede estar escrito a mano, en
@@ -94,6 +112,8 @@ export default function Documentos() {
   const [modalAbierto, setModalAbierto] = useState(false)
   const [numero, setNumero] = useState('')              // número de camiseta
   const [posicion, setPosicion] = useState('')          // una de POSICIONES
+  const [mutualista, setMutualista] = useState('')      // texto libre (con sugerencias)
+  const [fechaCumple, setFechaCumple] = useState('')    // aaaa-mm-dd (fecha de nacimiento)
   const [fechaCI, setFechaCI] = useState('')            // aaaa-mm-dd
   const [fechaCarnet, setFechaCarnet] = useState('')    // aaaa-mm-dd
   const [fotoPerfil, setFotoPerfil] = useState(null)    // File
@@ -141,6 +161,8 @@ export default function Documentos() {
   const abrirModal = () => {
     setNumero((datos?.numero || '').toString().trim())
     setPosicion(normalizarPosicion(datos?.posicion))
+    setMutualista((datos?.mutualista || '').toString().trim())
+    setFechaCumple(datos?.cumpleInput || '')
     setFechaCI(datos?.vencimientoCIInput || '')
     setFechaCarnet(datos?.vencimientoCarnetInput || '')
     setFotoPerfil(null)
@@ -155,27 +177,35 @@ export default function Documentos() {
     setModalAbierto(false)
   }
 
-  // Guarda todo lo que la jugadora tocó (número, posición, fechas, fotos). Nada es obligatorio.
+  // Guarda todo lo que la jugadora tocó (número, posición, mutualista, fechas, fotos). Nada es obligatorio.
   const confirmarCambios = async () => {
     setGuardando(true)
     try {
-      // 1) Número y posición (por GET, leyendo la respuesta) — solo lo que cambió
+      // 1) Número, posición y mutualista (por GET, leyendo la respuesta) — solo lo que cambió
       const numeroActual = (datos?.numero || '').toString().trim()
       const posicionActual = normalizarPosicion(datos?.posicion)
+      const mutualistaActual = (datos?.mutualista || '').toString().trim()
+      const mutualistaNueva = mutualista.replace(/\s+/g, ' ').trim()
       const cambioNumero = numero !== '' && numero !== numeroActual
       const cambioPosicion = posicion !== '' && posicion !== posicionActual
+      const cambioMutualista = mutualistaNueva !== '' && mutualistaNueva !== mutualistaActual
 
-      if (cambioNumero || cambioPosicion) {
-        setProgreso('Guardando número y posición...')
+      if (cambioNumero || cambioPosicion || cambioMutualista) {
+        setProgreso('Guardando tus datos...')
         let url = `${APPS_SCRIPT_URL}?_accion=guardarDatos&cedula=${encodeURIComponent(cedulaValida)}`
         if (cambioNumero) url += `&numero=${encodeURIComponent(numero)}`
         if (cambioPosicion) url += `&posicion=${encodeURIComponent(posicion)}`
+        if (cambioMutualista) url += `&mutualista=${encodeURIComponent(mutualistaNueva)}`
         const res = await fetch(url)
         const resp = await res.json()
-        if (!resp.ok) throw new Error(resp.error || 'No se pudo guardar número/posición')
+        if (!resp.ok) throw new Error(resp.error || 'No se pudieron guardar los datos')
       }
 
       // 2) Fechas (por GET) — solo si cambió respecto a lo que había
+      if (fechaCumple && fechaCumple !== (datos?.cumpleInput || '')) {
+        setProgreso('Guardando fecha de nacimiento...')
+        await fetch(`${APPS_SCRIPT_URL}?_accion=guardarFecha&cedula=${encodeURIComponent(cedulaValida)}&tipo=cumple&valor=${encodeURIComponent(fechaCumple)}`)
+      }
       if (fechaCI && fechaCI !== (datos?.vencimientoCIInput || '')) {
         setProgreso('Guardando vencimiento de cédula...')
         await fetch(`${APPS_SCRIPT_URL}?_accion=guardarFecha&cedula=${encodeURIComponent(cedulaValida)}&tipo=ci&valor=${encodeURIComponent(fechaCI)}`)
@@ -216,7 +246,7 @@ export default function Documentos() {
   return (
     <>
       <main className="documentos">
-        <button className="documentos__volver" onClick={() => navigate(`/categoria/${cat}`)}>
+        <button className="documentos__volver" onClick={() => navigate(`/categoria/${encodeURIComponent(cat)}`)}>
           ← Volver a {cat}
         </button>
 
@@ -262,6 +292,18 @@ export default function Documentos() {
               <button className="documentos__editar-btn" onClick={abrirModal} title="Editar mis datos">
                 ✏️ Editar
               </button>
+            </div>
+
+            {/* MUTUALISTA — para saber a quién llamar si pasa algo */}
+            <div className="documentos__form-fijos" style={{ marginBottom: '1.5rem' }}>
+              <div>
+                <span className="documentos__form-label">🏥 Mutualista</span>
+                <span>{datos.mutualista || 'No registrada'}</span>
+              </div>
+              <div>
+                <span className="documentos__form-label">🎂 Nacimiento</span>
+                <span>{datos.cumple || 'No registrado'}</span>
+              </div>
             </div>
 
             <div className="documentos__grid">
@@ -357,7 +399,30 @@ export default function Documentos() {
                     </select>
                   </div>
 
+                  {/* Mutualista */}
+                  <div className="documentos__form-campo">
+                    <label className="documentos__form-label">Mutualista</label>
+                    <input
+                      type="text"
+                      list="lista-mutualistas"
+                      maxLength={60}
+                      placeholder="Ej: CASMU"
+                      className="documentos__form-input"
+                      value={mutualista}
+                      onChange={(e) => setMutualista(e.target.value)}
+                    />
+                    <datalist id="lista-mutualistas">
+                      {MUTUALISTAS.map(m => <option key={m} value={m} />)}
+                    </datalist>
+                  </div>
+
                   {/* Fechas */}
+                  <div className="documentos__form-campo">
+                    <label className="documentos__form-label">Fecha de nacimiento</label>
+                    <input type="date" className="documentos__form-input"
+                      max={new Date().toISOString().slice(0, 10)}
+                      value={fechaCumple} onChange={(e) => setFechaCumple(e.target.value)} />
+                  </div>
                   <div className="documentos__form-campo">
                     <label className="documentos__form-label">Vencimiento cédula</label>
                     <input type="date" className="documentos__form-input"
@@ -402,7 +467,7 @@ export default function Documentos() {
                   <h2>¡Confirmado!</h2>
                   <p>Tus datos se están actualizando.</p>
                   <p style={{ color: '#888', fontSize: '0.9rem' }}>Puede llevar unos minutos en verse reflejado.</p>
-                  <button className="documentos__cedula-btn" onClick={() => navigate(`/categoria/${cat}`)}>
+                  <button className="documentos__cedula-btn" onClick={() => navigate(`/categoria/${encodeURIComponent(cat)}`)}>
                     OK
                   </button>
                 </div>

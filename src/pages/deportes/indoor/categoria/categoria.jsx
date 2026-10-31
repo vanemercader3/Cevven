@@ -9,6 +9,10 @@ import { useAuth } from '../../../../context/AuthContext'
 // numero, posicion, foto jugadora). NO trae cédula ni documentos.
 const PUBLICO_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwJTCQcNDqKRyeKdwLZdk1UXjYimsL9y9ASH9sxowzkQs0A2ARu9kRDkDL82MGx9_Im5ewuGW_MjRO/pub?gid=474355060&single=true&output=csv'
 
+// La clave es lo que va en la URL (/categoria/<clave>).
+// "hoja" es cómo está escrita la categoría en la columna `categoria` del Sheet,
+// solo hace falta cuando es distinta de la clave. Ej: Infantiles → "Escuelita/Infantiles"
+// (la barra "/" no puede ir en la URL porque rompe las rutas).
 const categoriaInfo = {
   'U13':        { nombre: 'Sub 13',               url: 'https://fuhandball.com/tablas-u13-femenino-26/' },
   'U14':        { nombre: 'Sub 14',               url: 'https://fuhandball.com/tablas-u14-femenino-26/' },
@@ -18,7 +22,7 @@ const categoriaInfo = {
   'U21':        { nombre: 'Sub 21',               url: 'https://fuhandball.com/tablas-u21-femenino-26/' },
   'Senior':     { nombre: 'Senior Femenino',      url: 'https://fuhandball.com/tablas-senior-femenino-26/' },
   'Inter Masc': { nombre: 'Intermedia Masculino', url: 'https://fuhandball.com/intermedia-masculino-26/' },
-  'Infantiles': { nombre: 'Infantiles',           url: '#' },
+  'Infantiles': { nombre: 'Escuelita / Infantiles', url: '#', hoja: 'Escuelita/Infantiles' },
   'Plus 35':    { nombre: 'Plus 35',              url: '#' },
   'Entrenadores': { nombre: 'Entrenadores',       url: '#' },
 }
@@ -35,6 +39,11 @@ function parsearCSV(texto) {
   })
 }
 
+// Compara categorías ignorando mayúsculas y espacios de más
+function normalizarCat(txt) {
+  return (txt || '').toString().replace(/\s+/g, ' ').trim().toLowerCase()
+}
+
 export default function Categoria() {
   const { cat } = useParams()
   const navigate = useNavigate()
@@ -42,21 +51,24 @@ export default function Categoria() {
   const [cargando, setCargando] = useState(true)
 
   const info = categoriaInfo[cat] || { nombre: cat, url: '#' }
+  // Texto a buscar en la columna `categoria` de la hoja
+  const catEnHoja = info.hoja || cat
 
   const { usuario } = useAuth()
 
   useEffect(() => {
+    setCargando(true)
     fetch(PUBLICO_URL)
       .then(res => res.text())
       .then(texto => {
         const todas = parsearCSV(texto)
         const filtradas = todas.filter(j =>
-          j.categoria?.trim().toLowerCase() === cat?.trim().toLowerCase()
+          normalizarCat(j.categoria) === normalizarCat(catEnHoja)
         )
         setJugadoras(filtradas)
         setCargando(false)
       })
-  }, [cat])
+  }, [catEnHoja])
 
   return (
     <>
@@ -85,7 +97,7 @@ export default function Categoria() {
                   className={`categoria__card ${esEntrenador ? 'categoria__card--entrenador' : usuario ? 'categoria__card--clickeable' : 'categoria__card--bloqueada'}`}
                   onClick={() => {
                     if (!esEntrenador && usuario) {
-                      navigate(`/documentos/${cat}/${encodeURIComponent(`${j.nombre} ${j.apellido}`)}`)
+                      navigate(`/documentos/${encodeURIComponent(cat)}/${encodeURIComponent(`${j.nombre} ${j.apellido}`)}`)
                     }
                   }}
                 >
